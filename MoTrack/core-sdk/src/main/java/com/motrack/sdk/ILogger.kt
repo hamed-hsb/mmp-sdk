@@ -1,5 +1,10 @@
 package com.motrack.sdk
 
+/**
+ * @author yaya (@yahyalmh)
+ * @since 04th October 2021
+ */
+
 interface ILogger {
     fun setLogLevel(logLevel: LogLevel, isProductionEnvironment: Boolean)
 

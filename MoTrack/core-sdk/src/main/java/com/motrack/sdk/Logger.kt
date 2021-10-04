@@ -3,6 +3,11 @@ package com.motrack.sdk
 import android.util.Log
 import com.motrack.sdk.Constants.Companion.LOGTAG
 
+/**
+ * @author yaya (@yahyalmh)
+ * @since 04th October 2021
+ */
+
 class Logger : ILogger {
 
     private lateinit var logLevel: LogLevel
