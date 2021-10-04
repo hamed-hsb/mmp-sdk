@@ -5,7 +5,7 @@ ext {
     coreMinSdkVersion = 16
     coreCompileSdkVersion = 30
     coreTargetSdkVersion = 30
-    coreVersionName = '1.0.0'
+    coreVersionName = '1.1.0'
     defaultVersionCode = 100
 
     // Dependencies
