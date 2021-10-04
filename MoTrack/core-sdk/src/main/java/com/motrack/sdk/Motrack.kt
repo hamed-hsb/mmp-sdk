@@ -5,6 +5,6 @@ package com.motrack.sdk
  * @since 04th October 2021
  */
 
-class MoTrack {
+class Motrack {
 
 }
