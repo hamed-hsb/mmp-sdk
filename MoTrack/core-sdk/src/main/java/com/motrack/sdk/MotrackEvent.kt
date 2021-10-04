@@ -69,7 +69,7 @@ class MotrackEvent {
 
     private fun checkRevenue(revenue: Double?, currency: String?): Boolean {
         if (revenue != null) {
-            if (revenue < 0f) {
+            if (revenue < 0.0) {
                 logger.error("Invalid revenue amount: $revenue")
                 return false
             }

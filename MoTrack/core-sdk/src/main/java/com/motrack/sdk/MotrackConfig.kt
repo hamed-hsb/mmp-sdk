@@ -8,13 +8,20 @@ import android.content.Context
  */
 
 class MotrackConfig {
+    lateinit var subscriptionPath: String
+    lateinit var dgprPath: String
+    lateinit var basePath: String
+    var startOffline: Boolean? = null
+    var startEnabled: Boolean? = null
     private var preinstallTrackingEnabled: Boolean = false
     private var sendInBackground: Boolean = false
     private var eventBufferingEnabled: Boolean = false
     private lateinit var logger: ILogger
     private var context: Context? = null
-    private var appToken: String? = null
+    var appToken: String? = null
     private lateinit var environment: String
+
+    public var preLaunchActions: MotrackInstance.Companion.PreLaunchActions? = null
 
     companion object {
         const val ENVIRONMENT_SANDBOX = "sandbox"
