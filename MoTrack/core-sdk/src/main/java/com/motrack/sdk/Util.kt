@@ -20,6 +20,22 @@ class Util {
             }
         }
 
+        public fun isValidParameter(
+            attribute: String?,
+            attributeType: String,
+            parameterName: String
+        ): Boolean {
+            if (attribute == null) {
+                getLogger().error("$parameterName parameter $attributeType is missing")
+                return false
+            }
+            if (attribute.isEmpty() || attribute.isBlank()) {
+                getLogger().error("$parameterName parameter $attributeType is empty")
+                return false
+            }
+            return true
+        }
+
         private fun getLogger(): ILogger {
             return MotrackFactory.getLogger()
         }
