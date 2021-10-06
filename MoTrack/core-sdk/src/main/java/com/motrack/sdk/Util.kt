@@ -2,6 +2,9 @@ package com.motrack.sdk
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.os.Build
+import java.util.*
 
 /**
  * @author yaya (@yahyalmh)
@@ -10,7 +13,8 @@ import android.content.pm.PackageManager
 
 class Util {
     companion object {
-        @JvmStatic public fun checkPermission(context: Context, permission: String): Boolean {
+        @JvmStatic
+        public fun checkPermission(context: Context, permission: String): Boolean {
             return try {
                 val result = context.checkCallingOrSelfPermission(permission)
                 result == PackageManager.PERMISSION_GRANTED
@@ -20,7 +24,8 @@ class Util {
             }
         }
 
-        @JvmStatic public fun isValidParameter(
+        @JvmStatic
+        public fun isValidParameter(
             attribute: String?,
             attributeType: String,
             parameterName: String
@@ -36,7 +41,8 @@ class Util {
             return true
         }
 
-        @JvmStatic public fun getSdkPrefix(clientSdk: String): String? {
+        @JvmStatic
+        public fun getSdkPrefix(clientSdk: String): String? {
             if (clientSdk.isNullOrEmpty()) {
                 return null
             }
@@ -57,7 +63,8 @@ class Util {
             return split[0]
         }
 
-        @JvmStatic public fun getSdkPrefixPlatform(clientSdk: String): String? {
+        @JvmStatic
+        public fun getSdkPrefixPlatform(clientSdk: String): String? {
             val sdkPrefix = getSdkPrefix(clientSdk)
 
             if (sdkPrefix.isNullOrEmpty()) {
@@ -70,6 +77,20 @@ class Util {
             }
 
             return split[0]
+        }
+
+        @JvmStatic
+        public fun getLocale(configuration: Configuration): Locale? {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val locales = configuration.locales
+                if (!locales.isEmpty) {
+                    return locales[0]
+                }
+            } else {
+                return configuration.locale
+            }
+
+            return null
         }
 
         private fun getLogger(): ILogger {
