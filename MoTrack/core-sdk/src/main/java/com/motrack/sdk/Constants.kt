@@ -9,5 +9,6 @@ package com.motrack.sdk
 class Constants {
     companion object {
         const val LOGTAG = "MoTrack"
+        var CLIENT_SDK = "android4.28.5"
     }
 }

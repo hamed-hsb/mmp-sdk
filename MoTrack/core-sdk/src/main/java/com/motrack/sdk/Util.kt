@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -13,6 +16,15 @@ import java.util.*
 
 class Util {
     companion object {
+        private const val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z"
+        val SecondsDisplayFormat: DecimalFormat = newLocalDecimalFormat()
+        val dateFormatter = SimpleDateFormat(DATE_FORMAT, Locale.US)
+
+        private fun newLocalDecimalFormat(): DecimalFormat {
+            val symbols = DecimalFormatSymbols(Locale.US)
+            return DecimalFormat("0.0", symbols)
+        }
+
         @JvmStatic
         public fun checkPermission(context: Context, permission: String): Boolean {
             return try {
