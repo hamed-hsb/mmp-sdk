@@ -36,6 +36,42 @@ class Util {
             return true
         }
 
+        public fun getSdkPrefix(clientSdk: String): String? {
+            if (clientSdk.isNullOrEmpty()) {
+                return null
+            }
+
+            if (!clientSdk.contains("@")) {
+                return null
+            }
+
+            val split = clientSdk.split("@")
+            if (split.isNullOrEmpty()) {
+                return null
+            }
+
+            if (split.size != 2) {
+                return null
+            }
+
+            return split[0]
+        }
+
+        public fun getSdkPrefixPlatform(clientSdk: String): String? {
+            val sdkPrefix = getSdkPrefix(clientSdk)
+
+            if (sdkPrefix.isNullOrEmpty()) {
+                return null
+            }
+
+            val split = sdkPrefix.split(Regex("\\d+"), 2)
+            if (split.isNullOrEmpty()) {
+                return null
+            }
+
+            return split[0]
+        }
+
         private fun getLogger(): ILogger {
             return MotrackFactory.getLogger()
         }
