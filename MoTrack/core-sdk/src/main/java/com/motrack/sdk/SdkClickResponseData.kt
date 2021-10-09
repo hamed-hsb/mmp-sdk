@@ -5,7 +5,7 @@ package com.motrack.sdk
  * @since 06th October 2021
  */
 
-class SdkClickResponseData : RespondData() {
+class SdkClickResponseData : ResponseData() {
     var isInstallReferrer = false
     var clickTime: Long? = null
     var installBegin: Long? = null

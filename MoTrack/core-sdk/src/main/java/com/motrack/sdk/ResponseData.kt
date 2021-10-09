@@ -7,7 +7,7 @@ import org.json.JSONObject
  * @since 04th October 2021
  */
 
-open class RespondData {
+open class ResponseData {
     var success = false
     var willRetry = false
     var adid: String? = null
@@ -29,22 +29,22 @@ open class RespondData {
         fun buildResponseData(
             activityPackage: ActivityPackage,
             sendingParameters: Map<String, String>
-        ): RespondData {
-            val respondData: RespondData?
+        ): ResponseData {
+            val responseData: ResponseData?
             val activityKind = activityPackage.getActivityKind()
 
-            respondData = when (activityKind) {
+            responseData = when (activityKind) {
                 ActivityKind.SESSION -> SessionResponseData(activityPackage)
                 ActivityKind.CLICK -> SdkClickResponseData()
                 ActivityKind.ATTRIBUTION -> AttributionResponseData()
                 ActivityKind.EVENT -> EventResponseData(activityPackage)
-                else -> RespondData()
+                else -> ResponseData()
             }
-            respondData.activityKind = activityKind
-            respondData.activityPackage = activityPackage
-            respondData.sendingParameters = sendingParameters
+            responseData.activityKind = activityKind
+            responseData.activityPackage = activityPackage
+            responseData.sendingParameters = sendingParameters
 
-            return respondData
+            return responseData
         }
     }
 

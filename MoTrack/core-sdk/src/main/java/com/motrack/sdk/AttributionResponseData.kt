@@ -7,6 +7,6 @@ import android.net.Uri
  * @since 06th October 2021
  */
 
-class AttributionResponseData : RespondData() {
+class AttributionResponseData : ResponseData() {
     public var callback: Uri? = null
 }

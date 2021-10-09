@@ -7,7 +7,7 @@ import org.json.JSONObject
  * @since 06th October 2021
  */
 
-class EventResponseData(activityPackage: ActivityPackage) : RespondData() {
+class EventResponseData(activityPackage: ActivityPackage) : ResponseData() {
 
     private var eventToken: String? = activityPackage.getParameters()?.get("event_token")
     private var callbackId: String? = activityPackage.getParameters()?.get("event_callback_id")

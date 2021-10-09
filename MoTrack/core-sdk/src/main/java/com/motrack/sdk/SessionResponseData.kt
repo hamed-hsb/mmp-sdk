@@ -7,7 +7,7 @@ import org.json.JSONObject
  * @since 06th October 2021
  */
 
-class SessionResponseData(activityPackage: ActivityPackage) : RespondData() {
+class SessionResponseData(activityPackage: ActivityPackage) : ResponseData() {
 
     private val sdkPlatform = activityPackage.getClientSdk()?.let { Util.getSdkPrefixPlatform(it) }
 
