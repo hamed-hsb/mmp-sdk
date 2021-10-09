@@ -81,6 +81,22 @@ class Util {
             return String.format(Locale.US, formatString, bigInt)
         }
 
+        fun getSdkVersion(): String {
+            return Constants.CLIENT_SDK
+        }
+
+        fun resolveContentProvider(
+            applicationContext: Context,
+            authority: String
+        ): Boolean {
+            return try {
+                applicationContext.packageManager
+                    .resolveContentProvider(authority, 0) != null
+            } catch (e: java.lang.Exception) {
+                false
+            }
+        }
+
         @JvmStatic
         public fun isValidParameter(
             attribute: String?,
@@ -218,6 +234,7 @@ class Util {
             }
             return null
         }
+
         fun getAdvertisingInfoObject(context: Context, timeoutMilli: Long): Any? {
             val callable = Callable {
                 try {
