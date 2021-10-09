@@ -1,6 +1,7 @@
 package com.motrack.sdk
 
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * @author yaya (@yahyalmh)
@@ -8,8 +9,8 @@ import java.util.*
  */
 
 class SessionParameters {
-    var callbackParameters: Map<String, String>? = null
-    var partnerParameters: Map<String, String>? = null
+    var callbackParameters: HashMap<String, String>? = null
+    var partnerParameters: HashMap<String, String>? = null
 
     fun deepCopy(): SessionParameters {
         val newSessionParameters = SessionParameters()
