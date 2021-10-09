@@ -105,6 +105,10 @@ class Util {
             return null
         }
 
+        fun createUuid(): String {
+            return UUID.randomUUID().toString()
+        }
+
         private fun getLogger(): ILogger {
             return MotrackFactory.getLogger()
         }
