@@ -8,5 +8,6 @@ package com.motrack.sdk
 class DefaultConfig {
     companion object {
         const val APP_TOKEN_LENGTH = 12
+        const val MOTRACK_CONFIG_FILE_NAME = "motrack_config.properties"
     }
 }

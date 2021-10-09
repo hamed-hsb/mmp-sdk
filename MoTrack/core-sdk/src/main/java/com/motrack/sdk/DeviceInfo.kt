@@ -1,5 +1,6 @@
 package com.motrack.sdk
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -16,14 +17,14 @@ import java.util.*
  */
 
 class DeviceInfo(private val context: Context, sdkPrefix: String) {
-    lateinit var playId: String
-    lateinit var playIdSource: String
-    var playIdAttempt: Int? = null
-    var isTrackingEnabled: Boolean = false
+    var playAdId: String? = null
+    var playAdIdSource: String? = null
+    var playAdIdAttempt = 0
+    var isTrackingEnabled: Boolean? = false
     private var nonGoogleIdsReadOnce: Boolean = false
-    lateinit var macSha1: String
-    lateinit var macShortMd5: String
-    lateinit var androidId: String
+     var macSha1: String? = null
+    var macShortMd5: String? = null
+    var androidId: String? = null
     lateinit var fabAttributionId: String
     var clientSdk: String
     var packageName: String?
@@ -246,6 +247,111 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
 
     private fun getPackageName(context: Context): String {
         return context.packageName
+    }
+
+    fun reloadPlayIds(context: Context?) {
+        val previousPlayAdId: String? = playAdId
+        val previousIsTrackingEnabled = isTrackingEnabled
+        playAdId = null
+        isTrackingEnabled = null
+        playAdIdSource = null
+        playAdIdAttempt = -1
+
+
+        // attempt connecting to Google Play Service by own
+        var serviceAttempt = 1
+        while (serviceAttempt <= 3) {
+            try {
+                // timeout is a multiplier of the attempt number with 3 seconds
+                // so first 3 seconds, second 6 seconds and third and last 9 seconds
+                val timeoutServiceMilli = (Constants.ONE_SECOND * 3 * serviceAttempt)
+                val gpsInfo: GooglePlayServicesClient.Companion.GooglePlayServicesInfo =
+                    GooglePlayServicesClient.getGooglePlayServicesInfo(
+                        context!!,
+                        timeoutServiceMilli
+                    )!!
+                if (playAdId == null) {
+                    playAdId = gpsInfo.gpsAdid
+                }
+                if (isTrackingEnabled == null) {
+                    isTrackingEnabled = gpsInfo.isTrackingEnabled
+                }
+                if (playAdId != null && isTrackingEnabled != null) {
+                    playAdIdSource = "service"
+                    playAdIdAttempt = serviceAttempt
+                    return
+                }
+            } catch (e: java.lang.Exception) {
+            }
+            serviceAttempt += 1
+        }
+
+        // as fallback attempt connecting to Google Play Service using library
+        var libAttempt = 1
+        while (libAttempt <= 3) {
+
+            // timeout inside library is 10 seconds, so 10 + 1 seconds are given
+            val advertisingInfoObject: Any? = Util.getAdvertisingInfoObject(
+                context!!, Constants.ONE_SECOND * 11
+            )
+            if (advertisingInfoObject == null) {
+                libAttempt += 1
+                continue
+            }
+            if (playAdId == null) {
+                // just needs a short timeout since it should be just accessing a POJO
+                playAdId = Util.getPlayAdId(
+                    context, advertisingInfoObject, Constants.ONE_SECOND
+                )
+            }
+            if (isTrackingEnabled == null) {
+                // just needs a short timeout since it should be just accessing a POJO
+                isTrackingEnabled = Util.isPlayTrackingEnabled(
+                    context, advertisingInfoObject, Constants.ONE_SECOND
+                )
+            }
+            if (playAdId != null && isTrackingEnabled != null) {
+                playAdIdSource = "library"
+                playAdIdAttempt = libAttempt
+                return
+            }
+            libAttempt += 1
+        }
+
+        // if both weren't found, use previous values
+        if (playAdId == null) {
+            playAdId = previousPlayAdId
+        }
+        if (isTrackingEnabled == null) {
+            isTrackingEnabled = previousIsTrackingEnabled
+        }
+    }
+
+    fun reloadNonPlayIds(context: Context?) {
+        if (nonGoogleIdsReadOnce) {
+            return
+        }
+        if (!Util.checkPermission(context!!, Manifest.permission.ACCESS_WIFI_STATE)) {
+            MotrackFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE")
+        }
+        val macAddress: String? = MacAddressUtil.getMacAddress(context)
+        macSha1 = getMacSha1(macAddress)
+        macShortMd5 = getMacShortMd5(macAddress)
+        androidId = Util.getAndroidId(context)
+        nonGoogleIdsReadOnce = true
+    }
+    private fun getMacSha1(macAddress: String?): String? {
+        return if (macAddress == null) {
+            null
+        } else Util.sha1(macAddress)
+    }
+
+    private fun getMacShortMd5(macAddress: String?): String? {
+        if (macAddress == null) {
+            return null
+        }
+        val macShort = macAddress.replace(":".toRegex(), "")
+        return Util.md5(macShort)
     }
 
     private fun getFacebookAttributionId(context: Context): String? {
