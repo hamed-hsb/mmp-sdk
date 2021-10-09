@@ -11,13 +11,20 @@ class MotrackConfig {
     lateinit var subscriptionPath: String
     lateinit var dgprPath: String
     lateinit var basePath: String
-    var startOffline: Boolean? = null
-    var startEnabled: Boolean? = null
+    var startOffline = false
+    var startEnabled= false
+    var processName: String? = null
+    var defaultTracker: String? = null
+    var sdkPrefix: String? = null
+
+    var pushToken: String? = null
+
+
     private var preinstallTrackingEnabled: Boolean = false
     private var sendInBackground: Boolean = false
-    private var eventBufferingEnabled: Boolean = false
+    var eventBufferingEnabled: Boolean = false
     private lateinit var logger: ILogger
-    private var context: Context? = null
+    var context: Context? = null
     var appToken: String? = null
     private lateinit var environment: String
 
@@ -117,4 +124,5 @@ class MotrackConfig {
     private fun setLogLevel(logLevel: LogLevel, environment: String) {
         logger.setLogLevel(logLevel, ENVIRONMENT_PRODUCTION == environment)
     }
+
 }
