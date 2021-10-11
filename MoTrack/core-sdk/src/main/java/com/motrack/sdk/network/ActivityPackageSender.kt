@@ -23,7 +23,7 @@ class ActivityPackageSender(
     private val gdprPath: String?,
     private val subscriptionPath: String?,
     private val clientSdk: String?
-) {
+): IActivityPackageSender {
 
     private var logger: ILogger = MotrackFactory.getLogger()
     private var executor: ThreadExecutor? = null
@@ -43,9 +43,9 @@ class ActivityPackageSender(
         connectionOptions = MotrackFactory.getConnectionOptions()
     }
 
-    fun sendActivityPackage(
+    override fun sendActivityPackage(
         activityPackage: ActivityPackage,
-        sendingParameters: Map<String, String>,
+        sendingParameters: Map<String?, String?>,
         responseCallback: IActivityPackageSender.ResponseDataCallbackSubscriber
     ) {
         executor!!.submit {
@@ -55,9 +55,9 @@ class ActivityPackageSender(
         }
     }
 
-    private fun sendActivityPackageSync(
+    override fun sendActivityPackageSync(
         activityPackage: ActivityPackage,
-        sendingParameters: Map<String, String>
+        sendingParameters: Map<String?, String?>
     ): ResponseData {
         var retryToSend: Boolean
         var responseData: ResponseData
@@ -235,7 +235,7 @@ class ActivityPackageSender(
     private fun generateUrlStringForPOST(
         activityKind: ActivityKind,
         activityPackagePath: String
-    ): String{
+    ): String {
         val targetUrl = urlStrategy!!.targetUrlByActivityKind(activityKind)
 
         // extra path, if present, has the format '/X/Y'
@@ -323,10 +323,11 @@ class ActivityPackageSender(
         if (parametersToInject == null || parametersToInject.isEmpty()) {
             return
         }
-        
+
         for ((key, value) in parametersToInject) {
             val encodedName = URLEncoder.encode(key, Constants.ENCODING)
-            val encodedValue = if (value != null) URLEncoder.encode(value, Constants.ENCODING) else ""
+            val encodedValue =
+                if (value != null) URLEncoder.encode(value, Constants.ENCODING) else ""
             postStringBuilder.append(encodedName)
             postStringBuilder.append("=")
             postStringBuilder.append(encodedValue)
@@ -345,11 +346,12 @@ class ActivityPackageSender(
         try {
             connection!!.connect()
             responseCode = connection.responseCode
-            val inputStream: InputStream = if (responseCode.toInt() >= Constants.MINIMAL_ERROR_STATUS_CODE) {
-                connection.errorStream
-            } else {
-                connection.inputStream
-            }
+            val inputStream: InputStream =
+                if (responseCode.toInt() >= Constants.MINIMAL_ERROR_STATUS_CODE) {
+                    connection.errorStream
+                } else {
+                    connection.inputStream
+                }
             val inputStreamReader = InputStreamReader(inputStream)
             val bufferedReader = BufferedReader(inputStreamReader)
             var line: String?
@@ -469,10 +471,11 @@ class ActivityPackageSender(
         val signature = Util.sha256(signatureDetails["clear_signature"]!!)
         val fields = signatureDetails["fields"]
         val secretIdHeader = "secret_id=\"$secretId\""
-        val signatureHeader ="signature=\"$signature\""
+        val signatureHeader = "signature=\"$signature\""
         val algorithmHeader = "algorithm=\"$algorithm\""
         val fieldsHeader = "headers=\"$fields\""
-        val authorizationHeader = "Signature $secretIdHeader,$signatureHeader,$algorithmHeader,$fieldsHeader"
+        val authorizationHeader =
+            "Signature $secretIdHeader,$signatureHeader,$algorithmHeader,$fieldsHeader"
 
         logger.verbose("authorizationHeader: %s", authorizationHeader)
         return authorizationHeader
@@ -488,12 +491,13 @@ class ActivityPackageSender(
         if (secretId == null || signature == null || headersId == null) {
             return null
         }
-        val signatureHeader ="signature=\"$signature\""
-        val secretIdHeader ="secret_id=\"$secretId\""
-        val idHeader ="headers_id=\"$headersId\""
-        val algorithmHeader ="algorithm=\"${algorithm ?: "adj1"}\""
-        val nativeVersionHeader = "native_version=\"${ nativeVersion ?: ""}\""
-        val authorizationHeader =  "Signature $signatureHeader,$secretIdHeader,$algorithmHeader,$idHeader,$nativeVersionHeader"
+        val signatureHeader = "signature=\"$signature\""
+        val secretIdHeader = "secret_id=\"$secretId\""
+        val idHeader = "headers_id=\"$headersId\""
+        val algorithmHeader = "algorithm=\"${algorithm ?: "adj1"}\""
+        val nativeVersionHeader = "native_version=\"${nativeVersion ?: ""}\""
+        val authorizationHeader =
+            "Signature $signatureHeader,$secretIdHeader,$algorithmHeader,$idHeader,$nativeVersionHeader"
         logger.verbose("authorizationHeader: $authorizationHeader")
         return authorizationHeader
     }

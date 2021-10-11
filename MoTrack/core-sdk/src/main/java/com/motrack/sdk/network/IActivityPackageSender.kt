@@ -14,13 +14,13 @@ interface IActivityPackageSender {
     }
 
     fun sendActivityPackage(
-        activityPackage: ActivityPackage?,
-        sendingParameters: Map<String?, String?>?,
-        responseCallback: ResponseDataCallbackSubscriber?
+        activityPackage: ActivityPackage,
+        sendingParameters: Map<String?, String?>,
+        responseCallback: ResponseDataCallbackSubscriber
     )
 
     fun sendActivityPackageSync(
-        activityPackage: ActivityPackage?,
-        sendingParameters: Map<String?, String?>?
-    ): ResponseData?
+        activityPackage: ActivityPackage,
+        sendingParameters: Map<String?, String?>
+    ): ResponseData
 }
