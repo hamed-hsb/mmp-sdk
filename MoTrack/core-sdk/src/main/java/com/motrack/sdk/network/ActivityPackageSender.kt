@@ -220,7 +220,7 @@ class ActivityPackageSender(
         uriBuilder.encodedAuthority(urlObject.authority)
         uriBuilder.path(urlObject.path)
         uriBuilder.appendPath(activityPackagePath)
-        logger.debug("Making request to url: %s", uriBuilder.toString())
+        logger.debug("Making request to url: $uriBuilder")
         for ((key, value) in activityPackageParameters) {
             uriBuilder.appendQueryParameter(key, value)
         }
@@ -379,15 +379,15 @@ class ActivityPackageSender(
 
         // extract response string from string builder
         val responseString = responseStringBuilder.toString()
-        logger.debug("Response string: %s", responseString)
+        logger.debug("Response string: $responseString", )
         parseResponse(responseData, responseString)
         val responseMessage = responseData.message ?: return responseCode
 
         // log response message
         if (responseCode != null && responseCode.toInt() == HttpsURLConnection.HTTP_OK) {
-            logger.info("Response message: %s", responseMessage)
+            logger.info("Response message: $responseMessage")
         } else {
-            logger.error("Response message: %s", responseMessage)
+            logger.error("Response message: $responseMessage")
         }
         return responseCode
     }
@@ -477,7 +477,7 @@ class ActivityPackageSender(
         val authorizationHeader =
             "Signature $secretIdHeader,$signatureHeader,$algorithmHeader,$fieldsHeader"
 
-        logger.verbose("authorizationHeader: %s", authorizationHeader)
+        logger.verbose("authorizationHeader: $authorizationHeader")
         return authorizationHeader
     }
 
