@@ -1,6 +1,8 @@
 package com.motrack.sdk
 
 import android.content.Context
+import com.motrack.sdk.network.IActivityPackageSender
+import com.motrack.sdk.network.NetworkUtil
 
 /**
  * @author yaya (@yahyalmh)
@@ -13,7 +15,13 @@ class MotrackFactory {
         private var logger: ILogger? = null
         private var activityHandler: IActivityHandler? = null
         private var tryInstallReferrer = true
+        private val sdkClickHandler: ISdkClickHandler? = null
 
+        var baseUrl: String? = null
+        var gdprUrl: String? = null
+        var subscriptionUrl: String? = null
+        private val connectionOptions: NetworkUtil.IConnectionOptions? = null
+        private val httpsURLConnectionProvider: NetworkUtil.IHttpsURLConnectionProvider? = null
 
         private const val timerInterval: Long = -1
         private const val timerStart: Long = -1
@@ -42,6 +50,33 @@ class MotrackFactory {
 
         fun setTryInstallReferrer(tryInstallReferrer: Boolean) {
             MotrackFactory.tryInstallReferrer = tryInstallReferrer
+        }
+        fun getConnectionOptions(): NetworkUtil.IConnectionOptions {
+            return connectionOptions ?: NetworkUtil.createDefaultConnectionOptions()
+        }
+
+        fun getHttpsURLConnectionProvider(): NetworkUtil.IHttpsURLConnectionProvider {
+            return httpsURLConnectionProvider ?: NetworkUtil.createDefaultHttpsURLConnectionProvider()
+        }
+
+        fun getSdkClickHandler(
+            activityHandler: IActivityHandler?,
+            startsSending: Boolean,
+            packageHandlerActivityPackageSender: IActivityPackageSender?
+        ): ISdkClickHandler {
+            if (sdkClickHandler == null) {
+                return SdkClickHandler(
+                    activityHandler,
+                    startsSending,
+                    packageHandlerActivityPackageSender
+                )
+            }
+            sdkClickHandler.init(
+                activityHandler,
+                startsSending,
+                packageHandlerActivityPackageSender
+            )
+            return sdkClickHandler
         }
 
         fun getTimerInterval(): Long {
@@ -73,6 +108,10 @@ class MotrackFactory {
             activityHandler = null
             logger = null
             tryInstallReferrer = true
+
+            baseUrl = Constants.BASE_URL
+            gdprUrl = Constants.GDPR_URL
+            subscriptionUrl = Constants.SUBSCRIPTION_URL
         }
     }
 }

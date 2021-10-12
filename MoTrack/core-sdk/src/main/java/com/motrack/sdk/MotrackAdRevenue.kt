@@ -6,16 +6,16 @@ package com.motrack.sdk
  */
 
 class MotrackAdRevenue {
-    private lateinit var source: String
-    private var revenue: Double = 0.0
+    lateinit var source: String
+    var revenue: Double = 0.0
     var currency: String? = null
-    private var adImpressionsCount: Int = 0
-    private var adRevenueNetwork: String? = null
-    private var adRevenueUnit: String? = null
-    private var adRevenuePlacement: String? = null
+    var adImpressionsCount: Int = 0
+    var adRevenueNetwork: String? = null
+    var adRevenueUnit: String? = null
+    var adRevenuePlacement: String? = null
 
-    private var callbackParameters: HashMap<String, String>? = null
-    private var partnerParameters: HashMap<String, String>? = null
+    var callbackParameters: HashMap<String, String>? = null
+    var partnerParameters: HashMap<String, String>? = null
 
     companion object {
         val logger = MotrackFactory.getLogger()
@@ -76,21 +76,5 @@ class MotrackAdRevenue {
     fun setRevenue(revenue: Double, currency: String) {
         this.revenue = revenue
         this.currency = currency
-    }
-
-    fun setAdImpressionsCount(adImpressionsCount: Int) {
-        this.adImpressionsCount = adImpressionsCount
-    }
-
-    fun setAdRevenueNetwork(adRevenueNetwork: String) {
-        this.adRevenueNetwork = adRevenueNetwork
-    }
-
-    fun setAdRevenueUnit(adRevenueUnit: String) {
-        this.adRevenueUnit = adRevenueUnit
-    }
-
-    fun setAdRevenuePlacement(adRevenuePlacement: String) {
-        this.adRevenuePlacement = adRevenuePlacement
     }
 }

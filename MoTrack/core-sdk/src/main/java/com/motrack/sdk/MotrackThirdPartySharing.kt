@@ -5,8 +5,8 @@ package com.motrack.sdk
  * @since 06th October 2021
  */
 
-class MotrackThirdPlaySharing(private val isEnabled: Boolean) {
-    private var granularOptions: HashMap<String, HashMap<String, String>> = HashMap()
+class MotrackThirdPartySharing(val isEnabled: Boolean?) {
+    var granularOptions: HashMap<String, HashMap<String, String>> = HashMap()
 
     public fun addGranularOption(partnerName: String?, key: String?, value: String?) {
         if (partnerName.isNullOrEmpty() || key.isNullOrEmpty() || value.isNullOrEmpty()) {
