@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdk rootProject.ext.coreCompileSdkVersion
+
+    defaultConfig {
+        minSdk rootProject.ext.coreMinSdkVersion
+        targetSdk rootProject.ext.coreTargetSdkVersion
+        versionCode rootProject.ext.defaultVersionCode
+        versionName rootProject.ext.coreVersionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    compileSdkVersion coreCompileSdkVersion
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly project(path: ':core-sdk')
+
+    implementation "androidx.core:core-ktx:$rootProject.coreKtxVersion"
+    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+
+    // Testing
+    testImplementation "junit:junit:$rootProject.JunitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+
+    implementation "com.google.android.gms:play-services-ads-identifier:$rootProject.playServicesAdsIdentifier"
+    implementation "com.android.installreferrer:installreferrer:$rootProject.installreferrerVersion"
+}
