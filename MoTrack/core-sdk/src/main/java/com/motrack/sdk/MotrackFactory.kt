@@ -16,6 +16,8 @@ class MotrackFactory {
         private var activityHandler: IActivityHandler? = null
         private var tryInstallReferrer = true
         private val sdkClickHandler: ISdkClickHandler? = null
+        private val packageHandler: IPackageHandler? = null
+        private val attributionHandler: IAttributionHandler? = null
 
         var baseUrl: String? = null
         var gdprUrl: String? = null
@@ -79,6 +81,49 @@ class MotrackFactory {
 
         fun setPackageHandlerBackoffStrategy(packageHandlerBackoffStrategy: BackoffStrategy) {
             this.packageHandlerBackoffStrategy = packageHandlerBackoffStrategy
+        }
+
+        fun getPackageHandler(
+            activityHandler: IActivityHandler?,
+            context: Context?,
+            startsSending: Boolean,
+            packageHandlerActivityPackageSender: IActivityPackageSender?
+        ): IPackageHandler {
+            if (packageHandler == null) {
+                return PackageHandler(
+                    activityHandler,
+                    context,
+                    startsSending,
+                    packageHandlerActivityPackageSender
+                )
+            }
+            packageHandler.init(
+                activityHandler,
+                context,
+                startsSending,
+                packageHandlerActivityPackageSender
+            )
+            return packageHandler
+        }
+
+        fun getAttributionHandler(
+            activityHandler: IActivityHandler,
+            startsSending: Boolean,
+            packageHandlerActivityPackageSender: IActivityPackageSender
+        ): IAttributionHandler {
+            if (attributionHandler == null) {
+                return AttributionHandler(
+                    activityHandler,
+                    startsSending,
+                    packageHandlerActivityPackageSender
+                )
+            }
+            attributionHandler.init(
+                activityHandler,
+                startsSending,
+                packageHandlerActivityPackageSender
+            )
+            return attributionHandler
         }
 
         fun getSdkClickHandler(

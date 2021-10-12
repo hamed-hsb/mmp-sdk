@@ -8,5 +8,5 @@ import android.net.Uri
  */
 
 class AttributionResponseData : ResponseData() {
-    public var callback: Uri? = null
+    public var deeplink: Uri? = null
 }
