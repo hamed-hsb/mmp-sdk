@@ -14,6 +14,7 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.*
+import kotlin.math.pow
 
 /**
  * @author yaya (@yahyalmh)
@@ -164,6 +165,55 @@ class Util {
             }
 
             return null
+        }
+
+        public fun mergeParameters(
+            target: HashMap<String, String>?,
+            source: HashMap<String, String>?,
+            parameterName: String?
+        ): HashMap<String, String>? {
+            if (target == null) {
+                return source
+            }
+            if (source == null) {
+                return target
+            }
+            val mergedParameters: HashMap<String, String> = HashMap(target)
+            for ((key, value) in source) {
+                val oldValue = mergedParameters.put(key, value)
+                if (oldValue != null) {
+                    getLogger().warn("Key $key with value $oldValue from ${parameterName!!} parameter was replaced by value $value")
+                }
+            }
+            return mergedParameters
+        }
+
+        fun getWaitingTime(retries: Int, backoffStrategy: BackoffStrategy): Long {
+            if (retries < backoffStrategy.minRetries) {
+                return 0
+            }
+            // start with expon 0
+            val expon = retries - backoffStrategy.minRetries
+            // get the exponential Time from the power of 2: 1, 2, 4, 8, 16, ... * times the multiplier
+            val exponentialTime =
+                2.0.pow(expon.toDouble()).toLong() * backoffStrategy.milliSecondMultiplier
+            // limit the maximum allowed time to wait
+            val ceilingTime = exponentialTime.coerceAtMost(backoffStrategy.maxWait)
+            // get the random range
+            val randomDouble: Double = randomInRange(
+                backoffStrategy.minRange,
+                backoffStrategy.maxRange
+            )
+            // apply jitter factor
+            val waitingTime = ceilingTime * randomDouble
+            return waitingTime.toLong()
+        }
+
+        private fun randomInRange(minRange: Double, maxRange: Double): Double {
+            val random = Random()
+            val range = maxRange - minRange
+            val scaled = random.nextDouble() * range
+            return scaled + minRange
         }
 
         fun hasRootCause(ex: java.lang.Exception): Boolean {

@@ -10,17 +10,17 @@ import com.motrack.sdk.ResponseData
 
 interface IActivityPackageSender {
     interface ResponseDataCallbackSubscriber {
-        fun onResponseDataCallback(responseData: ResponseData?)
+        fun onResponseDataCallback(responseData: ResponseData)
     }
 
     fun sendActivityPackage(
         activityPackage: ActivityPackage,
-        sendingParameters: Map<String?, String?>,
+        sendingParameters: Map<String, String>,
         responseCallback: ResponseDataCallbackSubscriber
     )
 
     fun sendActivityPackageSync(
         activityPackage: ActivityPackage,
-        sendingParameters: Map<String?, String?>
+        sendingParameters: Map<String, String>
     ): ResponseData
 }

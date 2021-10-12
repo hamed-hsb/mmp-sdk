@@ -21,7 +21,7 @@ open class ResponseData {
     var retryIn: Long? = null
     var continueIn: Long? = null
 
-    lateinit var activityPackage: ActivityPackage
+    var activityPackage: ActivityPackage? = null
     lateinit var sendingParameters: Map<String?, String?>
 
     companion object {

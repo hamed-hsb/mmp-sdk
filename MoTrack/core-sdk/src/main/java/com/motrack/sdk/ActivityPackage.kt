@@ -2,6 +2,7 @@ package com.motrack.sdk
 
 import java.io.*
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * @author yaya (@yahyalmh)
@@ -11,7 +12,7 @@ import java.util.*
 class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
     // data
     private var path: String? = null
-    private var parameters: Map<String, String>? = null
+    private var parameters: HashMap<String, String>? = null
     private var clientSdk: String? = null
 
     @Transient // it will not be serialized
@@ -19,8 +20,8 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
     private var suffix: String? = null
 
     // delay
-    private var callbackParameters: Map<String, String>? = null
-    private var partnerParameters: Map<String, String>? = null
+    private var callbackParameters: HashMap<String, String>? = null
+    private var partnerParameters: HashMap<String, String>? = null
 
     private var retries = 0
     private var clickTimeInMilliseconds: Long = 0
@@ -89,9 +90,9 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
         clientSdk = readField(fields, "clientSdk", null) as String?
         activityKind = readField(fields, "activityKind", ActivityKind.UNKNOWN) as ActivityKind
         suffix = readField(fields, "suffix", null) as String?
-        parameters = readField(fields, "parameters", null) as Map<String, String>?
-        callbackParameters = readField(fields, "callbackParameters", null) as Map<String, String>?
-        partnerParameters = readField(fields, "partnerParameters", null) as Map<String, String>?
+        parameters = readField(fields, "parameters", null) as HashMap<String, String>?
+        callbackParameters = readField(fields, "callbackParameters", null) as HashMap<String, String>?
+        partnerParameters = readField(fields, "partnerParameters", null) as HashMap<String, String>?
     }
 
     private fun readField(
@@ -129,20 +130,20 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
         return clientSdk
     }
 
-    public fun getParameters(): Map<String, String>? {
+    public fun getParameters(): HashMap<String, String>? {
         return parameters
     }
 
-    fun setParameters(parameters: Map<String, String>) {
+    fun setParameters(parameters: HashMap<String, String>) {
         this.parameters = parameters
     }
 
-    fun setCallbackParameters(callbackParameters: Map<String, String>) {
+    fun setCallbackParameters(callbackParameters: HashMap<String, String>?) {
         this.callbackParameters = callbackParameters
     }
 
 
-    fun setPartnerParameters(partnerParameters: Map<String, String>) {
+    fun setPartnerParameters(partnerParameters: HashMap<String, String>?) {
         this.partnerParameters = partnerParameters
     }
 
@@ -223,11 +224,11 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
         this.googlePlayInstant = googlePlayInstant
     }
 
-    fun getCallbackParameters(): Map<String, String>? {
+    fun getCallbackParameters(): HashMap<String, String>? {
         return callbackParameters
     }
 
-    fun getPartnerParameters(): Map<String, String>? {
+    fun getPartnerParameters(): HashMap<String, String>? {
         return partnerParameters
     }
 

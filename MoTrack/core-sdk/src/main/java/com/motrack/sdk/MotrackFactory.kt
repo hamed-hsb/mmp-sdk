@@ -28,6 +28,10 @@ class MotrackFactory {
         private const val sessionInterval: Long = -1
         private const val subsessionInterval: Long = -1
 
+        private var packageHandlerBackoffStrategy: BackoffStrategy? = null
+        private var installSessionBackoffStrategy: BackoffStrategy? = null
+        private var sdkClickBackoffStrategy: BackoffStrategy? = null
+
 
         fun getLogger(): ILogger {
             if (logger == null) {
@@ -51,12 +55,30 @@ class MotrackFactory {
         fun setTryInstallReferrer(tryInstallReferrer: Boolean) {
             MotrackFactory.tryInstallReferrer = tryInstallReferrer
         }
+
         fun getConnectionOptions(): NetworkUtil.IConnectionOptions {
             return connectionOptions ?: NetworkUtil.createDefaultConnectionOptions()
         }
 
         fun getHttpsURLConnectionProvider(): NetworkUtil.IHttpsURLConnectionProvider {
-            return httpsURLConnectionProvider ?: NetworkUtil.createDefaultHttpsURLConnectionProvider()
+            return httpsURLConnectionProvider
+                ?: NetworkUtil.createDefaultHttpsURLConnectionProvider()
+        }
+
+        fun getPackageHandlerBackoffStrategy(): BackoffStrategy {
+            return packageHandlerBackoffStrategy ?: BackoffStrategy.LONG_WAIT
+        }
+
+        fun getInstallSessionBackoffStrategy(): BackoffStrategy {
+            return installSessionBackoffStrategy ?: BackoffStrategy.SHORT_WAIT
+        }
+
+        fun setSdkClickBackoffStrategy(sdkClickBackoffStrategy: BackoffStrategy) {
+            this.sdkClickBackoffStrategy = sdkClickBackoffStrategy
+        }
+
+        fun setPackageHandlerBackoffStrategy(packageHandlerBackoffStrategy: BackoffStrategy) {
+            this.packageHandlerBackoffStrategy = packageHandlerBackoffStrategy
         }
 
         fun getSdkClickHandler(
@@ -112,6 +134,10 @@ class MotrackFactory {
             baseUrl = Constants.BASE_URL
             gdprUrl = Constants.GDPR_URL
             subscriptionUrl = Constants.SUBSCRIPTION_URL
+
+            sdkClickBackoffStrategy = null
+            packageHandlerBackoffStrategy = null
+
         }
     }
 }

@@ -21,6 +21,10 @@ class Constants {
         var SESSION_PARTNER_PARAMETERS_FILENAME = "MotrackSessionPartnerParameters"
 
         var ENCODING = "UTF-8"
+        var MALFORMED = "malformed"
+        var REFTAG = "reftag"
+        var INSTALL_REFERRER = "install_referrer"
+
         var MD5 = "MD5"
         var SHA1 = "SHA-1"
         var SHA256 = "SHA-256"
@@ -60,5 +64,9 @@ class Constants {
         var SUBSCRIPTION_URL = "https://subscription.adjust.com"
 
         var MINIMAL_ERROR_STATUS_CODE = 400
+
+
+        var CALLBACK_PARAMETERS = "callback_params"
+        var PARTNER_PARAMETERS = "partner_params"
     }
 }
