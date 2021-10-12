@@ -52,7 +52,7 @@ class MotrackAttribution : Serializable {
         public fun fromJson(
             jsonObject: JSONObject?,
             adid: String?,
-            sdkPlatform: String
+            sdkPlatform: String?
         ): MotrackAttribution? {
             if (jsonObject == null) return null
             val attribution = MotrackAttribution()
