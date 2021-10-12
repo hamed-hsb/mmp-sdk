@@ -21,7 +21,7 @@ class Reflection {
             )
         }
 
-        fun getImeiParameters(context: Context?, logger: ILogger?): Map<String?, String?>? {
+        fun getImeiParameters(context: Context?, logger: ILogger?): Map<String, String>? {
             try {
                 val nonPlayParameters = invokeStaticMethod(
                     "com.adjust.sdk.imei.Util", "getImeiParameters", arrayOf(
@@ -31,14 +31,14 @@ class Reflection {
                 )
                 val stringStringMapClass = MutableMap::class.java as Class<Map<String, String>>
                 if (nonPlayParameters != null && stringStringMapClass.isInstance(nonPlayParameters)) {
-                    return nonPlayParameters as Map<String?, String?>?
+                    return nonPlayParameters as Map<String, String>?
                 }
             } catch (e: Exception) {
             }
             return null
         }
 
-        fun getOaidParameters(context: Context?, logger: ILogger?): Map<String?, String?>? {
+        fun getOaidParameters(context: Context?, logger: ILogger?): Map<String, String>? {
             try {
                 val oaidParameters = invokeStaticMethod(
                     "com.adjust.sdk.oaid.Util", "getOaidParameters", arrayOf(
@@ -48,7 +48,7 @@ class Reflection {
                 )
                 val stringStringMapClass = MutableMap::class.java as Class<Map<String, String>>
                 if (oaidParameters != null && stringStringMapClass.isInstance(oaidParameters)) {
-                    return oaidParameters as Map<String?, String?>?
+                    return oaidParameters as Map<String, String>
                 }
             } catch (e: java.lang.Exception) {
             }

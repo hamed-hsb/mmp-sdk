@@ -8,7 +8,7 @@ package com.motrack.sdk
 class MotrackEvent {
     lateinit var eventToken: String
     var revenue: Double? = null
-    private var currency: String? = null
+    var currency: String? = null
     var callbackParameters: LinkedHashMap<String, String>? = null
     var partnerParameters: LinkedHashMap<String, String>? = null
     var orderId: String? = null

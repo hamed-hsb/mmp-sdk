@@ -302,6 +302,110 @@ class Util {
             return resultObject
         }
 
+        fun <T> writeObject(anObject: T, context: Context, filename: String, objectName: String) {
+            var closable: Closeable? = null
+            try {
+                val outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE)
+                closable = outputStream
+                val bufferedStream = BufferedOutputStream(outputStream)
+                closable = bufferedStream
+                val objectStream = ObjectOutputStream(bufferedStream)
+                closable = objectStream
+
+                try {
+                    objectStream.writeObject(anObject)
+                    getLogger().debug("Wrote $anObject: $objectName")
+                } catch (e: NotSerializableException) {
+                    getLogger().error("Failed to serialize $objectName")
+                }
+
+            } catch (e: java.lang.Exception) {
+                getLogger().error("Failed to open $objectName for writing ($e)")
+            }
+            try {
+                closable?.close()
+            } catch (e: java.lang.Exception) {
+                getLogger().error("Failed to close $objectName file for writing $e)")
+            }
+        }
+
+        fun isEqualReferrerDetails(
+            referrerDetails: ReferrerDetails,
+            referrerApi: String,
+            activityState: ActivityState
+        ): Boolean {
+            if (referrerApi == Constants.REFERRER_API_GOOGLE) {
+                return isEqualGoogleReferrerDetails(referrerDetails, activityState)
+            } else if (referrerApi == Constants.REFERRER_API_HUAWEI) {
+                return isEqualHuaweiReferrerDetails(referrerDetails, activityState)
+            }
+            return false
+        }
+
+        private fun isEqualGoogleReferrerDetails(
+            referrerDetails: ReferrerDetails,
+            activityState: ActivityState
+        ): Boolean {
+            return (referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
+                    && referrerDetails.installBeginTimestampSeconds == activityState.installBegin
+                    && referrerDetails.referrerClickTimestampServerSeconds == activityState.clickTimeServer
+                    && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServer
+                    && equalString(
+                referrerDetails.installReferrer,
+                activityState.installReferrer
+            )
+                    && equalString(
+                referrerDetails.installVersion,
+                activityState.installVersion
+            )
+                    && equalBoolean(
+                referrerDetails.googlePlayInstant,
+                activityState.googlePlayInstant
+            ))
+        }
+
+        private fun isEqualHuaweiReferrerDetails(
+            referrerDetails: ReferrerDetails,
+            activityState: ActivityState
+        ): Boolean {
+            return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
+                    && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
+                    && equalString(
+                referrerDetails.installReferrer,
+                activityState.installReferrerHuawei
+            )
+        }
+
+        fun equalObject(first: Any?, second: Any?): Boolean {
+            return if (first == null || second == null) {
+                first == null && second == null
+            } else first == second
+        }
+
+        fun equalsDouble(first: Double?, second: Double?): Boolean {
+            return if (first == null || second == null) {
+                first == null && second == null
+            } else java.lang.Double.doubleToLongBits(first) == java.lang.Double.doubleToLongBits(
+                second
+            )
+        }
+
+        fun equalString(first: String?, second: String?): Boolean {
+            return equalObject(first, second)
+        }
+
+        fun equalBoolean(first: Boolean?, second: Boolean?): Boolean {
+            return equalObject(first, second)
+        }
+
+        fun getReasonString(message: String?, throwable: Throwable?): String {
+            return if (throwable != null) {
+                "$message: $throwable"
+            } else {
+                "$message"
+            }
+        }
+
         private fun getLogger(): ILogger {
             return MotrackFactory.getLogger()
         }

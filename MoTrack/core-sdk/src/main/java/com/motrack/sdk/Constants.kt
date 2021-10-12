@@ -29,5 +29,36 @@ class Constants {
         const val LOGTAG = "MoTrack"
         var CLIENT_SDK = "android4.28.5"
         var THREAD_PREFIX = "Motrack-"
+
+        var REFERRER_API_GOOGLE = "google"
+        var REFERRER_API_HUAWEI = "huawei"
+        var DEEPLINK = "deeplink"
+        var PUSH = "push"
+
+
+        var PREINSTALL = "preinstall"
+        var SYSTEM_PROPERTIES = "system_properties"
+        var SYSTEM_PROPERTIES_REFLECTION = "system_properties_reflection"
+        var SYSTEM_PROPERTIES_PATH = "system_properties_path"
+        var SYSTEM_PROPERTIES_PATH_REFLECTION = "system_properties_path_reflection"
+        var CONTENT_PROVIDER = "content_provider"
+        var CONTENT_PROVIDER_INTENT_ACTION = "content_provider_intent_action"
+        var CONTENT_PROVIDER_NO_PERMISSION = "content_provider_no_permission"
+        var FILE_SYSTEM = "file_system"
+        var SYSTEM_INSTALLER_REFERRER = "system_installer_referrer"
+
+        var MOTRACK_PREINSTALL_SYSTEM_PROPERTY_PREFIX = "motrack.preinstall."
+        var MOTRACK_PREINSTALL_SYSTEM_PROPERTY_PATH = "motrack.preinstall.path"
+        var MOTRACK_PREINSTALL_CONTENT_URI_AUTHORITY = "com.motrack.preinstall"
+        var MOTRACK_PREINSTALL_CONTENT_URI_PATH = "trackers"
+        var MOTRACK_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION = "com.attribution.REFERRAL_PROVIDER"
+        var MOTRACK_PREINSTALL_FILE_SYSTEM_PATH = "/data/local/tmp/motrack.preinstall"
+        var EXTRA_SYSTEM_INSTALLER_REFERRER = "com.attribution.EXTRA_SYSTEM_INSTALLER_REFERRER"
+
+        var BASE_URL = "https://app.adjust.com"
+        var GDPR_URL = "https://gdpr.adjust.com"
+        var SUBSCRIPTION_URL = "https://subscription.adjust.com"
+
+        var MINIMAL_ERROR_STATUS_CODE = 400
     }
 }

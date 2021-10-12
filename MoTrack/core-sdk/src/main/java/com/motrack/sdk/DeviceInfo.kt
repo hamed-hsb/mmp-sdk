@@ -28,15 +28,15 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
     lateinit var fabAttributionId: String
     var clientSdk: String
     var packageName: String?
-    private var appVersion: String?
-    private var deviceType: String?
-    private var deviceName: String
-    private var deviceManufacturer: String
-    private var osName: String
-    private var osVersion: String
-    private var apiLevel: String
-    private var language: String?
-    private var country: String?
+    var appVersion: String?
+    var deviceType: String?
+    var deviceName: String
+    var deviceManufacturer: String
+    public var osName: String
+    public var osVersion: String
+    var apiLevel: String
+    public var language: String?
+    var country: String?
     var screenSize: String?
     var screenFormat: String?
     var screenDensity: String?
@@ -44,9 +44,9 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
     var displayHeight: String
     var hardwareName: String
     var abi: String?
-    private var buildName: String
-    private var appInstallTime: String?
-    private var appUpdateTime: String?
+    public var buildName: String
+    var appInstallTime: String?
+    public var appUpdateTime: String?
     var uiMode: Int? = null
     var fbAttributionId: String?
 
@@ -60,11 +60,11 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
         packageName = getPackageName(context)
         appVersion = getAppVersion(context)
         deviceType = getDeviceType(configuration)
-        deviceName = getDeviceName()
-        deviceManufacturer = getDeviceManufacturer()
-        osName = getOsName()
-        osVersion = getOsVersion()
-        apiLevel = getApiLevel()
+        deviceName = fetchDeviceName()
+        deviceManufacturer = fetchDeviceManufacturer()
+        osName = fetchOsName()
+        osVersion = fetchOsVersion()
+        apiLevel = fetchApiLevel()
         language = getLanguage(locale)
         country = getCountry(locale)
         screenSize = getScreenSize(screenLayout)
@@ -76,7 +76,7 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
         fbAttributionId = getFacebookAttributionId(context)
         hardwareName = getHardWareName()
         abi = getABI()
-        buildName = getBuildName()
+        buildName = fetchBuildName()
         appInstallTime = getAppInstallTime(context)
         appUpdateTime = getAppUpdateTime(context)
         uiMode = getDeviceUiMode(configuration)
@@ -115,7 +115,7 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
         }
     }
 
-    private fun getBuildName(): String {
+    private fun fetchBuildName(): String {
         return Build.ID
     }
 
@@ -202,23 +202,23 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
         return locale?.language
     }
 
-    private fun getApiLevel(): String {
+    private fun fetchApiLevel(): String {
         return "" + Build.VERSION.SDK_INT
     }
 
-    private fun getOsVersion(): String {
+    private fun fetchOsVersion(): String {
         return Build.VERSION.RELEASE
     }
 
-    private fun getOsName(): String {
+    private fun fetchOsName(): String {
         return ANDROID_OS_NAME
     }
 
-    private fun getDeviceManufacturer(): String {
+    private fun fetchDeviceManufacturer(): String {
         return Build.MANUFACTURER
     }
 
-    private fun getDeviceName(): String {
+    private fun fetchDeviceName(): String {
         return Build.MODEL
     }
 
@@ -334,7 +334,7 @@ class DeviceInfo(private val context: Context, sdkPrefix: String) {
         if (!Util.checkPermission(context!!, Manifest.permission.ACCESS_WIFI_STATE)) {
             MotrackFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE")
         }
-        val macAddress: String? = MacAddressUtil.getMacAddress(context)
+        val macAddress: String? = AndroidUtil.getMacAddress(context)
         macSha1 = getMacSha1(macAddress)
         macShortMd5 = getMacShortMd5(macAddress)
         androidId = Util.getAndroidId(context)

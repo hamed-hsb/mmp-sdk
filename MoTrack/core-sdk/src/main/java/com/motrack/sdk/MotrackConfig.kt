@@ -12,27 +12,43 @@ class MotrackConfig {
     lateinit var dgprPath: String
     lateinit var basePath: String
     var startOffline = false
-    var startEnabled= false
+    var startEnabled: Boolean? = false
     var processName: String? = null
     var defaultTracker: String? = null
     var sdkPrefix: String? = null
 
     var pushToken: String? = null
+    var delayStart: Double? = 0.0
+    private var urlStrategy: String? = null
+    var gdprPath: String? = null
+    var preinstallFilePath: String? = null
 
-
-    private var preinstallTrackingEnabled: Boolean = false
-    private var sendInBackground: Boolean = false
+    var preinstallTrackingEnabled: Boolean = false
+    var sendInBackground: Boolean = false
     var eventBufferingEnabled: Boolean = false
     private lateinit var logger: ILogger
     var context: Context? = null
     var appToken: String? = null
-    private lateinit var environment: String
+    lateinit var environment: String
+
+    var externalDeviceId: String? = null
+    var secretId: String? = null
+    var appSecret: String? = null
+    var needsCost: Boolean? = null
+    var deviceKnown: Boolean? = null
+
 
     public var preLaunchActions: MotrackInstance.Companion.PreLaunchActions? = null
 
     companion object {
         const val ENVIRONMENT_SANDBOX = "sandbox"
         const val ENVIRONMENT_PRODUCTION = "production"
+
+        const val URL_STRATEGY_INDIA = "url_strategy_india"
+        const val URL_STRATEGY_CHINA = "url_strategy_china"
+        const val DATA_RESIDENCY_EU = "data_residency_eu"
+        const val DATA_RESIDENCY_TR = "data_residency_tr"
+        const val DATA_RESIDENCY_US = "data_residency_us"
     }
 
     private fun init(
@@ -79,6 +95,13 @@ class MotrackConfig {
         return true
     }
 
+
+    fun setAppSecret(secretId: Long, info1: Long, info2: Long, info3: Long, info4: Long) {
+        this.secretId = String.format("%d", secretId)
+        this.appSecret = String.format("%d%d%d%d", info1, info2, info3, info4)
+    }
+
+
     private fun checkContext(context: Context?): Boolean {
         if (context == null) {
             logger.error("Missing Context")
@@ -119,6 +142,24 @@ class MotrackConfig {
                     "The environment can only be $ENVIRONMENT_SANDBOX for testing or $ENVIRONMENT_PRODUCTION for publishing"
         )
         return false
+    }
+
+    fun setUrlStrategy(urlStrategy: String?) {
+        if (urlStrategy == null || urlStrategy.isEmpty()) {
+            logger.error("Invalid url strategy")
+            return
+        }
+        if (urlStrategy != URL_STRATEGY_INDIA
+            && urlStrategy != URL_STRATEGY_CHINA
+            && urlStrategy != DATA_RESIDENCY_EU
+        ) {
+            logger.warn("Unrecognised url strategy $urlStrategy")
+        }
+        this.urlStrategy = urlStrategy
+    }
+
+    fun getUrlStrategy(): String? {
+        return urlStrategy
     }
 
     private fun setLogLevel(logLevel: LogLevel, environment: String) {
