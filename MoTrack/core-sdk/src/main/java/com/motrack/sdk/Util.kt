@@ -3,6 +3,7 @@ package com.motrack.sdk
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings.Secure
 import com.motrack.sdk.scheduler.SingleThreadFutureScheduler
@@ -283,6 +284,19 @@ class Util {
             } catch (e: TimeoutException) {
             }
             return null
+        }
+
+        fun isUrlFilteredOut(url: Uri?): Boolean {
+            if (url == null) {
+                return true
+            }
+            val urlString = url.toString()
+            if (urlString.isEmpty()) {
+                return true
+            }
+
+            // Url with FB credentials to be filtered out
+            return urlString.matches(Regex(Constants.FB_AUTH_REGEX))
         }
 
         fun getAdvertisingInfoObject(context: Context, timeoutMilli: Long): Any? {

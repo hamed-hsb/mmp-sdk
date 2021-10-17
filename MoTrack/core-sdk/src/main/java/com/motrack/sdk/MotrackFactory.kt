@@ -18,6 +18,7 @@ class MotrackFactory {
         private val sdkClickHandler: ISdkClickHandler? = null
         private val packageHandler: IPackageHandler? = null
         private val attributionHandler: IAttributionHandler? = null
+        private var maxDelayStart: Long = -1
 
         var baseUrl: String? = null
         var gdprUrl: String? = null
@@ -169,6 +170,17 @@ class MotrackFactory {
                 Constants.ONE_SECOND
             } else subsessionInterval
         }
+        fun getMaxDelayStart(): Long {
+            return if (maxDelayStart == -1L) {
+                Constants.ONE_SECOND * 10 // 10 seconds
+            } else maxDelayStart
+        }
+
+
+        fun getSdkClickBackoffStrategy(): BackoffStrategy {
+            return sdkClickBackoffStrategy ?: BackoffStrategy.SHORT_WAIT
+        }
+
 
         fun teardown(context: Context?) {
 
@@ -182,6 +194,8 @@ class MotrackFactory {
 
             sdkClickBackoffStrategy = null
             packageHandlerBackoffStrategy = null
+
+            maxDelayStart = -1
 
         }
     }

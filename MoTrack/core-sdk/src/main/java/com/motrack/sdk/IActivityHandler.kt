@@ -18,7 +18,7 @@ interface IActivityHandler {
 
     fun trackEvent(event: MotrackEvent)
 
-    fun finishingTrackingActivity(respondData: RespondData)
+    fun finishedTrackingActivity(responseData: ResponseData)
 
     fun setEnabled(enabled: Boolean)
 
@@ -26,7 +26,7 @@ interface IActivityHandler {
 
     fun readOpenUrl(url: Uri, clickTime: Long)
 
-    fun updateAttributionI(attribution: MotrackAttribution)
+    fun updateAttributionI(attribution: MotrackAttribution?): Boolean
 
     fun launchEventResponseTasks(eventResponseData: EventResponseData)
 
@@ -46,7 +46,7 @@ interface IActivityHandler {
 
     fun setAskingAttribution(askingAttribution: Boolean)
 
-    fun sendFirstPackage()
+    fun sendFirstPackages()
 
     fun addSessionCallbackParameter(key: String?, value: String?)
 
@@ -68,7 +68,7 @@ interface IActivityHandler {
 
     fun disableThirdPartySharing()
 
-    fun trackThirdPartySharing(motrackThirdPlaySharing: MotrackThirdPlaySharing)
+    fun trackThirdPartySharing(motrackThirdPartySharing: MotrackThirdPartySharing)
 
     fun trackMeasurementConsent(consentMeasurement: Boolean)
 
@@ -82,11 +82,11 @@ interface IActivityHandler {
 
     fun getContext(): Context
 
-    fun getAdid(): String
+    fun getAdid(): String?
 
-    fun getAttribution(): MotrackAttribution
+    fun getAttribution(): MotrackAttribution?
 
-    fun getAdjustConfig(): MotrackConfig
+    fun getMotrackConfig(): MotrackConfig
 
     fun getDeviceInfo(): DeviceInfo
 
