@@ -1155,7 +1155,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         executor!!.submit { addSessionCallbackParameterI(key, value) }
     }
 
-    private fun addSessionCallbackParameterI(key: String?, value: String?) {
+    fun addSessionCallbackParameterI(key: String?, value: String?) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return
         if (!Util.isValidParameter(value, "value", "Session Callback")) return
         if (sessionParameters!!.callbackParameters == null) {
@@ -1177,7 +1177,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         executor!!.submit { addSessionPartnerParameterI(key, value) }
     }
 
-    private fun addSessionPartnerParameterI(key: String?, value: String?) {
+    fun addSessionPartnerParameterI(key: String?, value: String?) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return
         if (!Util.isValidParameter(value, "value", "Session Partner")) return
         if (sessionParameters!!.partnerParameters == null) {
@@ -1199,7 +1199,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         executor!!.submit { removeSessionCallbackParameterI(key) }
     }
 
-    private fun removeSessionCallbackParameterI(key: String?) {
+    fun removeSessionCallbackParameterI(key: String?) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return
         if (sessionParameters!!.callbackParameters == null) {
             logger!!.warn("Session Callback parameters are not set")
@@ -1218,7 +1218,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         executor!!.submit { removeSessionPartnerParameterI(key) }
     }
 
-    private fun removeSessionPartnerParameterI(key: String?) {
+    fun removeSessionPartnerParameterI(key: String?) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return
         if (sessionParameters!!.partnerParameters == null) {
             logger!!.warn("Session Partner parameters are not set")
@@ -1237,7 +1237,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         executor!!.submit { resetSessionCallbackParametersI() }
     }
 
-    private fun resetSessionCallbackParametersI() {
+    fun resetSessionCallbackParametersI() {
         if (sessionParameters!!.callbackParameters == null) {
             logger!!.warn("Session Callback parameters are not set")
         }
@@ -1249,7 +1249,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         executor!!.submit { resetSessionPartnerParametersI() }
     }
 
-    private fun resetSessionPartnerParametersI() {
+    fun resetSessionPartnerParametersI() {
         if (sessionParameters!!.partnerParameters == null) {
             logger!!.warn("Session Partner parameters are not set")
         }

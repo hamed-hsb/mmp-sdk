@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
+import android.os.Looper
 import android.provider.Settings.Secure
 import com.motrack.sdk.scheduler.SingleThreadFutureScheduler
 import java.io.*
@@ -97,6 +99,21 @@ class Util {
             } catch (e: java.lang.Exception) {
                 false
             }
+        }
+
+        fun runInBackground(command: Runnable) {
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                command.run()
+                return
+            }
+            val task = object : AsyncTask<Any?, Void?, Void?>() {
+                override fun doInBackground(vararg params: Any?): Void? {
+                    val command = params[0] as Runnable
+                    command.run()
+                    return null
+                }
+            }
+            task.execute(command as Any)
         }
 
         @JvmStatic
