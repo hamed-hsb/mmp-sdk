@@ -24,7 +24,7 @@ class Reflection {
         fun getImeiParameters(context: Context?, logger: ILogger?): Map<String, String>? {
             try {
                 val nonPlayParameters = invokeStaticMethod(
-                    "com.adjust.sdk.imei.Util", "getImeiParameters", arrayOf(
+                    "com.motrack.sdk.imei.Util", "getImeiParameters", arrayOf(
                         Context::class.java,
                         ILogger::class.java
                     ), context, logger
@@ -41,7 +41,7 @@ class Reflection {
         fun getOaidParameters(context: Context?, logger: ILogger?): Map<String, String>? {
             try {
                 val oaidParameters = invokeStaticMethod(
-                    "com.adjust.sdk.oaid.Util", "getOaidParameters", arrayOf(
+                    "com.motrack.sdk.oaid.Util", "getOaidParameters", arrayOf(
                         Context::class.java,
                         ILogger::class.java
                     ), context, logger

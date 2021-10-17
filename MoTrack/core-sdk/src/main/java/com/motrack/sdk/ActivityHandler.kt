@@ -169,8 +169,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharing()
                 }
-                for (adjustThirdPartySharing in motrackConfig!!.preLaunchActions!!.preLaunchMotrackThirdPartyArray) {
-                    trackThirdPartySharing(adjustThirdPartySharing)
+                for (motrackThirdPartySharing in motrackConfig!!.preLaunchActions!!.preLaunchMotrackThirdPartyArray) {
+                    trackThirdPartySharing(motrackThirdPartySharing)
                 }
                 if (motrackConfig?.preLaunchActions?.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsent(
@@ -514,7 +514,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                     """
                          Event tracked before first activity resumed.
                          If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.
-                         Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.
+                         Please check https://github.com/motrack/AndroidSdk#can-i-trigger-an-event-at-application-launch for more information.
                          """.trimIndent()
                 )
                 startI()
@@ -637,8 +637,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI()
                 }
-                for (adjustThirdPartySharing in motrackConfig!!.preLaunchActions!!.preLaunchMotrackThirdPartyArray) {
-                    trackThirdPartySharingI(adjustThirdPartySharing)
+                for (motrackThirdPartySharing in motrackConfig!!.preLaunchActions!!.preLaunchMotrackThirdPartyArray) {
+                    trackThirdPartySharingI(motrackThirdPartySharing)
                 }
                 if (motrackConfig!!.preLaunchActions!!.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsentI(
@@ -777,8 +777,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         // compare with the internal state
         if (!hasChangedStateI(
                 internalState!!.isOffline, offline,
-                "Adjust already in offline mode",
-                "Adjust already in online mode"
+                "Motrack already in offline mode",
+                "Motrack already in online mode"
             )
         ) {
             return
@@ -1391,7 +1391,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         // compare with the saved or internal state
         if (!hasChangedStateI(
                 isEnabledI(), enabled,
-                "Adjust already enabled", "Adjust already disabled"
+                "Motrack already enabled", "Motrack already disabled"
             )
         ) {
             return
@@ -1424,8 +1424,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI()
                 }
-                for (adjustThirdPartySharing in motrackConfig?.preLaunchActions!!.preLaunchMotrackThirdPartyArray) {
-                    trackThirdPartySharingI(adjustThirdPartySharing)
+                for (motrackThirdPartySharing in motrackConfig?.preLaunchActions!!.preLaunchMotrackThirdPartyArray) {
+                    trackThirdPartySharingI(motrackThirdPartySharing)
                 }
                 if (motrackConfig!!.preLaunchActions!!.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsentI(
@@ -2118,7 +2118,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (!isEnabledI()) {
             return
         }
-        if (!checkAdjustAdRevenue(motrackAdRevenue)) {
+        if (!checkMotrackAdRevenue(motrackAdRevenue)) {
             return
         }
         if (activityState!!.isGdprForgotten) {
@@ -2137,7 +2137,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         packageHandler!!.sendFirstPackage()
     }
 
-    private fun checkAdjustAdRevenue(motrackAdRevenue: MotrackAdRevenue?): Boolean {
+    private fun checkMotrackAdRevenue(motrackAdRevenue: MotrackAdRevenue?): Boolean {
         if (motrackAdRevenue == null) {
             logger!!.error("Ad revenue object missing")
             return false

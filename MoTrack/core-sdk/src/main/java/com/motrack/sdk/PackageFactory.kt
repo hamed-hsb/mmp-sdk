@@ -15,7 +15,7 @@ import java.util.*
 class PackageFactory {
     companion object {
 
-        private const val ADJUST_PREFIX = "adjust_"
+        private const val MOTRACK_PREFIX = "motrack_"
 
         fun buildReftagSdkClickPackage(
             rawReferrer: String?,
@@ -220,11 +220,11 @@ class PackageFactory {
                 return false
             }
 
-            // Parameter key does not start with "adjust_" prefix.
-            if (!key.startsWith(ADJUST_PREFIX)) {
+            // Parameter key does not start with "motrack_" prefix.
+            if (!key.startsWith(MOTRACK_PREFIX)) {
                 return false
             }
-            val keyWOutPrefix = key.substring(ADJUST_PREFIX.length)
+            val keyWOutPrefix = key.substring(MOTRACK_PREFIX.length)
             if (keyWOutPrefix.isEmpty()) {
                 return false
             }

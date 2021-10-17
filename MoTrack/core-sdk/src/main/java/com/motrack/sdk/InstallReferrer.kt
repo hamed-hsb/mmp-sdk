@@ -71,9 +71,7 @@ class InstallReferrer
      */
     private var shouldTryToRead: AtomicBoolean? = null
 
-    /**
-     * Adjust logger instance.
-     */
+
     private var logger: ILogger? = null
 
     /**

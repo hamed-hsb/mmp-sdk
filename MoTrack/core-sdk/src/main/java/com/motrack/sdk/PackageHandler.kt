@@ -22,7 +22,7 @@ class PackageHandler(
 ) : IPackageHandler, IActivityPackageSender.ResponseDataCallbackSubscriber {
 
     companion object {
-        private const val PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue"
+        private const val PACKAGE_QUEUE_FILENAME = "MotrackIoPackageQueue"
         private const val PACKAGE_QUEUE_NAME = "Package queue"
     }
 

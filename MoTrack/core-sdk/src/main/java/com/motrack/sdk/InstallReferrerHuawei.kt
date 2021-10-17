@@ -21,9 +21,7 @@ class InstallReferrerHuawei
      */
     private val referrerCallback: InstallReferrerReadListener?
 ) {
-    /**
-     * Adjust logger instance.
-     */
+
     private var logger: ILogger? = null
 
     /**

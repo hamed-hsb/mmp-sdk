@@ -18,7 +18,7 @@ import javax.net.ssl.SSLHandshakeException
  */
 
 class ActivityPackageSender(
-    adjustUrlStrategy: String?,
+    motrackUrlStrategy: String?,
     private val basePath: String?,
     private val gdprPath: String?,
     private val subscriptionPath: String?,
@@ -37,7 +37,7 @@ class ActivityPackageSender(
             MotrackFactory.baseUrl,
             MotrackFactory.gdprUrl,
             MotrackFactory.subscriptionUrl,
-            adjustUrlStrategy!!
+            motrackUrlStrategy!!
         )
         httpsURLConnectionProvider = MotrackFactory.getHttpsURLConnectionProvider()
         connectionOptions = MotrackFactory.getConnectionOptions()
@@ -45,7 +45,7 @@ class ActivityPackageSender(
 
     override fun sendActivityPackage(
         activityPackage: ActivityPackage,
-        sendingParameters: Map<String?, String?>,
+        sendingParameters: Map<String, String>,
         responseCallback: IActivityPackageSender.ResponseDataCallbackSubscriber
     ) {
         executor!!.submit {
@@ -57,7 +57,7 @@ class ActivityPackageSender(
 
     override fun sendActivityPackageSync(
         activityPackage: ActivityPackage,
-        sendingParameters: Map<String?, String?>
+        sendingParameters: Map<String, String>
     ): ResponseData {
         var retryToSend: Boolean
         var responseData: ResponseData
@@ -88,16 +88,16 @@ class ActivityPackageSender(
     private fun tryToGetResponse(responseData: ResponseData) {
         var dataOutputStream: DataOutputStream? = null
         try {
-            val activityPackage = responseData.activityPackage
-            val activityPackageParameters: HashMap<String?, String?> =
-                activityPackage.getParameters() as HashMap<String?, String?>
+            val activityPackage = responseData.activityPackage!!
+            val activityPackageParameters: HashMap<String, String> =
+                activityPackage.getParameters() as HashMap<String, String>
             val sendingParameters = responseData.sendingParameters
             val authorizationHeader: String? = buildAndExtractAuthorizationHeader(
                 activityPackageParameters,
                 activityPackage.getActivityKind()
             )
             val shouldUseGET =
-                responseData.activityPackage.getActivityKind() === ActivityKind.ATTRIBUTION
+                responseData.activityPackage!!.getActivityKind() === ActivityKind.ATTRIBUTION
             val urlString: String = if (shouldUseGET) {
                 extractEventCallbackId(activityPackageParameters)
                 generateUrlStringForGET(
@@ -171,7 +171,7 @@ class ActivityPackageSender(
                 val errorMessage: String = errorMessage(
                     ioException,
                     "Flushing and closing connection output stream",
-                    responseData.activityPackage
+                    responseData.activityPackage!!
                 )
                 logger.error(errorMessage)
             }
@@ -179,14 +179,14 @@ class ActivityPackageSender(
     }
 
     private fun localError(throwable: Throwable, description: String, responseData: ResponseData) {
-        val finalMessage = errorMessage(throwable, description, responseData.activityPackage)
+        val finalMessage = errorMessage(throwable, description, responseData.activityPackage!!)
         logger.error(finalMessage)
         responseData.message = finalMessage
         responseData.willRetry = false
     }
 
     private fun remoteError(throwable: Throwable, description: String, responseData: ResponseData) {
-        val finalMessage = (errorMessage(throwable, description, responseData.activityPackage)
+        val finalMessage = (errorMessage(throwable, description, responseData.activityPackage!!)
                 + " Will retry later")
         logger.error(finalMessage)
         responseData.message = finalMessage
@@ -207,8 +207,8 @@ class ActivityPackageSender(
     private fun generateUrlStringForGET(
         activityKind: ActivityKind,
         activityPackagePath: String,
-        activityPackageParameters: Map<String?, String?>,
-        sendingParameters: Map<String?, String?>?
+        activityPackageParameters: Map<String, String>,
+        sendingParameters: Map<String, String>?
     ): String {
         val targetUrl = urlStrategy!!.targetUrlByActivityKind(activityKind)
 
@@ -270,8 +270,8 @@ class ActivityPackageSender(
     @Throws(ProtocolException::class, UnsupportedEncodingException::class, IOException::class)
     private fun configConnectionForPOST(
         connection: HttpsURLConnection,
-        activityPackageParameters: Map<String?, String?>,
-        sendingParameters: Map<String?, String?>
+        activityPackageParameters: Map<String, String>,
+        sendingParameters: Map<String, String>
     ): DataOutputStream? {
         // set default POST configuration options
         connection.requestMethod = "POST"
@@ -296,8 +296,8 @@ class ActivityPackageSender(
 
     @Throws(UnsupportedEncodingException::class)
     private fun generatePOSTBodyString(
-        parameters: Map<String?, String?>,
-        sendingParameters: Map<String?, String?>
+        parameters: Map<String, String>,
+        sendingParameters: Map<String, String>
     ): String? {
         if (parameters.isEmpty()) {
             return null
@@ -317,7 +317,7 @@ class ActivityPackageSender(
 
     @Throws(UnsupportedEncodingException::class)
     private fun injectParametersToPOSTStringBuilder(
-        parametersToInject: Map<String?, String?>?,
+        parametersToInject: Map<String, String>?,
         postStringBuilder: StringBuilder
     ) {
         if (parametersToInject == null || parametersToInject.isEmpty()) {
@@ -362,7 +362,7 @@ class ActivityPackageSender(
             val errorMessage = errorMessage(
                 ioException,
                 "Connecting and reading response",
-                responseData.activityPackage
+                responseData.activityPackage!!
             )
             logger.error(errorMessage)
         } finally {
@@ -379,7 +379,7 @@ class ActivityPackageSender(
 
         // extract response string from string builder
         val responseString = responseStringBuilder.toString()
-        logger.debug("Response string: $responseString", )
+        logger.debug("Response string: $responseString")
         parseResponse(responseData, responseString)
         val responseMessage = responseData.message ?: return responseCode
 
@@ -405,7 +405,7 @@ class ActivityPackageSender(
             val errorMessage = errorMessage(
                 jsonException,
                 "Failed to parse JSON response",
-                responseData.activityPackage
+                responseData.activityPackage!!
             )
             logger.error(errorMessage)
         }
@@ -434,7 +434,7 @@ class ActivityPackageSender(
     }
 
     private fun buildAndExtractAuthorizationHeader(
-        parameters: MutableMap<String?, String?>,
+        parameters: MutableMap<String, String>,
         activityKind: ActivityKind
     ): String? {
         val activityKindString = activityKind.toString()
@@ -455,7 +455,7 @@ class ActivityPackageSender(
     }
 
     private fun buildAuthorizationHeaderV1(
-        parameters: Map<String?, String?>,
+        parameters: Map<String, String>,
         appSecret: String?,
         secretId: String?,
         activityKindString: String
@@ -503,7 +503,7 @@ class ActivityPackageSender(
     }
 
     private fun getSignature(
-        parameters: Map<String?, String?>,
+        parameters: Map<String, String>,
         activityKindString: String,
         appSecret: String
     ): Map<String, String?> {
@@ -545,7 +545,7 @@ class ActivityPackageSender(
         return signature
     }
 
-    private fun getValidIdentifier(parameters: Map<String?, String?>): String? {
+    private fun getValidIdentifier(parameters: Map<String, String>): String? {
         val googleAdIdName = "gps_adid"
         val fireAdIdName = "fire_adid"
         val androidIdName = "android_id"
@@ -572,31 +572,31 @@ class ActivityPackageSender(
         } else null
     }
 
-    private fun extractAppSecret(parameters: MutableMap<String?, String?>): String? {
+    private fun extractAppSecret(parameters: MutableMap<String, String>): String? {
         return parameters.remove("app_secret")
     }
 
-    private fun extractSecretId(parameters: MutableMap<String?, String?>): String? {
+    private fun extractSecretId(parameters: MutableMap<String, String>): String? {
         return parameters.remove("secret_id")
     }
 
-    private fun extractSignature(parameters: MutableMap<String?, String?>): String? {
+    private fun extractSignature(parameters: MutableMap<String, String>): String? {
         return parameters.remove("signature")
     }
 
-    private fun extractAlgorithm(parameters: MutableMap<String?, String?>): String? {
+    private fun extractAlgorithm(parameters: MutableMap<String, String>): String? {
         return parameters.remove("algorithm")
     }
 
-    private fun extractNativeVersion(parameters: MutableMap<String?, String?>): String? {
+    private fun extractNativeVersion(parameters: MutableMap<String, String>): String? {
         return parameters.remove("native_version")
     }
 
-    private fun extractHeadersId(parameters: MutableMap<String?, String?>): String? {
+    private fun extractHeadersId(parameters: MutableMap<String, String>): String? {
         return parameters.remove("headers_id")
     }
 
-    private fun extractEventCallbackId(parameters: MutableMap<String?, String?>) {
+    private fun extractEventCallbackId(parameters: MutableMap<String, String>) {
         parameters.remove("event_callback_id")
     }
 
