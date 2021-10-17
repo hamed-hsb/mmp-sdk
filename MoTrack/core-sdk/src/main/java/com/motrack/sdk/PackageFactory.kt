@@ -116,16 +116,16 @@ class PackageFactory {
 
         fun buildInstallReferrerSdkClickPackage(
             referrerDetails: ReferrerDetails,
-            referrerApi: String?,
-            activityState: ActivityState?,
-            motrackConfig: MotrackConfig?,
-            deviceInfo: DeviceInfo?,
-            sessionParameters: SessionParameters?
-        ): ActivityPackage? {
+            referrerApi: String,
+            activityState: ActivityState,
+            motrackConfig: MotrackConfig,
+            deviceInfo: DeviceInfo,
+            sessionParameters: SessionParameters
+        ): ActivityPackage {
             val now = System.currentTimeMillis()
             val clickPackageBuilder = PackageBuilder(
-                motrackConfig!!,
-                deviceInfo!!,
+                motrackConfig,
+                deviceInfo,
                 activityState,
                 sessionParameters,
                 now

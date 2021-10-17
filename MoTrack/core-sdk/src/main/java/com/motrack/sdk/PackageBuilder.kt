@@ -85,7 +85,7 @@ class PackageBuilder(
         return infoPackage
     }
 
-    fun buildClickPackage(source: String?): ActivityPackage? {
+    fun buildClickPackage(source: String?): ActivityPackage {
         val parameters: HashMap<String, String> = getClickParameters(source!!)
         val clickPackage = getDefaultActivityPackage(ActivityKind.CLICK)
         clickPackage.setPath("/sdk_click")
