@@ -102,4 +102,8 @@ class MotrackEvent {
         }
         return true
     }
+
+    fun isValid(): Boolean {
+        return eventToken != null
+    }
 }
