@@ -6,7 +6,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
+import android.os.AsyncTask
 import android.os.Build
+import android.os.Looper
 import android.provider.Settings.Secure
 import android.telephony.TelephonyManager
 import android.text.TextUtils
@@ -22,6 +24,61 @@ import java.util.*
 
 class AndroidUtil {
     companion object {
+
+        fun getGoogleAdId(context: Context, onDeviceIdRead: OnDeviceIdsRead) {
+            val logger: ILogger = MotrackFactory.getLogger()
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                logger.debug("GoogleAdId being read in the background")
+                val googleAdId: String? = getGoogleAdId(context)
+                logger.debug("GoogleAdId read $googleAdId")
+                onDeviceIdRead.onGoogleAdIdRead(googleAdId)
+                return
+            }
+            logger.debug("GoogleAdId being read in the foreground")
+            object : AsyncTask<Context?, Void?, String?>() {
+                override fun onPostExecute(playAdiId: String?) {
+                    val logger: ILogger = MotrackFactory.getLogger()
+                    onDeviceIdRead.onGoogleAdIdRead(playAdiId)
+                }
+
+                override fun doInBackground(vararg params: Context?): String? {
+                    val logger: ILogger = MotrackFactory.getLogger()
+                    val innerContext = params[0]
+                    val innerResult: String? = getGoogleAdId(innerContext!!)
+                    logger.debug("GoogleAdId read $innerResult")
+                    return innerResult
+                }
+            }.execute(context)
+        }
+
+        fun getGoogleAdId(context: Context): String? {
+            var googleAdId: String? = null
+            try {
+                val gpsInfo: GooglePlayServicesClient.Companion.GooglePlayServicesInfo? =
+                    GooglePlayServicesClient.getGooglePlayServicesInfo(
+                        context,
+                        Constants.ONE_SECOND * 11
+                    )
+                if (gpsInfo != null) {
+                    googleAdId = gpsInfo.gpsAdid
+                }
+            } catch (e: java.lang.Exception) {
+            }
+            if (googleAdId == null) {
+                val advertisingInfoObject: Any? = Util.getAdvertisingInfoObject(
+                    context, Constants.ONE_SECOND * 11
+                )
+                if (advertisingInfoObject != null) {
+                    googleAdId = Util.getPlayAdId(
+                        context,
+                        advertisingInfoObject,
+                        Constants.ONE_SECOND
+                    )
+                }
+            }
+            return googleAdId
+        }
+
         fun getFireAdvertisingId(contentResolver: ContentResolver?): String? {
             if (contentResolver == null) {
                 return null
