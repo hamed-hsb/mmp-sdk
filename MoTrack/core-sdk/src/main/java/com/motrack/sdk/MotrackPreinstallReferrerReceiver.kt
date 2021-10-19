@@ -9,6 +9,14 @@ import com.motrack.sdk.Constants.Companion.EXTRA_SYSTEM_INSTALLER_REFERRER
 /**
  * @author yaya (@yahyalmh)
  * @since 19th October 2021
+ *
+ * You have to add this broadcast to manifest file like this:
+ *
+ *  <receiver android:name="com.motrack.sdk.MotrackPreinstallReferrerReceiver">
+ *      <intent-filter>
+ *       <action android:name="com.attribution.SYSTEM_INSTALLER_REFERRER" />
+ *      </intent-filter>
+ *  </receiver>
  */
 
 class MotrackPreinstallReferrerReceiver : BroadcastReceiver() {
