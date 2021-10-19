@@ -64,6 +64,7 @@ class Constants {
         var SUBSCRIPTION_URL = "https://subscription.motrack.com"
 
         var MINIMAL_ERROR_STATUS_CODE = 400
+        var REFERRER = "referrer"
 
 
         var CALLBACK_PARAMETERS = "callback_params"
