@@ -16,7 +16,7 @@ class InstallReferrer
     (
     private val context: Context,
     /**
-     * Weak reference to ActivityHandler instance.
+     * Referrer callback.
      */
     private val referrerCallback: InstallReferrerReadListener
 ) : InvocationHandler {
@@ -322,7 +322,7 @@ class InstallReferrer
                     )
 
                     // Stuff successfully read, try to send it.
-                    referrerCallback.onInstallReferrerRead(installReferrerDetails)
+                    referrerCallback.onInstallReferrerRead(installReferrerDetails, Constants.REFERRER_API_GOOGLE)
                 } catch (e: java.lang.Exception) {
                     logger!!.warn(
                         "Couldn't get install referrer from client (%s). Retrying...",

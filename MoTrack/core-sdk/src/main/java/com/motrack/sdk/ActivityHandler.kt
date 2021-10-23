@@ -255,15 +255,15 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
 
         installReferrer =
             InstallReferrer(motrackConfig!!.context!!, object : InstallReferrerReadListener {
-                override fun onInstallReferrerRead(referrerDetails: ReferrerDetails?) {
-                    sendInstallReferrer(referrerDetails!!, Constants.REFERRER_API_GOOGLE)
+                override fun onInstallReferrerRead(referrerDetails: ReferrerDetails?, referrerApi: String) {
+                    sendInstallReferrer(referrerDetails!!, referrerApi)
                 }
             })
 
         installReferrerHuawei =
             InstallReferrerHuawei(motrackConfig!!.context, object : InstallReferrerReadListener {
-                override fun onInstallReferrerRead(referrerDetails: ReferrerDetails?) {
-                    sendInstallReferrer(referrerDetails!!, Constants.REFERRER_API_HUAWEI)
+                override fun onInstallReferrerRead(referrerDetails: ReferrerDetails?, referrerApi: String) {
+                    sendInstallReferrer(referrerDetails!!, referrerApi)
                 }
             })
 

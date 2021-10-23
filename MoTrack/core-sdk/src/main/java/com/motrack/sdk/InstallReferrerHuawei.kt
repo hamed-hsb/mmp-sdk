@@ -17,7 +17,7 @@ class InstallReferrerHuawei
      */
     private var context: Context?,
     /**
-     * Weak reference to ActivityHandler instance.
+     * Huawei Referrer callback.
      */
     private val referrerCallback: InstallReferrerReadListener?
 ) {
@@ -52,9 +52,17 @@ class InstallReferrerHuawei
         try {
             cursor = contentResolver.query(uri, null, null, packageName, null)
             if (cursor != null && cursor.moveToFirst()) {
-                val installReferrer = cursor.getString(0)
-                val clickTime = cursor.getString(1)
-                val installTime = cursor.getString(2)
+
+                var installReferrer = cursor.getString(COLUMN_INDEX_REFERRER)
+                val clickTime = cursor.getString(COLUMN_INDEX_CLICK_TIME)
+                val installTime = cursor.getString(COLUMN_INDEX_INSTALL_TIME)
+                var referrerApi = Constants.REFERRER_API_HUAWEI
+
+                if (installReferrer == null || installReferrer.isEmpty()) {
+                    installReferrer = cursor.getString(COLUMN_INDEX_TRACK_ID)
+                    referrerApi = Constants.REFERRER_API_HUAWEI_ADS
+                }
+
                 logger!!.debug("InstallReferrerHuawei reads referrer[$installReferrer] clickTime[$clickTime] installTime[$installTime]")
                 val referrerClickTimestampSeconds = clickTime.toLong()
                 val installBeginTimestampSeconds = installTime.toLong()
@@ -62,7 +70,7 @@ class InstallReferrerHuawei
                     installReferrer,
                     referrerClickTimestampSeconds, installBeginTimestampSeconds
                 )
-                referrerCallback!!.onInstallReferrerRead(referrerDetails)
+                referrerCallback!!.onInstallReferrerRead(referrerDetails, referrerApi)
             } else {
                 logger!!.debug("InstallReferrerHuawei fail to read referrer for package [${context!!.packageName}] and content uri [$uri]")
             }
@@ -84,6 +92,27 @@ class InstallReferrerHuawei
          * Huawei install referrer provider content uri.
          */
         private const val REFERRER_PROVIDER_URI = "content://$REFERRER_PROVIDER_AUTHORITY/item/5"
+
+
+        /**
+         * Huawei install referrer provider column index referrer.
+         */
+        private const val COLUMN_INDEX_REFERRER = 0
+
+        /**
+         * Huawei install referrer provider column index click time.
+         */
+        private const val COLUMN_INDEX_CLICK_TIME = 1
+
+        /**
+         * Huawei install referrer provider column index install time.
+         */
+        private const val COLUMN_INDEX_INSTALL_TIME = 2
+
+        /**
+         * Huawei install referrer provider column index track ID.
+         */
+        private const val COLUMN_INDEX_TRACK_ID = 4
 
     }
 }

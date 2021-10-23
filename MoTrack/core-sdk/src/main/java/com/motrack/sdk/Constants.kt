@@ -65,7 +65,7 @@ class Constants {
 
         var MINIMAL_ERROR_STATUS_CODE = 400
         var REFERRER = "referrer"
-
+        var REFERRER_API_HUAWEI_ADS = "huawei_ads"
 
         var CALLBACK_PARAMETERS = "callback_params"
         var PARTNER_PARAMETERS = "partner_params"

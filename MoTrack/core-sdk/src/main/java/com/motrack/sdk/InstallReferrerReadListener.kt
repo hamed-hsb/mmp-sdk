@@ -6,5 +6,5 @@ package com.motrack.sdk
  */
 
 interface InstallReferrerReadListener {
-    fun onInstallReferrerRead(referrerDetails: ReferrerDetails?)
+    fun onInstallReferrerRead(referrerDetails: ReferrerDetails?, referrerApi: String)
 }
