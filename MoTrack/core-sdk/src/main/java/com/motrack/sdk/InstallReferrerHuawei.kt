@@ -48,29 +48,44 @@ class InstallReferrerHuawei
         var cursor: Cursor? = null
         val uri = Uri.parse(REFERRER_PROVIDER_URI)
         val contentResolver = context!!.contentResolver
+
+
         val packageName = arrayOf(context!!.packageName)
         try {
             cursor = contentResolver.query(uri, null, null, packageName, null)
-            if (cursor != null && cursor.moveToFirst()) {
 
-                var installReferrer = cursor.getString(COLUMN_INDEX_REFERRER)
+            if (cursor != null && cursor.moveToFirst()) {
+                val referrerHuaweiAds = cursor.getString(COLUMN_INDEX_REFERRER)
+                val referrerHuaweiAppGallery = cursor.getString(COLUMN_INDEX_TRACK_ID)
+                logger!!.debug("InstallReferrerHuawei reads index_referrer $referrerHuaweiAds index_track_id $referrerHuaweiAppGallery")
                 val clickTime = cursor.getString(COLUMN_INDEX_CLICK_TIME)
                 val installTime = cursor.getString(COLUMN_INDEX_INSTALL_TIME)
-                var referrerApi = Constants.REFERRER_API_HUAWEI_ADS
+                logger!!.debug("InstallReferrerHuawei reads clickTime[$clickTime] installTime[$installTime]")
 
-                if (installReferrer == null || installReferrer.isEmpty()) {
-                    installReferrer = cursor.getString(COLUMN_INDEX_TRACK_ID)
-                    referrerApi = Constants.REFERRER_API_HUAWEI_APP_GALLERY
-                }
-
-                logger!!.debug("InstallReferrerHuawei reads referrer[$installReferrer] clickTime[$clickTime] installTime[$installTime]")
                 val referrerClickTimestampSeconds = clickTime.toLong()
                 val installBeginTimestampSeconds = installTime.toLong()
-                val referrerDetails = ReferrerDetails(
-                    installReferrer,
-                    referrerClickTimestampSeconds, installBeginTimestampSeconds
-                )
-                referrerCallback!!.onInstallReferrerRead(referrerDetails, referrerApi)
+                if (isValidReferrerHuaweiAds(referrerHuaweiAds)) {
+                    val referrerDetails = ReferrerDetails(
+                        referrerHuaweiAds,
+                        referrerClickTimestampSeconds,
+                        installBeginTimestampSeconds
+                    )
+                    referrerCallback!!.onInstallReferrerRead(
+                        referrerDetails,
+                        Constants.REFERRER_API_HUAWEI_ADS
+                    )
+                }
+                if (isValidReferrerHuaweiAppGallery(referrerHuaweiAppGallery)) {
+                    val referrerDetails = ReferrerDetails(
+                        referrerHuaweiAppGallery,
+                        referrerClickTimestampSeconds,
+                        installBeginTimestampSeconds
+                    )
+                    referrerCallback!!.onInstallReferrerRead(
+                        referrerDetails,
+                        Constants.REFERRER_API_HUAWEI_APP_GALLERY
+                    )
+                }
             } else {
                 logger!!.debug("InstallReferrerHuawei fail to read referrer for package [${context!!.packageName}] and content uri [$uri]")
             }
@@ -81,6 +96,21 @@ class InstallReferrerHuawei
         }
         shouldTryToRead!!.set(false)
     }
+
+    private fun isValidReferrerHuaweiAds(referrerHuaweiAds: String?): Boolean {
+        if (referrerHuaweiAds == null) {
+            return false
+        }
+        return referrerHuaweiAds.isNotEmpty()
+    }
+
+    private fun isValidReferrerHuaweiAppGallery(referrerHuaweiAppGallery: String?): Boolean {
+        if (referrerHuaweiAppGallery == null) {
+            return false
+        }
+        return referrerHuaweiAppGallery.isNotEmpty()
+    }
+
 
     companion object {
         /**

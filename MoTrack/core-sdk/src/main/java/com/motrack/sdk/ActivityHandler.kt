@@ -745,23 +745,35 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             return
         }
 
-        val isInstallReferrerHuawei = responseData.referrerApi != null &&
-                (responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS, ignoreCase = true) ||
-                        responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY, ignoreCase = true))
-
-        if (!isInstallReferrerHuawei) {
-            activityState!!.clickTime = responseData.clickTime!!
-            activityState!!.installBegin = responseData.installBegin!!
-            activityState!!.installReferrer = responseData.installReferrer
-            activityState!!.clickTimeServer = responseData.clickTimeServer!!
-            activityState!!.installBeginServer = responseData.installBeginServer!!
-            activityState!!.installVersion = responseData.installVersion
-            activityState!!.googlePlayInstant = responseData.googlePlayInstant
-        } else {
+        val isInstallReferrerHuaweiAds = responseData.referrerApi != null &&
+                responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS, ignoreCase = true)
+        if (isInstallReferrerHuaweiAds) {
             activityState!!.clickTimeHuawei = responseData.clickTime!!
             activityState!!.installBeginHuawei = responseData.installBegin!!
             activityState!!.installReferrerHuawei = responseData.installReferrer
+            writeActivityStateI()
+            return
         }
+
+        val isInstallReferrerHuaweiAppGallery = responseData.referrerApi != null &&
+                responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY, ignoreCase = true)
+
+        if (isInstallReferrerHuaweiAppGallery) {
+            activityState!!.clickTimeHuawei = responseData.clickTime!!
+            activityState!!.installBeginHuawei = responseData.installBegin!!
+            activityState!!.installReferrerHuaweiAppGallery = responseData.installReferrer
+            writeActivityStateI()
+            return
+        }
+
+        activityState!!.clickTime = responseData.clickTime!!
+        activityState!!.installBegin = responseData.installBegin!!
+        activityState!!.installReferrer = responseData.installReferrer
+        activityState!!.clickTimeServer = responseData.clickTimeServer!!
+        activityState!!.installBeginServer = responseData.installBeginServer!!
+        activityState!!.installVersion = responseData.installVersion
+        activityState!!.googlePlayInstant = responseData.googlePlayInstant
+
         writeActivityStateI()
     }
 

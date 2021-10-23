@@ -40,7 +40,7 @@ class Util {
         }
 
         @JvmStatic
-        public fun checkPermission(context: Context, permission: String): Boolean {
+        fun checkPermission(context: Context, permission: String): Boolean {
             return try {
                 val result = context.checkCallingOrSelfPermission(permission)
                 result == PackageManager.PERMISSION_GRANTED
@@ -116,7 +116,7 @@ class Util {
         }
 
         @JvmStatic
-        public fun isValidParameter(
+        fun isValidParameter(
             attribute: String?,
             attributeType: String,
             parameterName: String
@@ -133,7 +133,7 @@ class Util {
         }
 
         @JvmStatic
-        public fun getSdkPrefix(clientSdk: String): String? {
+        fun getSdkPrefix(clientSdk: String): String? {
             if (clientSdk.isNullOrEmpty()) {
                 return null
             }
@@ -155,7 +155,7 @@ class Util {
         }
 
         @JvmStatic
-        public fun getSdkPrefixPlatform(clientSdk: String): String? {
+        fun getSdkPrefixPlatform(clientSdk: String): String? {
             val sdkPrefix = getSdkPrefix(clientSdk)
 
             if (sdkPrefix.isNullOrEmpty()) {
@@ -171,7 +171,7 @@ class Util {
         }
 
         @JvmStatic
-        public fun getLocale(configuration: Configuration): Locale? {
+        fun getLocale(configuration: Configuration): Locale? {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val locales = configuration.locales
                 if (!locales.isEmpty) {
@@ -184,7 +184,7 @@ class Util {
             return null
         }
 
-        public fun mergeParameters(
+        fun mergeParameters(
             target: HashMap<String, String>?,
             source: HashMap<String, String>?,
             parameterName: String?
@@ -415,13 +415,33 @@ class Util {
             activityState: ActivityState
         ): Boolean {
             if (referrerApi == Constants.REFERRER_API_GOOGLE) {
-                return isEqualGoogleReferrerDetails(referrerDetails, activityState)
-            } else if (referrerApi == Constants.REFERRER_API_HUAWEI_ADS ||
-                referrerApi == Constants.REFERRER_API_HUAWEI_APP_GALLERY
-            ) {
-                return isEqualHuaweiReferrerDetails(referrerDetails, activityState)
+                return isEqualGoogleReferrerDetails(
+                    referrerDetails,
+                    activityState
+                )
+            } else if (referrerApi == Constants.REFERRER_API_HUAWEI_ADS) {
+                return isEqualHuaweiReferrerAdsDetails(
+                    referrerDetails,
+                    activityState
+                )
+            } else if (referrerApi == Constants.REFERRER_API_HUAWEI_APP_GALLERY) {
+                return isEqualHuaweiReferrerAppGalleryDetails(
+                    referrerDetails,
+                    activityState
+                )
             }
+
             return false
+        }
+
+        private fun isEqualHuaweiReferrerAppGalleryDetails(
+            referrerDetails: ReferrerDetails,
+            activityState: ActivityState
+        ): Boolean {
+            return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei && equalString(
+                referrerDetails.installReferrer,
+                activityState.installReferrerHuaweiAppGallery
+            )
         }
 
         private fun isEqualGoogleReferrerDetails(
@@ -446,7 +466,7 @@ class Util {
             ))
         }
 
-        private fun isEqualHuaweiReferrerDetails(
+        private fun isEqualHuaweiReferrerAdsDetails(
             referrerDetails: ReferrerDetails,
             activityState: ActivityState
         ): Boolean {

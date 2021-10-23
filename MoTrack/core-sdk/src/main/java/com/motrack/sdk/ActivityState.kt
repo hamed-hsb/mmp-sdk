@@ -42,7 +42,8 @@ class ActivityState : Serializable, Cloneable {
             ObjectStreamField("installVersion", String::class.java),
             ObjectStreamField("clickTimeHuawei", Long::class.javaPrimitiveType),
             ObjectStreamField("installBeginHuawei", Long::class.javaPrimitiveType),
-            ObjectStreamField("installReferrerHuawei", String::class.java)
+            ObjectStreamField("installReferrerHuawei", String::class.java),
+            ObjectStreamField("installReferrerHuaweiAppGallery", String::class.java)
         )
     }
 
@@ -87,6 +88,8 @@ class ActivityState : Serializable, Cloneable {
     var clickTimeHuawei: Long = 0
     var installBeginHuawei: Long = 0
     var installReferrerHuawei: String? = null
+    var installReferrerHuaweiAppGallery: String? = null
+
 
     init {
         uuid = Util.createUuid()
@@ -167,6 +170,8 @@ class ActivityState : Serializable, Cloneable {
         clickTimeHuawei = readField(fields, "clickTimeHuawei", -1L) as Long
         installBeginHuawei = readField(fields, "installBeginHuawei", -1L) as Long
         installReferrerHuawei = readField(fields, "installReferrerHuawei", null) as String?
+        installReferrerHuaweiAppGallery =
+            readField(fields, "installReferrerHuaweiAppGallery", null) as String?
 
         // create UUID for migrating devices
         if (uuid == null) {
@@ -221,6 +226,7 @@ class ActivityState : Serializable, Cloneable {
         if (clickTimeHuawei != other.clickTimeHuawei) return false
         if (installBeginHuawei != other.installBeginHuawei) return false
         if (installReferrerHuawei != other.installReferrerHuawei) return false
+        if (installReferrerHuaweiAppGallery != other.installReferrerHuaweiAppGallery) return false
 
         return true
     }
@@ -253,6 +259,7 @@ class ActivityState : Serializable, Cloneable {
         result = 31 * result + clickTimeHuawei.hashCode()
         result = 31 * result + installBeginHuawei.hashCode()
         result = 31 * result + (installReferrerHuawei?.hashCode() ?: 0)
+        result = 31 * result + (installReferrerHuaweiAppGallery?.hashCode() ?: 0)
         return result
     }
 
