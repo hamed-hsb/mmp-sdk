@@ -59,6 +59,13 @@ class MotrackConfig {
         const val DATA_RESIDENCY_EU = "data_residency_eu"
         const val DATA_RESIDENCY_TR = "data_residency_tr"
         const val DATA_RESIDENCY_US = "data_residency_us"
+
+
+        const val AD_REVENUE_APPLOVIN_MAX = "applovin_max_sdk"
+        const val AD_REVENUE_MOPUB = "mopub"
+        const val AD_REVENUE_ADMOB = "admob_sdk"
+        const val AD_REVENUE_IRONSOURCE = "ironsource_sdk"
+        const val AD_REVENUE_ADMOST = "admost_sdk"
     }
 
     private fun init(
@@ -82,6 +89,13 @@ class MotrackConfig {
         this.context = context
         this.appToken = appToken
         this.environment = environment
+
+        // default values
+
+        // default values
+        eventBufferingEnabled = false
+        sendInBackground = false
+        preinstallTrackingEnabled = false
     }
 
     public fun isValid(): Boolean {
@@ -124,6 +138,15 @@ class MotrackConfig {
         }
         return true
     }
+
+    fun setEventBufferingEnabled(eventBufferingEnabled: Boolean?) {
+        if (eventBufferingEnabled == null) {
+            this.eventBufferingEnabled = false
+            return
+        }
+        this.eventBufferingEnabled = eventBufferingEnabled
+    }
+
 
     private fun checkEnvironment(environment: String): Boolean {
         if (environment.isNullOrEmpty()) {
