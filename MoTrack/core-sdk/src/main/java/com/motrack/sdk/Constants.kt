@@ -35,7 +35,7 @@ class Constants {
         var THREAD_PREFIX = "Motrack-"
 
         var REFERRER_API_GOOGLE = "google"
-        var REFERRER_API_HUAWEI = "huawei"
+        var REFERRER_API_HUAWEI_APP_GALLERY = "huawei_app_gallery"
         var DEEPLINK = "deeplink"
         var PUSH = "push"
 

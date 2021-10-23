@@ -744,11 +744,11 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (!responseData.isInstallReferrer) {
             return
         }
-        val isInstallReferrerHuawei =
-            responseData.referrerApi != null && responseData.referrerApi.equals(
-                Constants.REFERRER_API_HUAWEI,
-                ignoreCase = true
-            )
+
+        val isInstallReferrerHuawei = responseData.referrerApi != null &&
+                (responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS, ignoreCase = true) ||
+                        responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY, ignoreCase = true))
+
         if (!isInstallReferrerHuawei) {
             activityState!!.clickTime = responseData.clickTime!!
             activityState!!.installBegin = responseData.installBegin!!

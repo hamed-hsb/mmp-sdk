@@ -56,11 +56,11 @@ class InstallReferrerHuawei
                 var installReferrer = cursor.getString(COLUMN_INDEX_REFERRER)
                 val clickTime = cursor.getString(COLUMN_INDEX_CLICK_TIME)
                 val installTime = cursor.getString(COLUMN_INDEX_INSTALL_TIME)
-                var referrerApi = Constants.REFERRER_API_HUAWEI
+                var referrerApi = Constants.REFERRER_API_HUAWEI_ADS
 
                 if (installReferrer == null || installReferrer.isEmpty()) {
                     installReferrer = cursor.getString(COLUMN_INDEX_TRACK_ID)
-                    referrerApi = Constants.REFERRER_API_HUAWEI_ADS
+                    referrerApi = Constants.REFERRER_API_HUAWEI_APP_GALLERY
                 }
 
                 logger!!.debug("InstallReferrerHuawei reads referrer[$installReferrer] clickTime[$clickTime] installTime[$installTime]")

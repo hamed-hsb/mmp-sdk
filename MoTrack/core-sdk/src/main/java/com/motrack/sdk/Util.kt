@@ -416,7 +416,9 @@ class Util {
         ): Boolean {
             if (referrerApi == Constants.REFERRER_API_GOOGLE) {
                 return isEqualGoogleReferrerDetails(referrerDetails, activityState)
-            } else if (referrerApi == Constants.REFERRER_API_HUAWEI) {
+            } else if (referrerApi == Constants.REFERRER_API_HUAWEI_ADS ||
+                referrerApi == Constants.REFERRER_API_HUAWEI_APP_GALLERY
+            ) {
                 return isEqualHuaweiReferrerDetails(referrerDetails, activityState)
             }
             return false
