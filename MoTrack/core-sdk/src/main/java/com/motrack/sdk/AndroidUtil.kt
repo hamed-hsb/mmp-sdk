@@ -6,12 +6,12 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Looper
 import android.provider.Settings.Secure
 import android.telephony.TelephonyManager
 import android.text.TextUtils
+import com.motrack.sdk.scheduler.AsyncTaskExecutor
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException
@@ -35,16 +35,17 @@ class AndroidUtil {
                 return
             }
             logger.debug("GoogleAdId being read in the foreground")
-            object : AsyncTask<Context?, Void?, String?>() {
-                override fun onPostExecute(playAdiId: String?) {
+            object : AsyncTaskExecutor<Context?, String?>() {
+
+                protected override fun onPostExecute(result: String?) {
                     val logger: ILogger = MotrackFactory.getLogger()
-                    onDeviceIdRead.onGoogleAdIdRead(playAdiId)
+                    onDeviceIdRead.onGoogleAdIdRead(result)
                 }
 
-                override fun doInBackground(vararg params: Context?): String? {
+                override fun doInBackground(params: Array<out Context?>): String? {
                     val logger: ILogger = MotrackFactory.getLogger()
                     val innerContext = params[0]
-                    val innerResult: String? = getGoogleAdId(innerContext!!)
+                    val innerResult: String? = innerContext?.let { getGoogleAdId(it) }
                     logger.debug("GoogleAdId read $innerResult")
                     return innerResult
                 }

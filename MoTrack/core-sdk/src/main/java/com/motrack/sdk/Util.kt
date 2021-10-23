@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Looper
 import android.provider.Settings.Secure
+import com.motrack.sdk.scheduler.AsyncTaskExecutor
 import com.motrack.sdk.scheduler.SingleThreadFutureScheduler
 import java.io.*
 import java.math.BigInteger
@@ -106,14 +106,13 @@ class Util {
                 command.run()
                 return
             }
-            val task = object : AsyncTask<Any?, Void?, Void?>() {
-                override fun doInBackground(vararg params: Any?): Void? {
+            object : AsyncTaskExecutor<Any?, Void?>() {
+                override fun doInBackground(params: Array<out Any?>): Void? {
                     val command = params[0] as Runnable
                     command.run()
                     return null
                 }
-            }
-            task.execute(command as Any)
+            }.execute(command as Any)
         }
 
         @JvmStatic
