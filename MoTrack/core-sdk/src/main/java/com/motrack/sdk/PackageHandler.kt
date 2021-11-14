@@ -271,7 +271,7 @@ class PackageHandler(
             packageQueue,
             context!!, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME
         )
-        logger!!.debug("Package handler wrote %d packages", packageQueue!!.size)
+        logger!!.debug("Package handler wrote ${packageQueue!!.size} packages")
     }
 
     fun deletePackageQueue(context: Context): Boolean {

@@ -130,7 +130,7 @@ class MotrackFactory {
         fun getSdkClickHandler(
             activityHandler: IActivityHandler?,
             startsSending: Boolean,
-            packageHandlerActivityPackageSender: IActivityPackageSender?
+            packageHandlerActivityPackageSender: IActivityPackageSender
         ): ISdkClickHandler {
             if (sdkClickHandler == null) {
                 return SdkClickHandler(
