@@ -1,6 +1,7 @@
 package com.motrack.test
 
 import android.util.Log
+import com.motrack.test.Constants.Companion.LOGTAG
 import java.util.*
 
 /**
@@ -10,9 +11,9 @@ import java.util.*
 
 class Util {
     companion object {
-        fun debug(message: String?, vararg parameters: Any?) {
+        fun debug(message: String, vararg parameters: Any?) {
             try {
-                Log.d(Constants.LOGTAG, String.format(Locale.US, message!!, *parameters))
+                Log.d(LOGTAG, String.format(Locale.US, message, *parameters))
             } catch (e: Exception) {
                 Log.e(
                     Constants.LOGTAG, String.format(
@@ -21,6 +22,25 @@ class Util {
                     )
                 )
             }
+        }
+
+        fun error(message: String, vararg parameters: Any?) {
+            try {
+                Log.e(LOGTAG, String.format(Locale.US, message, *parameters))
+            } catch (e: java.lang.Exception) {
+                Log.e(
+                    LOGTAG, String.format(
+                        Locale.US,
+                        "Error formatting log message: $message, with params: ${parameters.contentToString()}",
+                    )
+                )
+            }
+        }
+
+        fun appendBasePath(basePath: String?, path: String): String {
+            return if (basePath == null) {
+                path
+            } else basePath + path
         }
     }
 }
