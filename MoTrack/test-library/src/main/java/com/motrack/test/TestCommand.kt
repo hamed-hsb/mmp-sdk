@@ -6,7 +6,7 @@ package com.motrack.test
  */
 
 class TestCommand {
-    var className: String? = null
-    var functionName: String? = null
+    lateinit var className: String
+    lateinit var functionName: String
     var params: Map<String, List<String>>? = null
 }

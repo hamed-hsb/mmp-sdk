@@ -177,10 +177,10 @@ class NetworkUtils {
             return result.toString()
         }
 
-        class HttpResponse {
-            var response: String? = null
+        public class HttpResponse {
+            lateinit var response: String
             var responseCode by Delegates.notNull<Int>()
-            var headerFields: Map<String, List<String>>? = null
+            lateinit var headerFields: Map<String, List<String>>
         }
 
         interface IConnectionOptions {

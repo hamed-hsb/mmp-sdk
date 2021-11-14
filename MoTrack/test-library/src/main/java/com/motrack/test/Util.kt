@@ -16,7 +16,7 @@ class Util {
                 Log.d(LOGTAG, String.format(Locale.US, message, *parameters))
             } catch (e: Exception) {
                 Log.e(
-                    Constants.LOGTAG, String.format(
+                    LOGTAG, String.format(
                         Locale.US,
                         "Error formatting log message: $message, with params: ${parameters.contentToString()}",
                     )
