@@ -8,11 +8,8 @@ import android.content.Context
 import android.os.RemoteException
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
+import com.motrack.sdk.*
 import com.motrack.sdk.Constants.Companion.ONE_SECOND
-import com.motrack.sdk.ILogger
-import com.motrack.sdk.InstallReferrerReadListener
-import com.motrack.sdk.MotrackFactory
-import com.motrack.sdk.ReferrerDetails
 import com.motrack.sdk.scheduler.TimerOnce
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -92,7 +89,7 @@ class InstallReferrer(
                             referrerClickTimestampSeconds, installBeginTimestampSeconds,
                             referrerClickTimestampServerSeconds, installBeginTimestampServerSeconds,
                             installVersion, googlePlayInstantParam
-                        )
+                        ), Constants.REFERRER_API_GOOGLE
                     )
                     hasInstallReferrerBeenRead!!.set(true)
                     logger.debug("Install Referrer read successfully. Closing connection")
