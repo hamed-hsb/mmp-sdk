@@ -185,6 +185,8 @@ class MotrackConfig {
         if (urlStrategy != URL_STRATEGY_INDIA
             && urlStrategy != URL_STRATEGY_CHINA
             && urlStrategy != DATA_RESIDENCY_EU
+            && urlStrategy != DATA_RESIDENCY_TR
+            && urlStrategy != DATA_RESIDENCY_US
         ) {
             logger.warn("Unrecognised url strategy $urlStrategy")
         }
