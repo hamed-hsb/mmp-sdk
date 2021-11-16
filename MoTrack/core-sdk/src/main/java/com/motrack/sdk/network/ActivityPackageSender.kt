@@ -23,7 +23,7 @@ class ActivityPackageSender(
     private val gdprPath: String?,
     private val subscriptionPath: String?,
     private val clientSdk: String?
-): IActivityPackageSender {
+) : IActivityPackageSender {
 
     private var logger: ILogger = MotrackFactory.getLogger()
     private var executor: ThreadExecutor? = null
@@ -39,8 +39,8 @@ class ActivityPackageSender(
             MotrackFactory.subscriptionUrl,
             motrackUrlStrategy!!
         )
-        httpsURLConnectionProvider = MotrackFactory.getHttpsURLConnectionProvider()
-        connectionOptions = MotrackFactory.getConnectionOptions()
+        httpsURLConnectionProvider = MotrackFactory.httpsURLConnectionProvider
+        connectionOptions = MotrackFactory.connectionOptions
     }
 
     override fun sendActivityPackage(

@@ -24,6 +24,14 @@ class PackageHandler(
     companion object {
         private const val PACKAGE_QUEUE_FILENAME = "MotrackIoPackageQueue"
         private const val PACKAGE_QUEUE_NAME = "Package queue"
+
+        fun deleteState(context: Context) {
+            deletePackageQueue(context)
+        }
+
+        private fun deletePackageQueue(context: Context): Boolean {
+            return context.deleteFile(PACKAGE_QUEUE_FILENAME)
+        }
     }
 
     private var scheduler: ThreadScheduler? = null
@@ -40,8 +48,8 @@ class PackageHandler(
     init {
         scheduler = SingleThreadCachedScheduler("PackageHandler")
         logger = MotrackFactory.getLogger()
-        backoffStrategy = MotrackFactory.getPackageHandlerBackoffStrategy()
-        backoffStrategyForInstallSession = MotrackFactory.getInstallSessionBackoffStrategy()
+        backoffStrategy = MotrackFactory.packageHandlerBackoffStrategy
+        backoffStrategyForInstallSession = MotrackFactory.installSessionBackoffStrategy!!
         init(activityHandler, context, startsSending, packageHandlerActivityPackageSender)
         scheduler!!.submit { initI() }
     }
@@ -144,10 +152,6 @@ class PackageHandler(
         context = null
         logger = null
         backoffStrategy = null
-    }
-
-    fun deleteState(context: Context) {
-        deletePackageQueue(context)
     }
 
     // internal methods run in dedicated queue thread
@@ -272,9 +276,5 @@ class PackageHandler(
             context!!, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME
         )
         logger!!.debug("Package handler wrote ${packageQueue!!.size} packages")
-    }
-
-    fun deletePackageQueue(context: Context): Boolean {
-        return context.deleteFile(PACKAGE_QUEUE_FILENAME)
     }
 }

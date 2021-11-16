@@ -3,6 +3,7 @@ package com.motrack.sdk
 import android.content.Context
 import com.motrack.sdk.network.IActivityPackageSender
 import com.motrack.sdk.network.NetworkUtil
+import java.util.*
 
 /**
  * @author yaya (@yahyalmh)
@@ -12,36 +13,66 @@ import com.motrack.sdk.network.NetworkUtil
 class MotrackFactory {
 
     companion object {
-        private var logger: ILogger? = null
         private var activityHandler: IActivityHandler? = null
-        private var tryInstallReferrer = true
-        private val sdkClickHandler: ISdkClickHandler? = null
-        private val packageHandler: IPackageHandler? = null
-        private val attributionHandler: IAttributionHandler? = null
-        private var maxDelayStart: Long = -1
-
+        var tryInstallReferrer = true
+        private var sdkClickHandler: ISdkClickHandler? = null
+        private var packageHandler: IPackageHandler? = null
         var baseUrl: String? = null
         var gdprUrl: String? = null
         var subscriptionUrl: String? = null
-        private val connectionOptions: NetworkUtil.IConnectionOptions? = null
-        private val httpsURLConnectionProvider: NetworkUtil.IHttpsURLConnectionProvider? = null
 
-        private const val timerInterval: Long = -1
-        private const val timerStart: Long = -1
-        private const val sessionInterval: Long = -1
-        private const val subsessionInterval: Long = -1
+        private var attributionHandler: IAttributionHandler? = null
 
-        private var packageHandlerBackoffStrategy: BackoffStrategy? = null
-        private var installSessionBackoffStrategy: BackoffStrategy? = null
-        private var sdkClickBackoffStrategy: BackoffStrategy? = null
+        private var logger: ILogger? = null
 
-
-        fun getLogger(): ILogger {
-            if (logger == null) {
-                logger = Logger()
+        public var maxDelayStart: Long = -1
+            get() {
+                return if (field == -1L) {
+                    Constants.ONE_SECOND * 10 // 10 seconds
+                } else field
             }
-            return logger as ILogger
-        }
+
+        public var connectionOptions: NetworkUtil.IConnectionOptions? = null
+            get() = field ?: NetworkUtil.createDefaultConnectionOptions()
+
+        public var httpsURLConnectionProvider: NetworkUtil.IHttpsURLConnectionProvider? = null
+            get() = field ?: NetworkUtil.createDefaultHttpsURLConnectionProvider()
+
+        var timerInterval: Long = -1
+            get() {
+                return if (field == -1L) {
+                    Constants.ONE_MINUTE
+                } else field
+            }
+
+        var timerStart: Long = -1
+            get() {
+                return if (field == -1L) {
+                    Constants.ONE_MINUTE
+                } else field
+            }
+
+        var sessionInterval: Long = -1
+            get() {
+                return if (field == -1L) {
+                    Constants.THIRTY_MINUTES
+                } else field
+            }
+        var subsessionInterval: Long = -1
+            get() {
+                return if (field == -1L) {
+                    Constants.ONE_SECOND
+                } else field
+            }
+
+        public var packageHandlerBackoffStrategy: BackoffStrategy? = null
+            get() = field ?: BackoffStrategy.LONG_WAIT
+
+        public var installSessionBackoffStrategy: BackoffStrategy? = null
+            get() = field ?: BackoffStrategy.SHORT_WAIT
+
+        public var sdkClickBackoffStrategy: BackoffStrategy? = null
+            get() = field ?: BackoffStrategy.SHORT_WAIT
 
         fun getActivityHandler(config: MotrackConfig): IActivityHandler? {
             if (activityHandler == null) {
@@ -51,37 +82,11 @@ class MotrackFactory {
             return activityHandler
         }
 
-        fun getTryInstallReferrer(): Boolean {
-            return tryInstallReferrer
-        }
-
-        fun setTryInstallReferrer(tryInstallReferrer: Boolean) {
-            MotrackFactory.tryInstallReferrer = tryInstallReferrer
-        }
-
-        fun getConnectionOptions(): NetworkUtil.IConnectionOptions {
-            return connectionOptions ?: NetworkUtil.createDefaultConnectionOptions()
-        }
-
-        fun getHttpsURLConnectionProvider(): NetworkUtil.IHttpsURLConnectionProvider {
-            return httpsURLConnectionProvider
-                ?: NetworkUtil.createDefaultHttpsURLConnectionProvider()
-        }
-
-        fun getPackageHandlerBackoffStrategy(): BackoffStrategy {
-            return packageHandlerBackoffStrategy ?: BackoffStrategy.LONG_WAIT
-        }
-
-        fun getInstallSessionBackoffStrategy(): BackoffStrategy {
-            return installSessionBackoffStrategy ?: BackoffStrategy.SHORT_WAIT
-        }
-
-        fun setSdkClickBackoffStrategy(sdkClickBackoffStrategy: BackoffStrategy) {
-            this.sdkClickBackoffStrategy = sdkClickBackoffStrategy
-        }
-
-        fun setPackageHandlerBackoffStrategy(packageHandlerBackoffStrategy: BackoffStrategy) {
-            this.packageHandlerBackoffStrategy = packageHandlerBackoffStrategy
+        public fun getLogger(): ILogger {
+            if (logger == null) {
+                logger = Logger()
+            }
+            return logger as ILogger
         }
 
         fun getPackageHandler(
@@ -98,13 +103,13 @@ class MotrackFactory {
                     packageHandlerActivityPackageSender
                 )
             }
-            packageHandler.init(
+            packageHandler?.init(
                 activityHandler,
                 context,
                 startsSending,
                 packageHandlerActivityPackageSender
             )
-            return packageHandler
+            return packageHandler as IPackageHandler
         }
 
         fun getAttributionHandler(
@@ -119,12 +124,12 @@ class MotrackFactory {
                     packageHandlerActivityPackageSender
                 )
             }
-            attributionHandler.init(
+            attributionHandler?.init(
                 activityHandler,
                 startsSending,
                 packageHandlerActivityPackageSender
             )
-            return attributionHandler
+            return attributionHandler as IAttributionHandler
         }
 
         fun getSdkClickHandler(
@@ -139,64 +144,65 @@ class MotrackFactory {
                     packageHandlerActivityPackageSender
                 )
             }
-            sdkClickHandler.init(
+            sdkClickHandler?.init(
                 activityHandler,
                 startsSending,
                 packageHandlerActivityPackageSender
             )
-            return sdkClickHandler
+            return sdkClickHandler as ISdkClickHandler
         }
 
-        fun getTimerInterval(): Long {
-            return if (timerInterval == -1L) {
-                Constants.ONE_MINUTE
-            } else timerInterval
+        fun enableSigning() {
+            logger?.let { MotrackSigner.enableSigning(it) }
         }
 
-        fun getTimerStart(): Long {
-            return if (timerStart == -1L) {
-                Constants.ONE_MINUTE
-            } else timerStart
+        fun disableSigning() {
+            logger?.let { MotrackSigner.disableSigning(it) }
         }
 
-        fun getSessionInterval(): Long {
-            return if (sessionInterval == -1L) {
-                Constants.THIRTY_MINUTES
-            } else sessionInterval
-        }
+        private fun byte2HexFormatted(arr: ByteArray): String {
+            val str = StringBuilder(arr.size * 2)
+            for (i in arr.indices) {
+                var h = Integer.toHexString(arr[i].toInt())
+                val l = h.length
+                if (l == 1) {
+                    h = "0$h"
+                }
+                if (l > 2) {
+                    h = h.substring(l - 2, l)
+                }
+                str.append(h.uppercase(Locale.getDefault()))
 
-        fun getSubsessionInterval(): Long {
-            return if (subsessionInterval == -1L) {
-                Constants.ONE_SECOND
-            } else subsessionInterval
+                // if (i < (arr.length - 1)) str.append(':');
+            }
+            return str.toString()
         }
-        fun getMaxDelayStart(): Long {
-            return if (maxDelayStart == -1L) {
-                Constants.ONE_SECOND * 10 // 10 seconds
-            } else maxDelayStart
-        }
-
-
-        fun getSdkClickBackoffStrategy(): BackoffStrategy {
-            return sdkClickBackoffStrategy ?: BackoffStrategy.SHORT_WAIT
-        }
-
 
         fun teardown(context: Context?) {
+            context?.let {
+                ActivityHandler.deleteState(context)
+                PackageHandler.deleteState(context)
+            }
 
+            packageHandler = null
+            attributionHandler = null
             activityHandler = null
             logger = null
-            tryInstallReferrer = true
+            sdkClickHandler = null
 
+            timerInterval = -1
+            timerStart = -1
+            sessionInterval = -1
+            subsessionInterval = -1
+            sdkClickBackoffStrategy = null
+            packageHandlerBackoffStrategy = null
+            maxDelayStart = -1
             baseUrl = Constants.BASE_URL
             gdprUrl = Constants.GDPR_URL
             subscriptionUrl = Constants.SUBSCRIPTION_URL
-
-            sdkClickBackoffStrategy = null
-            packageHandlerBackoffStrategy = null
-
-            maxDelayStart = -1
-
+            connectionOptions = null
+            httpsURLConnectionProvider = null
+            tryInstallReferrer = true
         }
     }
 }

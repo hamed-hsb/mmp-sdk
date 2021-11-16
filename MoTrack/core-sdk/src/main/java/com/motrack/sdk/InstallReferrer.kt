@@ -124,7 +124,7 @@ class InstallReferrer
                 logger!!.error("Call to Play startConnection error: ${e.message!!}")
             }
         }
-        if (!MotrackFactory.getTryInstallReferrer()) {
+        if (!MotrackFactory.tryInstallReferrer) {
             return
         }
         closeReferrerClient()

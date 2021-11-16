@@ -87,12 +87,12 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
     }
 
     private fun initI() {
-        SESSION_INTERVAL = MotrackFactory.getSessionInterval()
-        SUBSESSION_INTERVAL = MotrackFactory.getSubsessionInterval()
+        SESSION_INTERVAL = MotrackFactory.sessionInterval
+        SUBSESSION_INTERVAL = MotrackFactory.subsessionInterval
         // get timer values
-        FOREGROUND_TIMER_INTERVAL = MotrackFactory.getTimerInterval()
-        FOREGROUND_TIMER_START = MotrackFactory.getTimerStart()
-        BACKGROUND_TIMER_INTERVAL = MotrackFactory.getTimerInterval()
+        FOREGROUND_TIMER_INTERVAL = MotrackFactory.timerInterval
+        FOREGROUND_TIMER_START = MotrackFactory.timerStart
+        BACKGROUND_TIMER_INTERVAL = MotrackFactory.timerInterval
 
         // has to be read in the background
 
@@ -255,14 +255,20 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
 
         installReferrer =
             InstallReferrer(motrackConfig!!.context!!, object : InstallReferrerReadListener {
-                override fun onInstallReferrerRead(referrerDetails: ReferrerDetails?, referrerApi: String) {
+                override fun onInstallReferrerRead(
+                    referrerDetails: ReferrerDetails?,
+                    referrerApi: String
+                ) {
                     sendInstallReferrer(referrerDetails!!, referrerApi)
                 }
             })
 
         installReferrerHuawei =
             InstallReferrerHuawei(motrackConfig!!.context, object : InstallReferrerReadListener {
-                override fun onInstallReferrerRead(referrerDetails: ReferrerDetails?, referrerApi: String) {
+                override fun onInstallReferrerRead(
+                    referrerDetails: ReferrerDetails?,
+                    referrerApi: String
+                ) {
                     sendInstallReferrer(referrerDetails!!, referrerApi)
                 }
             })
@@ -466,7 +472,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         // check against max start delay
         var delayStartSeconds =
             if (motrackConfig!!.delayStart != null) motrackConfig!!.delayStart else 0.0
-        val maxDelayStartMilli: Long = MotrackFactory.getMaxDelayStart()
+        val maxDelayStartMilli: Long = MotrackFactory.maxDelayStart
         var delayStartMilli = (delayStartSeconds!! * 1000).toLong()
         if (delayStartMilli > maxDelayStartMilli) {
             val maxDelayStartSeconds = (maxDelayStartMilli / 1000).toDouble()
@@ -746,7 +752,10 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
 
         val isInstallReferrerHuaweiAds = responseData.referrerApi != null &&
-                responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS, ignoreCase = true)
+                responseData.referrerApi.equals(
+                    Constants.REFERRER_API_HUAWEI_ADS,
+                    ignoreCase = true
+                )
         if (isInstallReferrerHuaweiAds) {
             activityState!!.clickTimeHuawei = responseData.clickTime!!
             activityState!!.installBeginHuawei = responseData.installBegin!!
@@ -756,7 +765,10 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
 
         val isInstallReferrerHuaweiAppGallery = responseData.referrerApi != null &&
-                responseData.referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY, ignoreCase = true)
+                responseData.referrerApi.equals(
+                    Constants.REFERRER_API_HUAWEI_APP_GALLERY,
+                    ignoreCase = true
+                )
 
         if (isInstallReferrerHuaweiAppGallery) {
             activityState!!.clickTimeHuawei = responseData.clickTime!!
@@ -1301,15 +1313,6 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         sessionParameters = null
     }
 
-    fun deleteState(context: Context) {
-        deleteActivityState(context)
-        deleteAttribution(context)
-        deleteSessionCallbackParameters(context)
-        deleteSessionPartnerParameters(context)
-        val sharedPreferencesManager = SharedPreferencesManager(context)
-        sharedPreferencesManager.clear()
-    }
-
     private fun updateActivityStateI(now: Long): Boolean {
         if (!checkActivityStateI(activityState)) {
             return false
@@ -1329,23 +1332,6 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
         return true
     }
-
-    fun deleteActivityState(context: Context): Boolean {
-        return context.deleteFile(ACTIVITY_STATE_FILENAME)
-    }
-
-    fun deleteAttribution(context: Context): Boolean {
-        return context.deleteFile(ATTRIBUTION_FILENAME)
-    }
-
-    fun deleteSessionCallbackParameters(context: Context): Boolean {
-        return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME)
-    }
-
-    fun deleteSessionPartnerParameters(context: Context): Boolean {
-        return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME)
-    }
-
 
     override fun setPushToken(token: String, preSaved: Boolean) {
         executor!!.submit(Runnable {
@@ -2310,6 +2296,31 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 }
             }
             return ActivityHandler(motrackConfig)
+        }
+
+        fun deleteState(context: Context) {
+            deleteActivityState(context)
+            deleteAttribution(context)
+            deleteSessionCallbackParameters(context)
+            deleteSessionPartnerParameters(context)
+            val sharedPreferencesManager = SharedPreferencesManager(context)
+            sharedPreferencesManager.clear()
+        }
+
+        fun deleteActivityState(context: Context): Boolean {
+            return context.deleteFile(ACTIVITY_STATE_FILENAME)
+        }
+
+        fun deleteAttribution(context: Context): Boolean {
+            return context.deleteFile(ATTRIBUTION_FILENAME)
+        }
+
+        fun deleteSessionCallbackParameters(context: Context): Boolean {
+            return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME)
+        }
+
+        fun deleteSessionPartnerParameters(context: Context): Boolean {
+            return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME)
         }
 
     }

@@ -69,7 +69,7 @@ class SdkClickHandler(
     init {
         init(activityHandler, startsSending, sdkClickHandlerActivityPackageSender)
         logger = MotrackFactory.getLogger()
-        backoffStrategy = MotrackFactory.getSdkClickBackoffStrategy()
+        backoffStrategy = MotrackFactory.sdkClickBackoffStrategy
         scheduler = SingleThreadCachedScheduler("SdkClickHandler")
         paused = !startsSending
         packageQueue = ArrayList()

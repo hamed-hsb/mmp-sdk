@@ -333,6 +333,24 @@ public class Motrack private constructor() {
             val motrackInstance: MotrackInstance = getDefaultInstance()
             return motrackInstance.getSdkVersion()
         }
+
+        /**
+         * Used for testing purposes only. Do NOT use this method.
+         *
+         * @param testOptions Adjust integration tests options
+         */
+        fun setTestOptions(testOptions: MotrackTestOptions) {
+            testOptions.teardown?.let {
+                if (it){
+                    defaultInstance?.teardown()
+                    defaultInstance = null
+                    MotrackFactory.teardown(testOptions.context)
+                }
+            }
+
+            val motrackInstance: MotrackInstance = getDefaultInstance()
+            motrackInstance.setTestOptions(testOptions)
+        }
     }
 
 }

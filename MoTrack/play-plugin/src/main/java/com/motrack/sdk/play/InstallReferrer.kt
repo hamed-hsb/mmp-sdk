@@ -36,7 +36,7 @@ class InstallReferrer(
     }
 
     fun startConnection() {
-        if (!MotrackFactory.getTryInstallReferrer()) {
+        if (!MotrackFactory.tryInstallReferrer) {
             return
         }
         closeReferrerClient()

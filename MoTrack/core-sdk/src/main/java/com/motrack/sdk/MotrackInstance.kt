@@ -653,4 +653,66 @@ class MotrackInstance {
         }
         return false
     }
+
+    /**
+     * Used for testing purposes only. Do NOT use this method.
+     *
+     * @param testOptions Adjust integration tests options
+     */
+    fun setTestOptions(testOptions: MotrackTestOptions) {
+        testOptions.basePath?.let {
+            basePath = it
+        }
+        testOptions.gdprPath?.let {
+            gdprPath = it
+        }
+        testOptions.subscriptionPath?.let {
+            subscriptionPath = it
+        }
+
+        testOptions.baseUrl?.let {
+            MotrackFactory.baseUrl = it
+        }
+
+        testOptions.gdprUrl?.let {
+            MotrackFactory.gdprUrl = it
+        }
+
+        testOptions.subscriptionUrl?.let {
+            MotrackFactory.subscriptionUrl = it
+        }
+
+        testOptions.timerIntervalInMilliseconds?.let {
+            MotrackFactory.timerInterval = it
+        }
+
+        testOptions.timerStartInMilliseconds?.let {
+            MotrackFactory.timerStart = it
+        }
+        testOptions.sessionIntervalInMilliseconds?.let {
+            MotrackFactory.sessionInterval = it
+        }
+        testOptions.subsessionIntervalInMilliseconds?.let {
+            MotrackFactory.subsessionInterval = it
+        }
+
+        testOptions.tryInstallReferrer?.let {
+            MotrackFactory.tryInstallReferrer = it
+        }
+        testOptions.noBackoffWait?.let {
+            MotrackFactory.packageHandlerBackoffStrategy = BackoffStrategy.NO_WAIT
+            MotrackFactory.sdkClickBackoffStrategy = BackoffStrategy.NO_WAIT
+        }
+
+        testOptions.enableSigning?.let {
+            if (it) {
+                MotrackFactory.enableSigning()
+            }
+        }
+        testOptions.disableSigning?.let {
+            if (it) {
+                MotrackFactory.disableSigning()
+            }
+        }
+    }
 }
