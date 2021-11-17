@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 include ':core-sdk'
 include ':play-plugin'
 include ':test-library'
+include ':test-unit'
