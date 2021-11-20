@@ -71,5 +71,7 @@ class Constants {
         var PARTNER_PARAMETERS = "partner_params"
 
         var FB_AUTH_REGEX = "^(fb|vk)[0-9]{5,}[^:]*://authorize.*access_token=.*"
+
+        var PREFERENCES_NAME = "preferences"
     }
 }

@@ -21,7 +21,7 @@ class MockLogger : ILogger {
 
     class ContainsReturn internal constructor(
         var containsMessage: Boolean,
-        var matchMessage: String
+        var matchMessage: String?
     )
 
     fun reset() {
@@ -140,8 +140,44 @@ class MockLogger : ILogger {
         test("MockLogger lockLogLevel")
     }
 
+    fun containsMessage(level: LogLevel, beginsWith: String): ContainsReturn {
+        return mapContainsMessage(level.getAndroidLogLevel(), beginsWith)
+    }
+
+    fun containsTestMessage(beginsWith: String): ContainsReturn {
+        return mapContainsMessage(TEST_LEVEL, beginsWith)
+    }
+
+    private fun mapContainsMessage(level: Int, beginsWith: String): ContainsReturn {
+        val list = logMap!![level]
+        val listCopy = ArrayList(list)
+        val sList = list.joinToString()
+        for (log in list) {
+            listCopy.removeAt(0)
+            if (log.startsWith(beginsWith)) {
+                val foundMessage = "$log found"
+                check(foundMessage)
+                logMap!!.put(level, listCopy)
+                return ContainsReturn(true, log)
+            }
+        }
+        val notFoundMessage = "$beginsWith is not in $sList"
+        check(notFoundMessage)
+        return ContainsReturn(false, null)
+    }
+
+    private fun check(message: String) {
+        logMessage(message, CHECK_LEVEL, "c", Log.VERBOSE)
+    }
+
+    fun printLogMap(level: Int) {
+        val list = logMap!![level]
+        val sList = list.joinToString()
+        val message = "list level $level: $sList"
+        check(message)
+    }
+
     override fun toString(): String {
-        //Log.v("TestLogger ", logging);
         return logBuffer.toString()
     }
 

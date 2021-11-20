@@ -16,12 +16,14 @@ class MotrackEvent {
     private val logger: ILogger = MotrackFactory.getLogger()
 
 
-    constructor(eventToken: String) {
+    constructor(eventToken: String?) {
         if (!checkEventToken(eventToken)) return
-        this.eventToken = eventToken
+        if (eventToken != null) {
+            this.eventToken = eventToken
+        }
     }
 
-    public fun setRevenue(revenue: Double, currency: String) {
+    public fun setRevenue(revenue: Double, currency: String?) {
         if (!checkRevenue(revenue, currency)) return
 
         this.revenue = revenue

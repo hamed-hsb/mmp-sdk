@@ -38,14 +38,14 @@ class MotrackFactory {
         public var httpsURLConnectionProvider: NetworkUtil.IHttpsURLConnectionProvider? = null
             get() = field ?: NetworkUtil.createDefaultHttpsURLConnectionProvider()
 
-        var timerInterval: Long = -1
+        public var timerInterval: Long = -1
             get() {
                 return if (field == -1L) {
                     Constants.ONE_MINUTE
                 } else field
             }
 
-        var timerStart: Long = -1
+        public var timerStart: Long = -1
             get() {
                 return if (field == -1L) {
                     Constants.ONE_MINUTE
@@ -65,7 +65,7 @@ class MotrackFactory {
                 } else field
             }
 
-        public var packageHandlerBackoffStrategy: BackoffStrategy? = null
+        private var packageHandlerBackoffStrategy: BackoffStrategy? = null
             get() = field ?: BackoffStrategy.LONG_WAIT
 
         public var installSessionBackoffStrategy: BackoffStrategy? = null
@@ -87,6 +87,26 @@ class MotrackFactory {
                 logger = Logger()
             }
             return logger as ILogger
+        }
+
+        public fun setLogger(logger: ILogger?) {
+            this.logger = logger
+        }
+
+        fun setActivityHandler(activityHandler: IActivityHandler?) {
+            MotrackFactory.activityHandler = activityHandler
+        }
+
+        fun setAttributionHandler(attributionHandler: IAttributionHandler?) {
+            MotrackFactory.attributionHandler = attributionHandler
+        }
+
+        fun setSdkClickHandler(sdkClickHandler: ISdkClickHandler?) {
+            MotrackFactory.sdkClickHandler = sdkClickHandler
+        }
+
+        fun setPackageHandler(packageHandler: IPackageHandler?) {
+            MotrackFactory.packageHandler = packageHandler
         }
 
         fun getPackageHandler(

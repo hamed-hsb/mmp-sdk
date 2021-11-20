@@ -22,13 +22,13 @@ open class ResponseData {
     var continueIn: Long? = null
 
     var activityPackage: ActivityPackage? = null
-    lateinit var sendingParameters: Map<String, String>
+    var sendingParameters: Map<String, String>? = null
 
     companion object {
         @JvmStatic
         fun buildResponseData(
             activityPackage: ActivityPackage,
-            sendingParameters: Map<String, String>
+            sendingParameters: Map<String, String>?
         ): ResponseData {
             val responseData: ResponseData?
             val activityKind = activityPackage.getActivityKind()

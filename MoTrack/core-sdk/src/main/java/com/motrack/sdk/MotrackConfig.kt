@@ -68,6 +68,18 @@ class MotrackConfig {
         const val AD_REVENUE_ADMOST = "admost_sdk"
     }
 
+    constructor(context: Context?, appToken: String?, environment: String?) {
+        init(context, appToken, environment, false)
+    }
+
+    constructor(
+        context: Context?,
+        appToken: String?,
+        environment: String,
+        allowSuppressLogLevel: Boolean
+    ) {
+        init(context, appToken, environment, allowSuppressLogLevel)
+    }
     private fun init(
         context: Context?,
         appToken: String?,

@@ -37,7 +37,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
     private var foregroundTimer: TimerCycle? = null
     private var backgroundTimer: TimerOnce? = null
     private var delayStartTimer: TimerOnce? = null
-    private var internalState: InternalState? = null
+    var internalState: InternalState? = null
     private val basePath: String? = null
     private val gdprPath: String? = null
     private val subscriptionPath: String? = null
