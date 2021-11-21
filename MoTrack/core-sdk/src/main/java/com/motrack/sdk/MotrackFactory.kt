@@ -65,7 +65,7 @@ class MotrackFactory {
                 } else field
             }
 
-        private var packageHandlerBackoffStrategy: BackoffStrategy? = null
+        var packageHandlerBackoffStrategy: BackoffStrategy? = null
             get() = field ?: BackoffStrategy.LONG_WAIT
 
         public var installSessionBackoffStrategy: BackoffStrategy? = null

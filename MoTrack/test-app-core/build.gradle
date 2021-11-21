@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk rootProject.ext.coreCompileSdkVersion
 
     defaultConfig {
         applicationId "com.motrack.testapp"
-        minSdk 16
-        targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        minSdk rootProject.ext.coreMinSdkVersion
+        targetSdk rootProject.ext.coreTargetSdkVersion
+        versionCode rootProject.ext.defaultVersionCode
+        versionName rootProject.ext.coreVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

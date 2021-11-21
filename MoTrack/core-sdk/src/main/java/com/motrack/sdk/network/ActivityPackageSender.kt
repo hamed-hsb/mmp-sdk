@@ -127,7 +127,7 @@ class ActivityPackageSender(
                 configConnectionForPOST(
                     connection,
                     activityPackageParameters,
-                    sendingParameters
+                    sendingParameters!!
                 )
             }
 

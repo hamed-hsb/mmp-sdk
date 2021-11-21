@@ -931,9 +931,11 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 if (motrackConfig!!.onSessionTrackingSucceededListener == null) {
                     return@Runnable
                 }
-                motrackConfig!!.onSessionTrackingSucceededListener!!.onFinishedSessionTrackingSucceeded(
-                    sessionResponseData.getSuccessResponseData()
-                )
+                sessionResponseData.getSuccessResponseData()?.let {
+                    motrackConfig!!.onSessionTrackingSucceededListener!!.onFinishedSessionTrackingSucceeded(
+                        it
+                    )
+                }
             }
             handler.post(runnable)
             return
@@ -949,9 +951,11 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 if (motrackConfig!!.onSessionTrackingFailedListener == null) {
                     return@Runnable
                 }
-                motrackConfig!!.onSessionTrackingFailedListener!!.onFinishedSessionTrackingFailed(
-                    sessionResponseData.getFailureResponseData()
-                )
+                sessionResponseData.getFailureResponseData()?.let {
+                    motrackConfig!!.onSessionTrackingFailedListener!!.onFinishedSessionTrackingFailed(
+                        it
+                    )
+                }
             }
             handler.post(runnable)
             return
@@ -1014,7 +1018,11 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             if (motrackConfig!!.onAttributionChangedListener == null) {
                 return@Runnable
             }
-            motrackConfig!!.onAttributionChangedListener!!.onAttributionChanged(attribution)
+            attribution?.let {
+                motrackConfig!!.onAttributionChangedListener!!.onAttributionChanged(
+                    it
+                )
+            }
         }
         handler.post(runnable)
     }
