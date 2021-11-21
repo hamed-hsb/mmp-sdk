@@ -37,10 +37,12 @@ class MotrackConfig {
     var needsCost: Boolean? = null
     var deviceKnown: Boolean? = null
 
+    var userAgent: String? = null
+
     var onAttributionChangedListener: OnAttributionChangedListener? = null
     var onEventTrackingSucceededListener: OnEventTrackingSucceededListener? = null
     var onEventTrackingFailedListener: OnEventTrackingFailedListener? = null
-    var onDeeplinkResponseListener: OnDeeplinkResponseListener? = null
+    public var onDeeplinkResponseListener: OnDeeplinkResponseListener? = null
     var onSessionTrackingFailedListener: OnSessionTrackingFailedListener? = null
     var onSessionTrackingSucceededListener: OnSessionTrackingSucceededListener? = null
 

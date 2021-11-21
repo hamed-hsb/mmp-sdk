@@ -6,6 +6,6 @@ package com.motrack.sdk
  */
 
 interface OnSessionTrackingSucceededListener {
-    fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: MotrackSessionSuccess?)
+    fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: MotrackSessionSuccess)
 
 }

@@ -6,5 +6,5 @@ package com.motrack.sdk
  */
 
 interface OnAttributionChangedListener {
-    fun onAttributionChanged(attribution: MotrackAttribution?)
+    fun onAttributionChanged(attribution: MotrackAttribution)
 }

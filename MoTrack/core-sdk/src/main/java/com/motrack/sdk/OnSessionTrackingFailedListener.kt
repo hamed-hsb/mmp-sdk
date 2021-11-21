@@ -8,6 +8,6 @@ import com.motrack.sdk.MotrackSessionFailure
  */
 
 interface OnSessionTrackingFailedListener {
-    fun onFinishedSessionTrackingFailed(failureResponseData: MotrackSessionFailure?)
+    fun onFinishedSessionTrackingFailed(failureResponseData: MotrackSessionFailure)
 
 }

@@ -7,11 +7,11 @@ package com.motrack.sdk
 
 class MotrackPlayStoreSubscription(
     private val price: Long,                                // revenue
-    private val currency: String,
-    private val sku: String,                                // product_id
-    private val orderId: String,                            // transaction_id
-    private val signature: String,                          // receipt
-    private val purchaseToken: String,
+    private val currency: String?,
+    private val sku: String?,                                // product_id
+    private val orderId: String?,                            // transaction_id
+    private val signature: String?,                          // receipt
+    private val purchaseToken: String?,
     private val billingStore: String = "GooglePlay",
     private var purchaseTime: Long = -1                     // transaction_date
 ) {
@@ -56,19 +56,19 @@ class MotrackPlayStoreSubscription(
         return purchaseTime
     }
 
-    fun getCurrency(): String {
+    fun getCurrency(): String? {
         return currency
     }
 
-    fun getSku(): String {
+    fun getSku(): String? {
         return sku
     }
 
-    fun getOrderId(): String {
+    fun getOrderId(): String? {
         return orderId
     }
 
-    fun getSignature(): String {
+    fun getSignature(): String? {
         return signature
     }
 
@@ -76,7 +76,7 @@ class MotrackPlayStoreSubscription(
         return billingStore
     }
 
-    fun getPurchaseToken(): String {
+    fun getPurchaseToken(): String? {
         return purchaseToken
     }
 
