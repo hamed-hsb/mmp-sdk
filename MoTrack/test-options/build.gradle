@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'kotlin-android'
 }
 
@@ -7,13 +7,13 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.motrack.testapp"
         minSdk 16
         targetSdk 31
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
@@ -32,19 +32,6 @@ android {
 }
 
 dependencies {
-
     implementation "androidx.core:core-ktx:$rootProject.coreKtxVersion"
-    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
-
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
-
-
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
-    implementation 'com.android.installreferrer:installreferrer:2.2'
-
     implementation project(path: ':core-sdk')
-//    implementation project(':test-options')
-    implementation project(path: ':test-library')
-    implementation project(path: ':test-options')
 }
