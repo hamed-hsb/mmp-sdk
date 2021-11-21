@@ -68,7 +68,7 @@ class MotrackConfig {
         const val AD_REVENUE_ADMOST = "admost_sdk"
     }
 
-    constructor(context: Context?, appToken: String?, environment: String?) {
+    constructor(context: Context?, appToken: String?, environment: String) {
         init(context, appToken, environment, false)
     }
 
@@ -209,8 +209,12 @@ class MotrackConfig {
         return urlStrategy
     }
 
-    private fun setLogLevel(logLevel: LogLevel, environment: String) {
+    fun setLogLevel(logLevel: LogLevel, environment: String) {
         logger.setLogLevel(logLevel, ENVIRONMENT_PRODUCTION == environment)
+    }
+
+    fun setLogLevel(logLevel: LogLevel) {
+        logger.setLogLevel(logLevel, true)
     }
 
 }

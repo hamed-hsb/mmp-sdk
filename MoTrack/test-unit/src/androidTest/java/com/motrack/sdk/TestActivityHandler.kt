@@ -17,6 +17,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
 /**
  * @author yaya (@yahyalmh)
@@ -30,7 +31,7 @@ class TestActivityHandler {
     lateinit var mockAttributionHandler: MockAttributionHandler
     lateinit var mockSdkClickHandler: MockSdkClickHandler
     var activity: UnitTestActivity? = null
-    var context: Context?= null
+    var context: Context? = null
     lateinit var assertUtil: AssertUtil
 
     @Rule
@@ -66,9 +67,11 @@ class TestActivityHandler {
             }"
         )
         mockLogger.test(
-            "Was Session Partner Parameters deleted? ${ActivityHandler.deleteSessionPartnerParameters(
-                context!!
-            )}"
+            "Was Session Partner Parameters deleted? ${
+                ActivityHandler.deleteSessionPartnerParameters(
+                    context!!
+                )
+            }"
         )
 
         // check the server url
@@ -291,6 +294,49 @@ class TestActivityHandler {
     }
 
     @Test
+    fun testForegroundTimer() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testForegroundTimer")
+        MotrackFactory.timerInterval = 4000
+        MotrackFactory.timerStart = 4000
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+
+        // start activity handler with config
+        val activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler)
+        stateActivityHandlerInit.foregroundTimerStart = 4
+        stateActivityHandlerInit.foregroundTimerCycle = 4
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // test session
+        checkFirstSession()
+
+        // wait enough to fire the first cycle
+        SystemClock.sleep(3000)
+        checkForegroundTimerFired(true)
+
+        // end subsession to stop timer
+        activityHandler.onPause()
+
+        // wait enough for a new cycle
+        SystemClock.sleep(6000)
+
+        // start a new session
+        activityHandler.onResume()
+        SystemClock.sleep(1000)
+
+        // check that not enough time passed to fire again
+        checkForegroundTimerFired(false)
+    }
+
+    @Test
     fun testEventsNotBuffered() {
         // assert test name to read better in logcat
         mockLogger.assert("TestActivityHandler testEventsNotBuffered")
@@ -374,7 +420,8 @@ class TestActivityHandler {
         assertUtil.isFalse(wrongEnvironmentConfig.isValid())
 
         // config with null context
-        val nullContextConfig = MotrackConfig(null, "123456789012", MotrackConfig.ENVIRONMENT_SANDBOX)
+        val nullContextConfig =
+            MotrackConfig(null, "123456789012", MotrackConfig.ENVIRONMENT_SANDBOX)
         assertUtil.error("Missing context")
         assertUtil.isFalse(nullContextConfig.isValid())
 
@@ -525,6 +572,104 @@ class TestActivityHandler {
         assertUtil.error("Session Partner parameter value is empty")
         assertUtil.warn("Session Callback parameters are not set")
         assertUtil.warn("Session Partner parameters are not set")
+    }
+
+    @Test
+    fun testTeardown() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testTeardown")
+
+        //  change the timer defaults
+        MotrackFactory.timerInterval = 4000
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+        config.delayStart = 4.0
+
+        // enable send in the background
+        config.sendInBackground = true
+
+        // start activity handler with config
+        val activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // handlers start sending
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler)
+        stateActivityHandlerInit.startsSending = false
+        stateActivityHandlerInit.sendInBackgroundConfigured = true
+        stateActivityHandlerInit.foregroundTimerCycle = 4
+        stateActivityHandlerInit.delayStartConfigured = true
+        stateActivityHandlerInit.sdkClickHandlerAlsoStartsPaused = false
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // test session
+        val newStateSession = StateSession(StateSession.SessionType.NEW_SESSION)
+        newStateSession.sendInBackgroundConfigured = true
+        newStateSession.toSend = false
+        newStateSession.sdkClickHandlerAlsoStartsPaused = false
+        newStateSession.delayStart = "4.0"
+        checkStartInternal(newStateSession)
+        activityHandler.teardown()
+        assertUtil.test("PackageHandler teardown deleteState, false")
+        assertUtil.test("AttributionHandler teardown")
+        assertUtil.test("SdkClickHandler teardown")
+        activityHandler.teardown()
+        assertUtil.notInTest("PackageHandler teardown deleteState, false")
+        assertUtil.notInTest("AttributionHandler teardown")
+        assertUtil.notInTest("SdkClickHandler teardown")
+    }
+
+    @Test
+    fun testUpdateStart() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testUpdateStart")
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+        config.delayStart = 10.1
+        var activityHandler: ActivityHandler? = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler!!)
+        stateActivityHandlerInit.delayStartConfigured = true
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1000)
+        val newStateSession = StateSession(StateSession.SessionType.NEW_SESSION)
+        // delay start means it starts paused
+        newStateSession.toSend = false
+        // sdk click handler does not start paused
+        newStateSession.sdkClickHandlerAlsoStartsPaused = false
+        // delay configured
+        newStateSession.delayStart = "10.0"
+        stopActivity(activityHandler)
+        SystemClock.sleep(1000)
+        val stateEndSession = StateEndSession()
+        checkEndSession(stateEndSession)
+        activityHandler.teardown()
+        activityHandler = null
+        SystemClock.sleep(1000)
+        val restartActivityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // start new one
+        // delay start not configured because activity state is already created
+        val restartActivityHandlerInit = StateActivityHandlerInit(restartActivityHandler)
+        restartActivityHandlerInit.activityStateAlreadyCreated = true
+        restartActivityHandlerInit.readActivityState = "ec:0 sc:1"
+        restartActivityHandlerInit.updatePackages = true
+
+        // test init values
+        checkInitTests(restartActivityHandlerInit)
+        resumeActivity(restartActivityHandler)
+        SystemClock.sleep(1500)
+        val stateRestartSession = StateSession(StateSession.SessionType.NEW_SUBSESSION)
+        stateRestartSession.activityStateAlreadyCreated = true
+        stateRestartSession.subsessionCount = 2
+        checkStartInternal(stateRestartSession)
     }
 
     @Test
@@ -962,6 +1107,392 @@ class TestActivityHandler {
     }
 
     @Test
+    fun testSendBackground() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testSendBackground")
+        MotrackFactory.timerInterval = 4000
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+
+        // enable send in the background
+        config.sendInBackground = true
+
+        // create activity handler without starting
+        val activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // handlers start sending
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler)
+        stateActivityHandlerInit.startsSending = true
+        stateActivityHandlerInit.sendInBackgroundConfigured = true
+        stateActivityHandlerInit.foregroundTimerCycle = 4
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // test session
+        val newStateSession = StateSession(StateSession.SessionType.NEW_SESSION)
+        newStateSession.sendInBackgroundConfigured = true
+        newStateSession.toSend = true
+        checkStartInternal(newStateSession)
+
+        // end subsession
+        // background timer starts
+        stopActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // session end does not pause the handlers
+        val stateEndSession1 = StateEndSession()
+        stateEndSession1.pausing = false
+        stateEndSession1.checkOnPause = true
+        stateEndSession1.backgroundTimerStarts = true
+        checkEndSession(stateEndSession1)
+
+        // end subsession again
+        // to test if background timer starts again
+        stopActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // session end does not pause the handlers
+        val stateEndSession2 = StateEndSession()
+        stateEndSession2.pausing = false
+        stateEndSession2.checkOnPause = true
+        stateEndSession2.foregroundAlreadySuspended = true
+        checkEndSession(stateEndSession2)
+
+        // wait for background timer launch
+        SystemClock.sleep(3000)
+
+        // background timer fired
+        assertUtil.test("PackageHandler sendFirstPackage")
+
+        // wait enough time
+        SystemClock.sleep(3000)
+
+        // check that background timer does not fire again
+        assertUtil.notInTest("PackageHandler sendFirstPackage")
+        activityHandler.trackEvent(MotrackEvent("abc123"))
+        SystemClock.sleep(1000)
+        val stateEvent = StateEvent()
+        stateEvent.backgroundTimerStarts = 4
+        checkEvent(stateEvent)
+
+        // disable and enable the sdk while in the background
+        activityHandler.setEnabled(false)
+        SystemClock.sleep(1000)
+
+        // check that it is disabled
+        assertUtil.isFalse(activityHandler.isEnabled())
+
+        // check if message the disable of the SDK
+        assertUtil.info("Pausing handlers due to SDK being disabled")
+        SystemClock.sleep(1000)
+
+        // handlers being paused because of the disable
+        checkHandlerStatus(true)
+        activityHandler.setEnabled(true)
+        SystemClock.sleep(1000)
+
+        // check that it is enabled
+        assertUtil.isTrue(activityHandler.isEnabled())
+
+        // check if message the enable of the SDK
+        assertUtil.info("Resuming handlers due to SDK being enabled")
+        SystemClock.sleep(1000)
+
+        // handlers being resumed because of the enable
+        // even in the background because of the sendInBackground option
+        checkHandlerStatus(false)
+
+        // set offline and online the sdk while in the background
+        activityHandler.setOfflineMode(true)
+        SystemClock.sleep(1000)
+        val internalState: ActivityHandler.InternalState? = activityHandler.internalState
+
+        // check that it is offline
+        if (internalState != null) {
+            assertUtil.isTrue(internalState.isOffline)
+        }
+
+        // check if message the offline of the SDK
+        assertUtil.info("Pausing handlers to put SDK offline mode")
+        SystemClock.sleep(1000)
+
+        // handlers being paused because of the offline
+        checkHandlerStatus(true)
+        activityHandler.setOfflineMode(false)
+        SystemClock.sleep(1000)
+
+        // check that it is online
+        if (internalState != null) {
+            assertUtil.isTrue(internalState.isOnline())
+        }
+
+        // check if message the online of the SDK
+        assertUtil.info("Resuming handlers to put SDK in online mode")
+        SystemClock.sleep(1000)
+
+        // handlers being resumed because of the online
+        // even in the background because of the sendInBackground option
+        checkHandlerStatus(false)
+    }
+
+
+    @Test
+    fun testPushToken() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testPushToken")
+        val config: MotrackConfig = getConfig()
+        // set the push token before the sdk starts
+        config.pushToken = "preStartPushToken"
+
+        // start activity handler with config
+        val activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler)
+        stateActivityHandlerInit.pushToken = "preStartPushToken"
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // test session
+        checkFirstSession()
+
+        // create the first Event
+        val firstEvent = MotrackEvent("event1")
+
+        // track event
+        activityHandler.trackEvent(firstEvent)
+        SystemClock.sleep(1500)
+
+        // checking the default values of the first session package
+        assertUtil.isEqual(2, mockPackageHandler.queue.size)
+        val activityPackage = mockPackageHandler.queue[0]
+
+        // create activity package test
+        val testActivityPackage = TestActivityPackage(activityPackage)
+        testActivityPackage.pushToken = "preStartPushToken"
+
+        // set first session
+        testActivityPackage.testSessionPackage(1)
+
+        // first event
+        val firstEventPackage = mockPackageHandler.queue[1]
+
+        // create event package test
+        val testFirstEventPackage = TestActivityPackage(firstEventPackage)
+
+        // set event test parameters
+        testFirstEventPackage.eventCount = "1"
+        testFirstEventPackage.suffix = "'event1'"
+        testFirstEventPackage.pushToken = "preStartPushToken"
+
+        // test first event
+        testFirstEventPackage.testEventPackage("event1")
+
+        // try to update with the same push token
+        activityHandler.setPushToken("preStartPushToken")
+        SystemClock.sleep(1500)
+
+        // should not have added a new package either in the package handler
+        assertUtil.isEqual(2, mockPackageHandler.queue.size)
+
+        // nor the click handler
+        assertUtil.notInTest("SdkClickHandler sendSdkClick")
+        assertUtil.isEqual(0, mockSdkClickHandler.queue.size)
+
+        // update with new push token
+        activityHandler.setPushToken("newPushToken")
+        SystemClock.sleep(1500)
+
+        // check it was added to sdk click handler
+        assertUtil.notInTest("SdkClickHandler sendSdkClick")
+        assertUtil.isEqual(0, mockSdkClickHandler.queue.size)
+
+        // check that info package was added
+        assertUtil.test("PackageHandler addPackage")
+
+        // check that event was sent to package handler
+        assertUtil.test("PackageHandler sendFirstPackage")
+
+        // checking that the info package was added
+        assertUtil.isEqual(3, mockPackageHandler.queue.size)
+
+        // get the click package
+        val sdkInfoPackage = mockPackageHandler.queue[2]
+
+        // create activity package test
+        val testInfoPackage = TestActivityPackage(sdkInfoPackage)
+        testInfoPackage.pushToken = "newPushToken"
+
+        // test the first deeplink
+        testInfoPackage.testInfoPackage("push")
+    }
+
+    @Test
+    fun testCheckAttributionState() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testCheckAttributionState")
+
+        // if it's the first launch
+        //if (internalState.isFirstLaunch()) {
+        //    if (internalState.hasSessionResponseNotBeenProcessed()) {
+        //        return;
+        //    }
+        //}
+        //if (attribution != null && !activityState.askingAttribution) {
+        //    return;
+        //}
+        //attributionHandler.getAttribution();
+        MotrackFactory.sessionInterval = 4000
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+        config.onAttributionChangedListener = object : OnAttributionChangedListener {
+            override fun onAttributionChanged(attribution: MotrackAttribution?) {
+                mockLogger.test("onAttributionChanged $attribution")
+            }
+        }
+
+        // start activity handler with config
+        var activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        checkInitTests(activityHandler)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1500)
+
+        // it's first launch
+        // session response has not been processed
+        // attribution is null
+        // -> not called
+        var newSessionState = StateSession(StateSession.SessionType.NEW_SESSION)
+        newSessionState.getAttributionIsCalled = false
+        checkStartInternal(newSessionState)
+        val firstSessionPackage = mockPackageHandler.queue[0]
+
+        // trigger a new sub session
+        activityHandler.onResume()
+        SystemClock.sleep(2000)
+
+        // does not call because the session has not been processed
+        checkSubSession(1, 2, false)
+
+        // it's first launch
+        // session response has been processed
+        // attribution is null
+        // -> called
+
+        // simulate a successful session
+        val successSessionResponseData =
+            ResponseData.buildResponseData(firstSessionPackage, null) as SessionResponseData
+        successSessionResponseData.success = true
+        successSessionResponseData.message = "Session successfully tracked"
+        successSessionResponseData.adid = "adidValue"
+        activityHandler.launchSessionResponseTasks(successSessionResponseData)
+
+        // trigger a new sub session
+        activityHandler.onResume()
+        SystemClock.sleep(2000)
+
+        // does call because the session has been processed
+        checkSubSession(1, 3, true)
+
+        // it's first launch
+        // session response has been processed
+        // attribution is not null
+        // askingAttribution is false
+        // -> not called
+
+        // save the new attribution
+        successSessionResponseData.attribution = MotrackAttribution()
+        successSessionResponseData.attribution!!.trackerName = "trackerName"
+        activityHandler.launchSessionResponseTasks(successSessionResponseData)
+        activityHandler.setAskingAttribution(false)
+
+        // trigger a new sub session
+        activityHandler.onResume()
+        SystemClock.sleep(2000)
+
+        // does call because the session has been processed
+        checkSubSession(1, 4, false)
+
+        // it's first launch
+        // session response has been processed
+        // attribution is not null
+        // askingAttribution is true
+        // -> called
+        activityHandler.setAskingAttribution(true)
+
+        // trigger a new sub session
+        activityHandler.onResume()
+        SystemClock.sleep(2000)
+
+        // does call because the session has been processed
+        checkSubSession(1, 5, true)
+
+        // it's not first launch
+        // attribution is null
+        // -> called
+
+        // finish activity handler
+        activityHandler.teardown()
+        // delete attribution
+        ActivityHandler.deleteAttribution(context!!)
+
+        // start new activity handler
+        SystemClock.sleep(5000)
+        activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler)
+        stateActivityHandlerInit.readActivityState = "ec:0 sc:1 ssc:5"
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1500)
+        newSessionState = StateSession(StateSession.SessionType.NEW_SESSION)
+        newSessionState.getAttributionIsCalled = true
+        newSessionState.sessionCount = 2
+        checkStartInternal(newSessionState)
+
+        // it's not first launch
+        // attribution is not null
+        // askingAttribution is true
+        // -> called
+
+        // save the new attribution
+        successSessionResponseData.attribution = MotrackAttribution()
+        successSessionResponseData.attribution!!.trackerName = "trackerName"
+        activityHandler.launchSessionResponseTasks(successSessionResponseData)
+        activityHandler.setAskingAttribution(true)
+
+        // trigger a new sub session
+        activityHandler.onResume()
+        SystemClock.sleep(2000)
+
+        // does call because the session has been processed
+        checkSubSession(2, 2, true)
+
+        // it's not first launch
+        // attribution is not null
+        // askingAttribution is false
+        // -> not called
+        activityHandler.setAskingAttribution(false)
+
+        // trigger a new sub session
+        activityHandler.onResume()
+        SystemClock.sleep(2000)
+
+        // does call because the session has been processed
+        checkSubSession(2, 3, false)
+    }
+
+    @Test
     fun testSuccessDelegates() {
         // assert test name to read better in logcat
         mockLogger.assert("TestActivityHandler testSuccessDelegates")
@@ -1194,7 +1725,10 @@ class TestActivityHandler {
 
         // test attribution response
         val attributionResponseDeeplink =
-            ResponseData.buildResponseData(mockAttributionHandler.attributionPackage, null) as AttributionResponseData
+            ResponseData.buildResponseData(
+                mockAttributionHandler.attributionPackage,
+                null
+            ) as AttributionResponseData
         attributionResponseDeeplink.deeplink = Uri.parse("adjustTestSchema://")
         activityHandler.launchAttributionResponseTasks(attributionResponseDeeplink)
         SystemClock.sleep(1500)
@@ -1206,13 +1740,65 @@ class TestActivityHandler {
         // should only have one package
         assertUtil.isEqual(1, mockPackageHandler.queue.size)
         val attributionResponseWrongDeeplink =
-            ResponseData.buildResponseData(mockAttributionHandler.attributionPackage, null) as AttributionResponseData
+            ResponseData.buildResponseData(
+                mockAttributionHandler.attributionPackage,
+                null
+            ) as AttributionResponseData
         attributionResponseWrongDeeplink.deeplink = Uri.parse("wrongDeeplink://")
         activityHandler.launchAttributionResponseTasks(attributionResponseWrongDeeplink)
         SystemClock.sleep(1500)
         assertUtil.info("Deferred deeplink received (wrongDeeplink://)")
         assertUtil.error("Unable to open deferred deep link (wrongDeeplink://)")
         assertUtil.notInInfo("Open deferred deep link (wrongDeeplink://)")
+    }
+
+    @Test
+    fun testLogLevel() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testLogLevel")
+        var config: MotrackConfig = getConfig()
+        config.setLogLevel(LogLevel.VERBOSE)
+        config.setLogLevel(LogLevel.DEBUG)
+        config.setLogLevel(LogLevel.INFO)
+        config.setLogLevel(LogLevel.WARN)
+        config.setLogLevel(LogLevel.ERROR)
+        config.setLogLevel(LogLevel.ASSERT)
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.VERBOSE.toString() + ", isProductionEnvironment: false")
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.DEBUG.toString() + ", isProductionEnvironment: false")
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO.toString() + ", isProductionEnvironment: false")
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.WARN.toString() + ", isProductionEnvironment: false")
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ERROR.toString() + ", isProductionEnvironment: false")
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT.toString() + ", isProductionEnvironment: false")
+        config.setLogLevel(LogLevel.SUPPRESS)
+
+        // chooses Assert because config object was not configured to allow suppress
+        //assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        // changed when log in production was introduced
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPPRESS.toString() + ", isProductionEnvironment: false")
+
+        // init log level with assert because it was not configured to allow suppress
+        config = getConfig("production", "123456789012", false, context!!)
+        config.setLogLevel(LogLevel.SUPPRESS)
+
+        // chooses Assert because config object was not configured to allow suppress
+        //assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        // changed when log in production was introduced
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPPRESS.toString() + ", isProductionEnvironment: true")
+
+        // init with info because it's sandbox
+        config = getConfig("sandbox", "123456789012", true, context!!)
+        config.setLogLevel(LogLevel.SUPPRESS)
+        // chooses SUPPRESS because config object was configured to allow suppress
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPPRESS.toString() + ", isProductionEnvironment: false")
+
+        // init with info because it's sandbox
+        config = getConfig("production", "123456789012", true, context!!)
+        config.setLogLevel(LogLevel.ASSERT)
+
+        // chooses SUPPRESS because config object was configured to allow suppress
+        //assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPPRESS);
+        // changed when log in production was introduced
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT.toString() + ", isProductionEnvironment: true")
     }
 
     @Test
@@ -1234,7 +1820,10 @@ class TestActivityHandler {
 
         // test attribution response
         val attributionResponseDeeplink =
-            ResponseData.buildResponseData(mockAttributionHandler.attributionPackage, null) as AttributionResponseData
+            ResponseData.buildResponseData(
+                mockAttributionHandler.attributionPackage,
+                null
+            ) as AttributionResponseData
         attributionResponseDeeplink.deeplink = Uri.parse("adjustTestSchema://")
         activityHandler.launchAttributionResponseTasks(attributionResponseDeeplink)
         SystemClock.sleep(1500)
@@ -1266,7 +1855,10 @@ class TestActivityHandler {
 
         // set package handler to respond with a valid attribution
         val attributionResponseDeeplink =
-            ResponseData.buildResponseData(mockAttributionHandler.attributionPackage, null) as AttributionResponseData
+            ResponseData.buildResponseData(
+                mockAttributionHandler.attributionPackage,
+                null
+            ) as AttributionResponseData
         attributionResponseDeeplink.deeplink = Uri.parse("adjustTestSchema://")
         activityHandler.launchAttributionResponseTasks(attributionResponseDeeplink)
         SystemClock.sleep(2000)
@@ -1277,6 +1869,52 @@ class TestActivityHandler {
         assertUtil.test("launchReceivedDeeplink, adjustTestSchema://")
         assertUtil.notInError("Unable to open deferred deep link (adjustTestSchema://)")
         assertUtil.info("Open deferred deep link (adjustTestSchema://)")
+    }
+
+    @Test
+    fun testDelayStartSendFirst() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testDelayStartSendFirst")
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+        config.delayStart = 5.0
+
+        // start activity handler with config
+        val activityHandler = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        val stateActivityHandlerInit = StateActivityHandlerInit(activityHandler)
+        stateActivityHandlerInit.delayStartConfigured = true
+        checkInitTests(stateActivityHandlerInit)
+        resumeActivity(activityHandler)
+        resumeActivity(activityHandler)
+        SystemClock.sleep(1000)
+        val newStateSession = StateSession(StateSession.SessionType.NEW_SESSION)
+        // delay start means it starts paused
+        newStateSession.toSend = false
+        // sdk click handler does not start paused
+        newStateSession.sdkClickHandlerAlsoStartsPaused = false
+        // delay configured
+        newStateSession.delayStart = "5.0"
+        checkStartInternal(newStateSession)
+
+        // change state session for non session
+        val nonSession = StateSession(StateSession.SessionType.NONSESSION)
+        // delay already processed
+        nonSession.delayStart = null
+        nonSession.toSend = false
+        nonSession.sdkClickHandlerAlsoStartsPaused = false
+        nonSession.foregroundTimerAlreadyStarted = true
+        checkStartInternal(nonSession)
+        activityHandler.sendFirstPackages()
+        SystemClock.sleep(3000)
+        assertUtil.notInVerbose("Delay Start timer fired")
+        activityHandler.internalState?.let { checkSendFirstPackages(true, it, true, false) }
+        activityHandler.sendFirstPackages()
+        SystemClock.sleep(1000)
+        activityHandler.internalState?.let { checkSendFirstPackages(false, it, true, false) }
     }
 
     @Test
@@ -1601,6 +2239,7 @@ class TestActivityHandler {
         // test that is not paused anymore
         checkStartInternal(secondSessionState)
     }
+
     private fun checkForegroundTimerFired(timerFired: Boolean) {
         // timer fired
         if (timerFired) {
@@ -1634,6 +2273,7 @@ class TestActivityHandler {
         assertUtil.verbose("Delay Start timer canceled")
         checkHandlerStatus(pausing, false, false)
     }
+
     @Test
     fun testSendReferrer() {
         // assert test name to read better in logcat
@@ -1776,6 +2416,151 @@ class TestActivityHandler {
         testIncompleteClickPackage.testClickPackage("reftag")
     }
 
+    @Test
+    fun testSessionParameters() {
+        // assert test name to read better in logcat
+        mockLogger.assert("TestActivityHandler testSessionParameters")
+
+        // create the config to start the session
+        val config: MotrackConfig = getConfig()
+
+        //  create handler and start the first session
+        config.preLaunchActions = ArrayList<IRunActivityHandler>()
+        config.preLaunchActions.add(object : IRunActivityHandler {
+            override fun run(activityHandler: ActivityHandler?) {
+                //
+                activityHandler?.let {
+                    it.addSessionCallbackParameterI("cKey", "cValue")
+                    it.addSessionCallbackParameterI("cFoo", "cBar")
+                    it.addSessionCallbackParameterI("cKey", "cValue2")
+                    it.resetSessionCallbackParametersI()
+                    it.addSessionCallbackParameterI("cKey", "cValue")
+                    it.addSessionCallbackParameterI("cFoo", "cBar")
+                    it.removeSessionCallbackParameterI("cKey")
+                    //
+                    it.addSessionPartnerParameterI("pKey", "pValue")
+                    it.addSessionPartnerParameterI("pFoo", "pBar")
+                    it.addSessionPartnerParameterI("pKey", "pValue2")
+                    it.resetSessionPartnerParametersI()
+                    it.addSessionPartnerParameterI("pKey", "pValue")
+                    it.addSessionPartnerParameterI("pFoo", "pBar")
+                    it.removeSessionPartnerParameterI("pKey")
+                }
+
+            }
+        })
+        var activityHandler: ActivityHandler? = getActivityHandler(config)
+        SystemClock.sleep(1500)
+
+        // test init values
+        checkInitTests(activityHandler!!)
+        checkSessionParameters()
+        resumeActivity(activityHandler)
+        val firstEvent = MotrackEvent("event1")
+        activityHandler.trackEvent(firstEvent)
+        SystemClock.sleep(1500)
+
+        // test session
+        checkFirstSession()
+        val stateEvent1 = StateEvent()
+        checkEvent(stateEvent1)
+
+        // 1 session + 1 event
+        assertUtil.isEqual(2, mockPackageHandler.queue.size)
+
+        // get the session package
+        val firstSessionPackage = mockPackageHandler.queue[0]
+
+        // create event package test
+        val testFirstSessionPackage = TestActivityPackage(firstSessionPackage)
+
+        // set event test parameters
+        testFirstSessionPackage.callbackParams = "{\"cFoo\":\"cBar\"}"
+        testFirstSessionPackage.partnerParams = "{\"pFoo\":\"pBar\"}"
+        testFirstSessionPackage.testSessionPackage(1)
+
+        // get the event
+        val firstEventPackage = mockPackageHandler.queue[1]
+
+        // create event package test
+        val testFirstEventPackage = TestActivityPackage(firstEventPackage)
+
+        // set event test parameters
+        testFirstEventPackage.eventCount = "1"
+        testFirstEventPackage.suffix = "'event1'"
+        testFirstEventPackage.callbackParams = "{\"cFoo\":\"cBar\"}"
+        testFirstEventPackage.partnerParams = "{\"pFoo\":\"pBar\"}"
+        testFirstEventPackage.testEventPackage("event1")
+
+        // end current session
+        stopActivity(activityHandler)
+        SystemClock.sleep(1000)
+        checkEndSession()
+        activityHandler.teardown()
+        activityHandler = null
+        val newConfig: MotrackConfig = getConfig()
+        val restartActivityHandler = getActivityHandler(newConfig)
+        SystemClock.sleep(1500)
+
+        // start new one
+        // delay start not configured because activity state is already created
+        val restartActivityHandlerInit = StateActivityHandlerInit(restartActivityHandler)
+        restartActivityHandlerInit.activityStateAlreadyCreated = true
+        restartActivityHandlerInit.readActivityState = "ec:1 sc:1"
+        restartActivityHandlerInit.readCallbackParameters = "{cFoo=cBar}"
+        restartActivityHandlerInit.readPartnerParameters = "{pFoo=pBar}"
+
+        // test init values
+        checkInitTests(restartActivityHandlerInit)
+        resumeActivity(restartActivityHandler)
+        SystemClock.sleep(1500)
+        val stateRestartSession = StateSession(StateSession.SessionType.NEW_SUBSESSION)
+        stateRestartSession.subsessionCount = 2
+        stateRestartSession.eventCount = 1
+        checkStartInternal(stateRestartSession)
+
+        // create the second Event
+        val secondEvent = MotrackEvent("event2")
+        secondEvent.addCallbackParameter("ceFoo", "ceBar")
+        secondEvent.addPartnerParameter("peFoo", "peBar")
+        restartActivityHandler.trackEvent(secondEvent)
+        val thirdEvent = MotrackEvent("event3")
+        thirdEvent.addCallbackParameter("cFoo", "ceBar")
+        thirdEvent.addPartnerParameter("pFoo", "peBar")
+        restartActivityHandler.trackEvent(thirdEvent)
+        SystemClock.sleep(1500)
+
+        // 2 events
+        assertUtil.isEqual(2, mockPackageHandler.queue.size)
+
+        // get the event
+        val secondEventPackage = mockPackageHandler.queue[0]
+
+        // create event package test
+        val testSecondEventPackage = TestActivityPackage(secondEventPackage)
+
+        // set event test parameters
+        testSecondEventPackage.eventCount = "2"
+        testSecondEventPackage.suffix = "'event2'"
+        testSecondEventPackage.callbackParams = "{\"ceFoo\":\"ceBar\",\"cFoo\":\"cBar\"}"
+        testSecondEventPackage.partnerParams = "{\"peFoo\":\"peBar\",\"pFoo\":\"pBar\"}"
+        testSecondEventPackage.testEventPackage("event2")
+
+        // get the event
+        val thirdEventPackage = mockPackageHandler.queue[1]
+
+        // create event package test
+        val testThirdEventPackage = TestActivityPackage(thirdEventPackage)
+
+        // set event test parameters
+        testThirdEventPackage.eventCount = "3"
+        testThirdEventPackage.suffix = "'event3'"
+        testThirdEventPackage.callbackParams = "{\"cFoo\":\"ceBar\"}"
+        testThirdEventPackage.partnerParams = "{\"pFoo\":\"peBar\"}"
+        testThirdEventPackage.testEventPackage("event3")
+    }
+
+
     private fun checkInitAndStart(
         activityHandler: ActivityHandler,
         initState: StateActivityHandlerInit,
@@ -1786,6 +2571,7 @@ class TestActivityHandler {
         SystemClock.sleep(1500)
         checkStartInternal(stateSession)
     }
+
     private fun checkEvent(stateEvent: StateEvent) {
         if (stateEvent.disabled) {
             assertUtil.notInInfo("Skipping duplicated order ID ")
@@ -1858,6 +2644,7 @@ class TestActivityHandler {
         // test session
         checkFirstSession()
     }
+
     private fun checkFirstSession() {
         val newStateSession = StateSession(StateSession.SessionType.NEW_SESSION)
         checkStartInternal(newStateSession)
@@ -1883,6 +2670,31 @@ class TestActivityHandler {
         subSessionState.foregroundTimerAlreadyStarted = true
         checkStartInternal(subSessionState)
     }
+
+    private fun checkSessionParameters() {
+        //
+        assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue}")
+        assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue, cFoo=cBar}")
+        assertUtil.warn("Key cKey will be overwritten")
+        assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue2, cFoo=cBar}")
+        assertUtil.debug("Wrote Session Callback parameters: null")
+        assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue}")
+        assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue, cFoo=cBar}")
+        assertUtil.debug("Key cKey will be removed")
+        assertUtil.debug("Wrote Session Callback parameters: {cFoo=cBar}")
+
+        //
+        assertUtil.debug("Wrote Session Partner parameters: {pKey=pValue}")
+        assertUtil.debug("Wrote Session Partner parameters: {pKey=pValue, pFoo=pBar}")
+        assertUtil.warn("Key pKey will be overwritten")
+        assertUtil.debug("Wrote Session Partner parameters: {pKey=pValue2, pFoo=pBar}")
+        assertUtil.debug("Wrote Session Partner parameters: null")
+        assertUtil.debug("Wrote Session Partner parameters: {pKey=pValue}")
+        assertUtil.debug("Wrote Session Partner parameters: {pKey=pValue, pFoo=pBar}")
+        assertUtil.debug("Key pKey will be removed")
+        assertUtil.debug("Wrote Session Partner parameters: {pFoo=pBar}")
+    }
+
     private fun checkStartInternal(stateSession: StateSession) {
         // check delay start
         checkDelayStart(stateSession)
@@ -1986,6 +2798,7 @@ class TestActivityHandler {
             assertUtil.verbose("Wrote Activity state")
         }
     }
+
     private fun checkOnResume(stateSession: StateSession) {
         if (!stateSession.startSubsession) {
             assertUtil.notInVerbose("Background timer canceled")
@@ -2158,6 +2971,7 @@ class TestActivityHandler {
             assertUtil.notInTest("SdkClickHandler sendSdkClick")
         }
     }
+
     private fun checkReadFile(fileLog: String?, objectName: String) {
         if (fileLog == null) {
             assertUtil.debug("$objectName file not found")
@@ -2165,6 +2979,7 @@ class TestActivityHandler {
             assertUtil.debug("Read $objectName: $fileLog")
         }
     }
+
     private fun getConfig(): MotrackConfig {
         return getConfig("sandbox", "123456789012", false, context!!)
     }
@@ -2203,7 +3018,7 @@ class TestActivityHandler {
 
         // goes to the background
 
-        internalState?.let{
+        internalState?.let {
             assertUtil.isTrue(it.isInBackground)
         }
     }

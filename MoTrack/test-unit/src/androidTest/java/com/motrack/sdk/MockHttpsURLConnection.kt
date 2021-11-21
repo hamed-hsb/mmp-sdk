@@ -24,7 +24,7 @@ class MockHttpsURLConnection(url: URL?) : HttpsURLConnection(url),
     private var outputStream: ByteArrayOutputStream? = null
     var responseType: ResponseType? = null
     var timeout = false
-    private var waitingTime: Long? = null
+    var waitingTime: Long? = null
 
     constructor(url: URL?, mockLogger: MockLogger) : this(url) {
         testLogger = mockLogger
