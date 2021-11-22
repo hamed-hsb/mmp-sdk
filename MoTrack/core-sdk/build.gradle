@@ -5,12 +5,14 @@ plugins {
 
 android {
     compileSdk rootProject.ext.coreCompileSdkVersion
+//    compileSdkVersion coreCompileSdkVersion
 
     defaultConfig {
+        configurations.all {
+            resolutionStrategy { force "androidx.core:core-ktx:$rootProject.coreKtxVersion" }
+        }
         minSdk rootProject.ext.coreMinSdkVersion
         targetSdk rootProject.ext.coreTargetSdkVersion
-        versionCode rootProject.ext.defaultVersionCode
-        versionName rootProject.ext.coreVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,7 +30,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    compileSdkVersion coreCompileSdkVersion
 }
 
 dependencies {

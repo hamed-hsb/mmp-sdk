@@ -4,7 +4,7 @@ ext {
     // Android config
     coreMinSdkVersion = 16
     coreCompileSdkVersion = 31
-    coreTargetSdkVersion = 30
+    coreTargetSdkVersion = 31
     coreVersionName = '1.1.0'
     defaultVersionCode = 100
 
@@ -16,6 +16,8 @@ ext {
     JunitVersion = '4.13.2'
     androidxJunitVersion = '1.1.3'
     espressoVersion = '3.4.0'
+    androidxTestRunner = '1.4.0'
+    androidxTestRules = '1.4.0'
 
     // play plugin
     installreferrerVersion =  '2.2'
@@ -23,6 +25,8 @@ ext {
 
     // POM
     motrackGroupId = 'com.motrack.sdk'
+
+    gsonVersion= '2.8.9'
 }
 
 buildscript {
@@ -32,7 +36,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.0.2"
+        classpath 'com.android.tools.build:gradle:7.0.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong

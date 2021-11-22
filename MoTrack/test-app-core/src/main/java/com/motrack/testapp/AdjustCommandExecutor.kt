@@ -178,7 +178,7 @@ class AdjustCommandExecutor(private var context: Context?) {
         }
         val adjustConfig: MotrackConfig
         if (savedConfigs!!.indexOfKey(configNumber) >= 0) {
-            adjustConfig = savedConfigs!![configNumber]
+            adjustConfig = savedConfigs!!.get(configNumber)
         } else {
             val environment = command!!.getFirstParameterValue("environment")
             val appToken = command!!.getFirstParameterValue("appToken")
@@ -281,27 +281,27 @@ class AdjustCommandExecutor(private var context: Context?) {
             adjustConfig.onAttributionChangedListener = object : OnAttributionChangedListener {
                 override fun onAttributionChanged(attribution: MotrackAttribution) {
                     Log.d("TestApp", "attribution = $attribution")
-                    MainActivity.testLibrary!!.addInfoToSend(
+                    MainActivity.testLibrary.addInfoToSend(
                         "trackerToken",
                         attribution.trackerToken
                     )
-                    MainActivity.testLibrary!!.addInfoToSend("trackerName", attribution.trackerName)
-                    MainActivity.testLibrary!!.addInfoToSend("network", attribution.network)
-                    MainActivity.testLibrary!!.addInfoToSend("campaign", attribution.campaign)
-                    MainActivity.testLibrary!!.addInfoToSend("adgroup", attribution.adgroup)
-                    MainActivity.testLibrary!!.addInfoToSend("creative", attribution.creative)
-                    MainActivity.testLibrary!!.addInfoToSend("clickLabel", attribution.clickLabel)
-                    MainActivity.testLibrary!!.addInfoToSend("adid", attribution.adid)
-                    MainActivity.testLibrary!!.addInfoToSend("costType", attribution.costType)
-                    MainActivity.testLibrary!!.addInfoToSend(
+                    MainActivity.testLibrary.addInfoToSend("trackerName", attribution.trackerName)
+                    MainActivity.testLibrary.addInfoToSend("network", attribution.network)
+                    MainActivity.testLibrary.addInfoToSend("campaign", attribution.campaign)
+                    MainActivity.testLibrary.addInfoToSend("adgroup", attribution.adgroup)
+                    MainActivity.testLibrary.addInfoToSend("creative", attribution.creative)
+                    MainActivity.testLibrary.addInfoToSend("clickLabel", attribution.clickLabel)
+                    MainActivity.testLibrary.addInfoToSend("adid", attribution.adid)
+                    MainActivity.testLibrary.addInfoToSend("costType", attribution.costType)
+                    MainActivity.testLibrary.addInfoToSend(
                         "costAmount",
                         attribution.costAmount.toString()
                     )
-                    MainActivity.testLibrary!!.addInfoToSend(
+                    MainActivity.testLibrary.addInfoToSend(
                         "costCurrency",
                         attribution.costCurrency
                     )
-                    MainActivity.testLibrary!!.sendInfoToServer(localBasePath)
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath)
                 }
             }
         }
@@ -312,96 +312,96 @@ class AdjustCommandExecutor(private var context: Context?) {
                 override fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: MotrackSessionSuccess) {
                     Log.d("TestApp", "session_success = $sessionSuccessResponseData")
                     sessionSuccessResponseData.message?.let {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "message",
                             it
                         )
                     }
                     sessionSuccessResponseData.timestamp?.let {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "timestamp",
                             it
                         )
                     }
                     sessionSuccessResponseData.adid?.let {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "adid",
                             it
                         )
                     }
                     sessionSuccessResponseData.jsonResponse?.let {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "jsonResponse",
                             it.toString()
                         )
                     }
-                    MainActivity.testLibrary!!.sendInfoToServer(localBasePath)
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath)
                 }
             }
         }
         if (command!!.containsParameter("sessionCallbackSendFailure")) {
-            val localBasePath = basePath!!
+            val localBasePath = basePath
             adjustConfig.onSessionTrackingFailedListener = object :
                 OnSessionTrackingFailedListener {
                 override fun onFinishedSessionTrackingFailed(failureResponseData: MotrackSessionFailure) {
                     Log.d("TestApp", "session_fail = $failureResponseData")
                     failureResponseData.message?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("message", it)
+                        MainActivity.testLibrary.addInfoToSend("message", it)
                     }
                     failureResponseData.timestamp?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("timestamp", it)
+                        MainActivity.testLibrary.addInfoToSend("timestamp", it)
                     }
                     failureResponseData.adid?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("adid", it)
+                        MainActivity.testLibrary.addInfoToSend("adid", it)
                     }
-                    MainActivity.testLibrary!!.addInfoToSend(
+                    MainActivity.testLibrary.addInfoToSend(
                         "willRetry",
                         java.lang.String.valueOf(failureResponseData.willRetry)
                     )
                     if (failureResponseData.jsonResponse != null) {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "jsonResponse",
                             failureResponseData.jsonResponse.toString()
                         )
                     }
-                    MainActivity.testLibrary!!.sendInfoToServer(localBasePath)
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath!!)
                 }
             }
         }
         if (command!!.containsParameter("eventCallbackSendSuccess")) {
-            val localBasePath = basePath!!
+            val localBasePath = basePath
             adjustConfig.onEventTrackingSucceededListener = object :
                 OnEventTrackingSucceededListener {
                 override fun onFinishedEventTrackingSucceeded(eventSuccessResponseData: MotrackEventSuccess) {
                     Log.d("TestApp", "event_success = $eventSuccessResponseData")
                     eventSuccessResponseData.message?.let {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "message",
                             it
                         )
                     }
                     eventSuccessResponseData.timestamp?.let {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "timestamp",
                             it
                         )
                     }
                     eventSuccessResponseData.adid?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("adid", it)
+                        MainActivity.testLibrary.addInfoToSend("adid", it)
                     }
                     eventSuccessResponseData.eventToken?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("eventToken", it)
+                        MainActivity.testLibrary.addInfoToSend("eventToken", it)
                     }
                     eventSuccessResponseData.callbackId?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("callbackId", it)
+                        MainActivity.testLibrary.addInfoToSend("callbackId", it)
                     }
                     if (eventSuccessResponseData.jsonResponse != null) {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "jsonResponse",
                             eventSuccessResponseData.jsonResponse.toString()
                         )
                     }
-                    MainActivity.testLibrary!!.sendInfoToServer(localBasePath)
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath!!)
                 }
             }
         }
@@ -411,31 +411,31 @@ class AdjustCommandExecutor(private var context: Context?) {
                 override fun onFinishedEventTrackingFailed(eventFailureResponseData: MotrackEventFailure) {
                     Log.d("TestApp", "event_fail = $eventFailureResponseData")
                     eventFailureResponseData.message?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("message", it)
+                        MainActivity.testLibrary.addInfoToSend("message", it)
                     }
                     eventFailureResponseData.timestamp?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("timestamp", it)
+                        MainActivity.testLibrary.addInfoToSend("timestamp", it)
                     }
                     eventFailureResponseData.adid?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("adid", it)
+                        MainActivity.testLibrary.addInfoToSend("adid", it)
                     }
                     eventFailureResponseData.eventToken?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("eventToken", it)
+                        MainActivity.testLibrary.addInfoToSend("eventToken", it)
                     }
                     eventFailureResponseData.callbackId?.let {
-                        MainActivity.testLibrary!!.addInfoToSend("callbackId", it)
+                        MainActivity.testLibrary.addInfoToSend("callbackId", it)
                     }
-                    MainActivity.testLibrary!!.addInfoToSend(
+                    MainActivity.testLibrary.addInfoToSend(
                         "willRetry",
                         java.lang.String.valueOf(eventFailureResponseData.willRetry)
                     )
                     if (eventFailureResponseData.jsonResponse != null) {
-                        MainActivity.testLibrary!!.addInfoToSend(
+                        MainActivity.testLibrary.addInfoToSend(
                             "jsonResponse",
                             eventFailureResponseData.jsonResponse.toString()
                         )
                     }
-                    MainActivity.testLibrary!!.sendInfoToServer(localBasePath)
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath)
                 }
             }
         }
@@ -447,8 +447,8 @@ class AdjustCommandExecutor(private var context: Context?) {
             adjustConfig.onDeeplinkResponseListener = object : OnDeeplinkResponseListener {
                 override fun launchReceivedDeeplink(deeplink: Uri?): Boolean {
                     Log.d("TestApp", "deferred_deep_link = $deeplink")
-                    MainActivity.testLibrary!!.addInfoToSend("deeplink", deeplink.toString())
-                    MainActivity.testLibrary!!.sendInfoToServer(localBasePath)
+                    MainActivity.testLibrary.addInfoToSend("deeplink", deeplink.toString())
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath)
                     return launchDeferredDeeplink
                 }
             }
@@ -478,7 +478,7 @@ class AdjustCommandExecutor(private var context: Context?) {
         }
         val adjustEvent: MotrackEvent
         if (savedEvents!!.indexOfKey(eventNumber) >= 0) {
-            adjustEvent = savedEvents!![eventNumber]
+            adjustEvent = savedEvents!!.get(eventNumber)
         } else {
             val eventToken = command!!.getFirstParameterValue("eventToken")
             adjustEvent = MotrackEvent(eventToken)

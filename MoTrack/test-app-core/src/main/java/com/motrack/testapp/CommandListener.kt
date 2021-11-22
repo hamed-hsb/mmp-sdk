@@ -2,6 +2,7 @@ package com.motrack.testapp
 
 import android.content.Context
 import android.util.Log
+import com.motrack.test.ICommandListener
 import java.lang.Exception
 import java.util.*
 
@@ -10,10 +11,10 @@ import java.util.*
  * @since 21th November 2021
  */
 
-class CommandListener(context: Context?) {
+class CommandListener(context: Context?): ICommandListener {
     var adjustCommandExecutor: AdjustCommandExecutor = AdjustCommandExecutor(context)
 
-    fun executeCommand(
+    override fun executeCommand(
         className: String,
         methodName: String,
         parameters: Map<String, List<String>>?
@@ -38,7 +39,7 @@ class CommandListener(context: Context?) {
                     Locale.US,
                     "Error formatting log message: %s, with params: %s",
                     message,
-                    Arrays.toString(parameters)
+                    parameters.contentToString()
                 )
             )
         }
