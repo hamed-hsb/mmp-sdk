@@ -20,7 +20,7 @@ class CommandListener(context: Context?): ICommandListener {
         parameters: Map<String, List<String>>?
     ) {
         when (className) {
-            "Adjust" -> adjustCommandExecutor.executeCommand(
+            "Motrack" -> adjustCommandExecutor.executeCommand(
                 Command(
                     className,
                     methodName, parameters
