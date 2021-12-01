@@ -13,7 +13,10 @@ android {
         versionCode rootProject.ext.defaultVersionCode
         versionName rootProject.ext.coreVersionName
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // DONE : replace with custom runner
+        testInstrumentationRunner "com.motrack.testapp.MockTestRunner"
     }
 
     buildTypes {
@@ -38,6 +41,40 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+
+    // MockWebServer
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.3"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.9.3"
+
+    implementation "com.squareup.okhttp3:okhttp:4.9.3"
+
+    // Testing
+    // Core library
+    androidTestImplementation "androidx.test:core:$rootProject.testCoreVersion"
+
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation "androidx.test:runner:$rootProject.testRunnerVersion"
+    androidTestImplementation "androidx.test:rules:$rootProject.testRulesVersion"
+
+    // Assertions
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
+    androidTestImplementation "androidx.test.ext:truth:$rootProject.extTruthVersion"
+    androidTestImplementation "com.google.truth:truth:$rootProject.truthVersion"
+
+    androidTestImplementation "androidx.test:core-ktx:$rootProject.testCoreVersion"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinStdlibVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$rootProject.jUnitKtxVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+    testImplementation "junit:junit:$rootProject.JunitVersion"
+
+    // Espresso dependencies
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-accessibility:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-web:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$rootProject.espressoVersion"
+    androidTestImplementation "com.jakewharton.espresso:okhttp3-idling-resource:$rootProject.okhttp3IdlingResourceVersion"
 
 
     implementation "com.google.android.gms:play-services-ads-identifier:$rootProject.playServicesAdsIdentifier"
