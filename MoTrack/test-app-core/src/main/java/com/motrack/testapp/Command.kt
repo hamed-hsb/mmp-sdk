@@ -8,17 +8,17 @@ package com.motrack.testapp
 class Command(
     var className: String,
     var methodName: String,
-    var parameters: Map<String, List<String>>?
+    var parameters: Map<String, List<String>>
 ) {
 
     fun getFirstParameterValue(parameterKey: String): String? {
-        val parameterValues = parameters!![parameterKey]
+        val parameterValues = parameters[parameterKey]
         return if (parameterValues == null || parameterValues.isEmpty()) {
             null
         } else parameterValues[0]
     }
 
     fun containsParameter(parameterKey: String): Boolean {
-        return parameters!![parameterKey] != null
+        return !parameters[parameterKey].isNullOrEmpty()
     }
 }

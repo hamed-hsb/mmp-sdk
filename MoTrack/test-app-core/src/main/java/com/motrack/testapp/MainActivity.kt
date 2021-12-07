@@ -9,9 +9,9 @@ class MainActivity : AppCompatActivity() {
     companion object {
         lateinit var testLibrary: TestLibrary
         private const val baseIp = "127.0.0.1"
-        var baseUrl = "http://$baseIp:8080"
-        const val gdprUrl = "https://$baseIp:8443"
-        const val controlUrl = "ws://$baseIp:1987"
+        var baseUrl = "https://$baseIp:8080"
+        const val gdprUrl = "https://$baseIp:8080" // 8443
+        const val controlUrl = "ws://$baseIp:8080" // 1987
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
             controlUrl,
             CommandListener(this.applicationContext)
         )
-        // testLibrary.doNotExitAfterEnd();
 
         // testLibrary.doNotExitAfterEnd();
         findViewById<Button>(R.id.textview).setOnClickListener{
