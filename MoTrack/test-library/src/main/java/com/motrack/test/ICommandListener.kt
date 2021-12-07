@@ -9,6 +9,6 @@ interface ICommandListener {
     fun executeCommand(
         className: String,
         methodName: String,
-        parameters: Map<String, List<String>>?
+        parameters: Map<String, List<String>>
     )
 }

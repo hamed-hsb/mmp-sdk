@@ -261,26 +261,34 @@ class TestLibrary {
                 continue
             }
 
-            // execute Adjust command
-            if (commandListener != null) {
-                commandListener!!.executeCommand(
-                    testCommand.className,
-                    testCommand.functionName,
-                    testCommand.params
-                )
-            } else if (commandJsonListener != null) {
-                val toJsonParams = gson.toJson(testCommand.params)
-                debug("commandJsonListener test command params toJson: %s", toJsonParams)
-                commandJsonListener!!.executeCommand(
-                    testCommand.className,
-                    testCommand.functionName,
-                    toJsonParams
-                )
-            } else if (commandRawJsonListener != null) {
-                val toJsonCommand = gson.toJson(testCommand)
-                debug("commandRawJsonListener test command toJson: %s", toJsonCommand)
-                commandRawJsonListener!!.executeCommand(toJsonCommand)
+            // execute Motrack command
+
+            when {
+                commandListener != null -> {
+                    testCommand.params?.let {
+                        commandListener!!.executeCommand(
+                            testCommand.className,
+                            testCommand.functionName,
+                            it
+                        )
+                    }
+                }
+                commandJsonListener != null -> {
+                    val toJsonParams = gson.toJson(testCommand.params)
+                    debug("commandJsonListener test command params toJson: %s", toJsonParams)
+                    commandJsonListener!!.executeCommand(
+                        testCommand.className,
+                        testCommand.functionName,
+                        toJsonParams
+                    )
+                }
+                commandRawJsonListener != null -> {
+                    val toJsonCommand = gson.toJson(testCommand)
+                    debug("commandRawJsonListener test command toJson: %s", toJsonCommand)
+                    commandRawJsonListener!!.executeCommand(toJsonCommand)
+                }
             }
+
             val timeAfter = System.nanoTime()
             val timeElapsedMillis = TimeUnit.NANOSECONDS.toMillis(timeAfter - timeBefore)
             debug(

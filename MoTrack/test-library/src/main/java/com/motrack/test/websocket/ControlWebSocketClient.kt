@@ -64,7 +64,9 @@ class ControlWebSocketClient(private val testLibrary: TestLibrary, serverUri: St
 
     fun sendInitTestSessionSignal(testSessionId: String) {
         val initSignal = ControlSignal(SignalType.INIT_TEST_SESSION, testSessionId)
-        send(gson.toJson(initSignal))
+        debug("[WebSocket] $initSignal was send to server")
+
+//        send(gson.toJson(initSignal))
     }
 
 }

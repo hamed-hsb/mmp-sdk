@@ -73,7 +73,7 @@ class NetworkUtils {
             testNames: String?,
             postBody: Map<String, String>?
         ): HttpResponse? {
-            val targetURL: String = TestLibrary.baseUrl.toString() + path
+            val targetURL: String = TestLibrary.baseUrl + path
             try {
                 connectionOptions.clientSdk = clientSdk
                 connectionOptions.testNames = testNames
@@ -81,9 +81,9 @@ class NetworkUtils {
                 val connection: HttpsURLConnection =
                     createPOSTHttpsURLConnection(targetURL, postBody, connectionOptions)
                 val httpResponse: HttpResponse = readHttpResponse(connection)
-                debug("Response: %s", httpResponse.response)
+                debug("Response: ${httpResponse.response}")
                 httpResponse.headerFields = connection.headerFields
-                debug("Headers: %s", httpResponse.headerFields)
+                debug("Headers: ${httpResponse.headerFields}")
                 return httpResponse
 
             } catch (e: IOException) {
@@ -232,7 +232,8 @@ class NetworkUtils {
                                 if (!isIPv4) {
                                     val delimit = hostAddress.indexOf('%') // drop ip6 zone suffix
                                     return if (delimit < 0) hostAddress.uppercase(Locale.getDefault())
-                                    else hostAddress.substring(0, delimit).uppercase(Locale.getDefault())
+                                    else hostAddress.substring(0, delimit)
+                                        .uppercase(Locale.getDefault())
                                 }
                             }
                         }
