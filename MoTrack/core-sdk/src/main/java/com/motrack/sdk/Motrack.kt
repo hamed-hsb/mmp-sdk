@@ -110,7 +110,7 @@ public class Motrack private constructor() {
          */
         fun appWillOpenUrl(url: Uri?, context: Context?) {
             val motrackInstance: MotrackInstance = getDefaultInstance()
-            motrackInstance.appWillOpenUrl(url, context)
+            motrackInstance.appWillOpenUrl(url, extractApplicationContext(context))
         }
 
         /**
@@ -121,7 +121,7 @@ public class Motrack private constructor() {
          */
         fun setReferrer(referrer: String?, context: Context?) {
             val motrackInstance: MotrackInstance = getDefaultInstance()
-            motrackInstance.sendReferrer(referrer, context)
+            motrackInstance.sendReferrer(referrer, extractApplicationContext(context))
         }
 
         /**
@@ -217,9 +217,9 @@ public class Motrack private constructor() {
          * @param token   Push notifications token
          * @param context Application context
          */
-        fun setPushToken(token: String, context: Context) {
+        fun setPushToken(token: String, context: Context?) {
             val motrackInstance: MotrackInstance = getDefaultInstance()
-            motrackInstance.setPushToken(token, context)
+            extractApplicationContext(context)?.let { motrackInstance.setPushToken(token, it) }
         }
 
         /**
@@ -229,7 +229,7 @@ public class Motrack private constructor() {
          */
         fun gdprForgetMe(context: Context?) {
             val motrackInstance: MotrackInstance = getDefaultInstance()
-            motrackInstance.gdprForgetMe(context)
+            extractApplicationContext(context)?.let { motrackInstance.gdprForgetMe(it) }
         }
 
         /**
@@ -237,9 +237,9 @@ public class Motrack private constructor() {
          *
          * @param context Application context
          */
-        fun disableThirdPartySharing(context: Context) {
+        fun disableThirdPartySharing(context: Context?) {
             val motrackInstance: MotrackInstance = getDefaultInstance()
-            motrackInstance.disableThirdPartySharing(context)
+            extractApplicationContext(context)?.let { motrackInstance.disableThirdPartySharing(it) }
         }
 
         fun trackThirdPartySharing(motrackThirdPartySharing: MotrackThirdPartySharing) {
@@ -290,8 +290,10 @@ public class Motrack private constructor() {
          * @param context        Application context
          * @param onDeviceIdRead Callback to get triggered once identifier is obtained
          */
-        fun getGoogleAdId(context: Context, onDeviceIdRead: OnDeviceIdsRead) {
-            AndroidUtil.getGoogleAdId(context, onDeviceIdRead)
+        fun getGoogleAdId(context: Context?, onDeviceIdRead: OnDeviceIdsRead) {
+            var appContext: Context? = null
+            context?.let { appContext = context.applicationContext }
+            appContext?.let { AndroidUtil.getGoogleAdId(it, onDeviceIdRead) }
         }
 
         /**
@@ -300,8 +302,11 @@ public class Motrack private constructor() {
          * @param context Application context
          * @return Amazon Advertising Identifier
          */
-        fun getAmazonAdId(context: Context): String? {
-            return AndroidUtil.getFireAdvertisingId(context.contentResolver)
+        fun getAmazonAdId(context: Context?): String? {
+            val appContext: Context? = extractApplicationContext(context)
+            return if (appContext != null) {
+                AndroidUtil.getFireAdvertisingId(appContext.contentResolver)
+            } else null
         }
 
         /**
@@ -341,7 +346,7 @@ public class Motrack private constructor() {
          */
         fun setTestOptions(testOptions: MotrackTestOptions) {
             testOptions.teardown?.let {
-                if (it){
+                if (it) {
                     defaultInstance?.teardown()
                     defaultInstance = null
                     MotrackFactory.teardown(testOptions.context)
@@ -351,6 +356,9 @@ public class Motrack private constructor() {
             val motrackInstance: MotrackInstance = getDefaultInstance()
             motrackInstance.setTestOptions(testOptions)
         }
-    }
 
+        private fun extractApplicationContext(context: Context?): Context? {
+            return context?.applicationContext
+        }
+    }
 }
