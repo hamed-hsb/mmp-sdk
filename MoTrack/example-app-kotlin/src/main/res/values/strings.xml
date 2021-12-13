@@ -17,6 +17,6 @@
     <string name="txt_disable_sdk">Disable SDK</string>
     <string name="txt_enable_offline_mode">Enable offline mode</string>
     <string name="txt_disable_offline_mode">Disable offline mode</string>
-    <string name="txt_sdk_is_enabled">Adjust SDK is ENABLED!</string>
-    <string name="txt_sdk_is_disabled">Adjust SDK is DISABLED!</string>
+    <string name="txt_sdk_is_enabled">Motrack SDK is ENABLED!</string>
+    <string name="txt_sdk_is_disabled">Motrack SDK is DISABLED!</string>
 </resources>

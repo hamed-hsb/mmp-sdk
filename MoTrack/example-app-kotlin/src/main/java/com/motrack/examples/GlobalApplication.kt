@@ -13,8 +13,9 @@ import com.motrack.sdk.oaid.MotrackOaid
 class GlobalApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        val TAG = "example"
 
-        // Configure adjust SDK.
+        // Configure Motrack SDK.
         val appToken = "2fm9gkqubvpc"
         val environment = MotrackConfig.ENVIRONMENT_SANDBOX
 
@@ -26,8 +27,8 @@ class GlobalApplication : Application() {
         // Set attribution delegate.
         config.onAttributionChangedListener = object : OnAttributionChangedListener {
             override fun onAttributionChanged(attribution: MotrackAttribution) {
-                Log.d("example", "Attribution callback called!")
-                Log.d("example", "Attribution: $attribution")
+                Log.d(TAG, "Attribution callback called!")
+                Log.d(TAG, "Attribution: $attribution")
             }
         }
 
@@ -35,45 +36,45 @@ class GlobalApplication : Application() {
         config.onEventTrackingSucceededListener = object : OnEventTrackingFailedListener,
             OnEventTrackingSucceededListener {
             override fun onFinishedEventTrackingFailed(eventFailureResponseData: MotrackEventFailure) {
-                Log.d("example", "Event Failure callback called!")
-                Log.d("example", "Event Failure data: $eventFailureResponseData")
+                Log.d(TAG, "Event Failure callback called!")
+                Log.d(TAG, "Event Failure data: $eventFailureResponseData")
             }
 
             override fun onFinishedEventTrackingSucceeded(eventSuccessResponseData: MotrackEventSuccess) {
-                Log.d("example", "Event success callback called!")
-                Log.d("example", "Event success data: $eventSuccessResponseData")
+                Log.d(TAG, "Event success callback called!")
+                Log.d(TAG, "Event success data: $eventSuccessResponseData")
             }
         }
 
         // Set event failure tracking delegate.
         config.onEventTrackingFailedListener = object : OnEventTrackingFailedListener {
             override fun onFinishedEventTrackingFailed(eventFailureResponseData: MotrackEventFailure) {
-                Log.d("example", "Event failure callback called!")
-                Log.d("example", "Event failure data: $eventFailureResponseData")
+                Log.d(TAG, "Event failure callback called!")
+                Log.d(TAG, "Event failure data: $eventFailureResponseData")
             }
         }
 
         // Set session success tracking delegate.
         config.onSessionTrackingSucceededListener = object : OnSessionTrackingSucceededListener {
             override fun onFinishedSessionTrackingSucceeded(sessionSuccessResponseData: MotrackSessionSuccess) {
-                Log.d("example", "Session success callback called!")
-                Log.d("example", "Session success data: $sessionSuccessResponseData")
+                Log.d(TAG, "Session success callback called!")
+                Log.d(TAG, "Session success data: $sessionSuccessResponseData")
             }
         }
 
         // Set session failure tracking delegate.
         config.onSessionTrackingFailedListener = object : OnSessionTrackingFailedListener {
             override fun onFinishedSessionTrackingFailed(failureResponseData: MotrackSessionFailure) {
-                Log.d("example", "Session failure callback called!")
-                Log.d("example", "Session failure data: $failureResponseData")
+                Log.d(TAG, "Session failure callback called!")
+                Log.d(TAG, "Session failure data: $failureResponseData")
             }
         }
 
         // Evaluate deferred deep link to be launched.
         config.onDeeplinkResponseListener = object : OnDeeplinkResponseListener {
             override fun launchReceivedDeeplink(deeplink: Uri?): Boolean {
-                Log.d("example", "Deferred deep link callback called!")
-                Log.d("example", "Deep link URL: $deeplink")
+                Log.d(TAG, "Deferred deep link callback called!")
+                Log.d(TAG, "Deep link URL: $deeplink")
 
                 return true
             }
@@ -83,7 +84,7 @@ class GlobalApplication : Application() {
         config.defaultTracker = "{YourDefaultTracker}"
 
         // Set process name.
-        config.processName = "com.adjust.examples"
+        config.processName = "com.motrack.examples"
 
         // Allow to send in the background.
         config.sendInBackground = true
@@ -96,6 +97,9 @@ class GlobalApplication : Application() {
 
         // Allow tracking preinstall
         config.preinstallTrackingEnabled = true
+
+        // Initialise the Motrack SDK.
+        Motrack.onCreate(config)
 
         // Add session callback parameters.
         Motrack.addSessionCallbackParameter("sc_foo", "sc_bar")
@@ -127,24 +131,21 @@ class GlobalApplication : Application() {
         // - Your app is NOT distributed in Google Play Store & supports OAID.
         MotrackOaid.readOaid()
 
-        // Initialise the adjust SDK.
-        Motrack.onCreate(config)
-
         // Abort delay for the first session introduced with setDelayStart method.
-        // Motrack.sendFirstPackages();
+         Motrack.sendFirstPackages()
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.
         registerActivityLifecycleCallbacks(MotrackLifecycleCallbacks())
 
         // Put the SDK in offline mode.
-        // Motrack.setOfflineMode(true);
+         Motrack.setOfflineMode(true)
 
         // Disable the SDK
         Motrack.setEnabled(false)
 
         // Send push notification token.
-        // Motrack.setPushToken("token");
+         Motrack.setPushToken("token", applicationContext);
 
     }
 

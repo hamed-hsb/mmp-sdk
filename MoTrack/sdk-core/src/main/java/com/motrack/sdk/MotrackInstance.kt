@@ -31,14 +31,14 @@ class MotrackInstance {
     /**
      * Base path for Motrack packages.
      */
-    private lateinit var basePath: String
+    private var basePath: String? = null
 
     /**
      * Path for GDPR package.
      */
-    private lateinit var gdprPath: String
+    private var gdprPath: String? = null
 
-    private lateinit var subscriptionPath: String
+    private var subscriptionPath: String? = null
 
     private lateinit var logger: ILogger
 
@@ -73,7 +73,7 @@ class MotrackInstance {
         }
 
         motrackConfig.preLaunchActions = preLaunchActions
-        motrackConfig.appToken = pushToken
+        motrackConfig.pushToken = pushToken
         motrackConfig.startEnabled = startEnabled
         motrackConfig.startOffline = startOffline
         motrackConfig.basePath = this.basePath

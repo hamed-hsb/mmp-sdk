@@ -47,6 +47,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ServiceActivity"/>
+
         <service
             android:name=".ServiceExample"
             android:enabled="true"

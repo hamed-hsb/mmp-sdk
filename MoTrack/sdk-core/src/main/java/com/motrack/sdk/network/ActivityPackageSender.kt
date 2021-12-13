@@ -37,7 +37,7 @@ class ActivityPackageSender(
             MotrackFactory.baseUrl,
             MotrackFactory.gdprUrl,
             MotrackFactory.subscriptionUrl,
-            motrackUrlStrategy!!
+            motrackUrlStrategy
         )
         httpsURLConnectionProvider = MotrackFactory.httpsURLConnectionProvider
         connectionOptions = MotrackFactory.connectionOptions

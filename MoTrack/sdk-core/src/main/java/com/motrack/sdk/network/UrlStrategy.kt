@@ -17,7 +17,7 @@ class UrlStrategy(
     private val baseUrlOverwrite: String?,
     private val gdprUrlOverwrite: String?,
     private val subscriptionUrlOverwrite: String?,
-    motrackUrlStrategy: String
+    motrackUrlStrategy: String?
 ) {
     companion object {
         private const val BASE_URL_INDIA = "https://app.motrack.net.in"
@@ -40,7 +40,7 @@ class UrlStrategy(
         private const val GDPR_URL_US = "https://gdpr.us.motrack.com"
         private const val SUBSCRIPTION_URL_US = "https://subscription.us.motrack.com"
 
-        private fun baseUrlChoices(urlStrategy: String): List<String> {
+        private fun baseUrlChoices(urlStrategy: String?): List<String> {
             return when (urlStrategy) {
                 URL_STRATEGY_INDIA -> listOf(BASE_URL_INDIA, Constants.BASE_URL)
                 URL_STRATEGY_CHINA -> listOf(BASE_URL_CHINA, Constants.BASE_URL)
@@ -51,7 +51,7 @@ class UrlStrategy(
             }
         }
 
-        private fun gdprUrlChoices(urlStrategy: String): List<String> {
+        private fun gdprUrlChoices(urlStrategy: String?): List<String> {
             return when (urlStrategy) {
                 URL_STRATEGY_INDIA -> listOf(GDPR_URL_INDIA, Constants.GDPR_URL)
                 URL_STRATEGY_CHINA -> listOf(GDPR_URL_CHINA, Constants.GDPR_URL)
@@ -62,7 +62,7 @@ class UrlStrategy(
             }
         }
 
-        private fun subscriptionUrlChoices(urlStrategy: String): List<String> {
+        private fun subscriptionUrlChoices(urlStrategy: String?): List<String> {
             return when (urlStrategy) {
                 URL_STRATEGY_INDIA -> listOf(SUBSCRIPTION_URL_INDIA, Constants.SUBSCRIPTION_URL)
                 URL_STRATEGY_CHINA -> listOf(SUBSCRIPTION_URL_CHINA, Constants.SUBSCRIPTION_URL)

@@ -16,7 +16,7 @@ import java.util.*
  * @since 06th October 2021
  */
 
-class DeviceInfo(private val context: Context, sdkPrefix: String) {
+class DeviceInfo(private val context: Context, sdkPrefix: String?) {
     var playAdId: String? = null
     var playAdIdSource: String? = null
     var playAdIdAttempt = 0

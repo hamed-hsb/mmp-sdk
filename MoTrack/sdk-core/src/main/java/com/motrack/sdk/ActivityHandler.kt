@@ -123,7 +123,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
 
         readConfigFile(motrackConfig!!.context!!)
 
-        deviceInfo = DeviceInfo(motrackConfig!!.context!!, motrackConfig!!.sdkPrefix!!)
+        deviceInfo = DeviceInfo(motrackConfig!!.context!!, motrackConfig!!.sdkPrefix)
 
         if (motrackConfig!!.eventBufferingEnabled) {
             logger!!.info("Event buffering is enabled")
@@ -538,10 +538,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         val now = System.currentTimeMillis()
         activityState!!.eventCount++
         updateActivityStateI(now)
-        val eventBuilder = PackageBuilder(
-            motrackConfig!!,
-            deviceInfo!!, activityState, sessionParameters, now
-        )
+        val eventBuilder = PackageBuilder(motrackConfig!!,deviceInfo!!, activityState, sessionParameters, now)
         val eventPackage = eventBuilder.buildEventPackage(event, internalState!!.isInDelayedStart)
         packageHandler!!.addPackage(eventPackage)
         if (motrackConfig!!.eventBufferingEnabled) {

@@ -8,9 +8,9 @@ import android.content.Context
  */
 
 class MotrackConfig {
-    lateinit var subscriptionPath: String
-    lateinit var dgprPath: String
-    lateinit var basePath: String
+    var subscriptionPath: String? = null
+    var dgprPath: String? = null
+    var basePath: String? = null
     var startOffline = false
     var startEnabled: Boolean? = false
     var processName: String? = null
@@ -82,6 +82,7 @@ class MotrackConfig {
     ) {
         init(context, appToken, environment, allowSuppressLogLevel)
     }
+
     private fun init(
         context: Context?,
         appToken: String?,
