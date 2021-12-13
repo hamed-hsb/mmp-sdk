@@ -13,25 +13,25 @@ class MotrackOaid {
     companion object {
         var isOaidToBeRead = false
         var isMsaSdkAvailable = false
-    }
 
-    fun readOaid() {
-        isOaidToBeRead = true
-    }
-
-    fun readOaid(context: Context) {
-        readOaid()
-        try {
-            System.loadLibrary("nllvm1623827671")
-            val certificate: String? = Util.readCertFromAssetFile(context)
-            isMsaSdkAvailable = MdidSdkHelper.InitCert(context, certificate)
-        } catch (t: Throwable) {
-            isMsaSdkAvailable = false
-            Log.d("Adjust", "Error during msa sdk initialization " + t.message)
+        fun readOaid() {
+            isOaidToBeRead = true
         }
-    }
 
-    fun doNotReadOaid() {
-        isOaidToBeRead = false
+        fun readOaid(context: Context) {
+            readOaid()
+            try {
+                System.loadLibrary("nllvm1623827671")
+                val certificate: String? = Util.readCertFromAssetFile(context)
+                isMsaSdkAvailable = MdidSdkHelper.InitCert(context, certificate)
+            } catch (t: Throwable) {
+                isMsaSdkAvailable = false
+                Log.d("Adjust", "Error during msa sdk initialization " + t.message)
+            }
+        }
+
+        fun doNotReadOaid() {
+            isOaidToBeRead = false
+        }
     }
 }
