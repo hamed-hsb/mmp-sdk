@@ -11,6 +11,7 @@ ext {
     // Dependencies
     coreKtxVersion = '1.7.0'
     appCompatVersion = '1.4.0'
+    googleMaterialVersion = '1.4.0'
 
     // Testing libraries
     JunitVersion = '4.13.2'
@@ -21,7 +22,7 @@ ext {
 
     // play plugin
     installreferrerVersion = '2.2'
-    playServicesAdsIdentifier = '17.1.0'
+    playServicesAdsIdentifier = '18.0.0'
 
     // POM
     motrackGroupId = 'com.motrack.sdk'
