@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onFireIntentClick(v: View) {
         val intent = Intent("com.android.vending.INSTALL_REFERRER")
-        intent.setPackage("com.adjust.examples")
+        intent.setPackage("com.motrack.examples")
         intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test")
         sendBroadcast(intent)
     }
