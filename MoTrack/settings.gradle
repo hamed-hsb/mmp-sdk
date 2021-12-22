@@ -7,7 +7,6 @@ dependencyResolutionManagement {
     }
 }
 include ':sdk-core'
-include ':play-plugin'
 include ':test-unit'
 include ':test-app-core'
 include ':test-options'
