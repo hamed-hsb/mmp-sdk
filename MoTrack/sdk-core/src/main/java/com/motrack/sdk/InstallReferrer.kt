@@ -219,7 +219,7 @@ class InstallReferrer
     override fun invoke(proxy: Any?, method: Method?, args: Array<Any?>?): Any? {
         executor!!.submit {
             try {
-                invokeI(proxy!!, method, args!!)
+                invokeI(proxy, method, args)
             } catch (throwable: Throwable) {
                 logger!!.error("invoke error (${throwable.message!!}) thrown by (${throwable.javaClass.canonicalName})")
             }
@@ -228,7 +228,7 @@ class InstallReferrer
     }
 
     @Throws(Throwable::class)
-    private fun invokeI(proxy: Any, method: Method?, args: Array<Any?>): Any? {
+    private fun invokeI(proxy: Any?, method: Method?, args: Array<Any?>?): Any? {
         var args: Array<Any?>? = args
         if (method == null) {
             logger!!.error("InstallReferrer invoke method null")
@@ -311,8 +311,8 @@ class InstallReferrer
                     val installBeginServer = getInstallBeginTimestampServerSeconds(referrerDetails)
                     val googlePlayInstant = getBooleanGooglePlayInstantParam(referrerDetails)
                     logger!!.debug(
-                        "installVersion: ${installVersion!!}, clickTimeServer: ${clickTimeServer}, " +
-                                "installBeginServer: ${installBeginServer}, googlePlayInstant: ${googlePlayInstant!!}"
+                        "installVersion: ${installVersion}, clickTimeServer: ${clickTimeServer}, " +
+                                "installBeginServer: ${installBeginServer}, googlePlayInstant: $googlePlayInstant"
                     )
                     logger!!.debug("Install Referrer read successfully. Closing connection")
                     val installReferrerDetails = ReferrerDetails(
@@ -322,7 +322,10 @@ class InstallReferrer
                     )
 
                     // Stuff successfully read, try to send it.
-                    referrerCallback.onInstallReferrerRead(installReferrerDetails, Constants.REFERRER_API_GOOGLE)
+                    referrerCallback.onInstallReferrerRead(
+                        installReferrerDetails,
+                        Constants.REFERRER_API_GOOGLE
+                    )
                 } catch (e: java.lang.Exception) {
                     logger!!.warn(
                         "Couldn't get install referrer from client (%s). Retrying...",

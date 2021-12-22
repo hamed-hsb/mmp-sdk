@@ -146,7 +146,13 @@ class Reflection {
             cArgs: Array<Class<*>>?,
             vararg args: Any?
         ): Any? {
-            val methodObject = classObject.getMethod(methodName, *cArgs!!) ?: return null
+
+            val methodObject = if (cArgs != null) {
+                classObject.getMethod(methodName, *cArgs)
+            } else {
+                classObject.getMethod(methodName)
+            }
+
             return methodObject.invoke(instance, *args)
         }
 
