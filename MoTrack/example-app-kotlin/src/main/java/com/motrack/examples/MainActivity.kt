@@ -11,7 +11,7 @@ import android.widget.Toast
 import com.motrack.sdk.MotrackEvent
 
 class MainActivity : AppCompatActivity() {
-    private var btnEnableDisableSDK: Button? = null
+    private lateinit var btnEnableDisableSDK: Button
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         if (Motrack.isEnabled()) {
-            btnEnableDisableSDK!!.setText(R.string.txt_disable_sdk)
+            btnEnableDisableSDK.setText(R.string.txt_disable_sdk)
         } else {
-            btnEnableDisableSDK!!.setText(R.string.txt_enable_sdk)
+            btnEnableDisableSDK.setText(R.string.txt_enable_sdk)
         }
     }
 

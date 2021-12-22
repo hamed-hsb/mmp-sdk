@@ -105,7 +105,7 @@ class PackageHandler(
         val retries = responseData.activityPackage!!.increaseRetries()
         val waitTimeMilliSeconds: Long
         val sharedPreferencesManager = SharedPreferencesManager(context!!)
-        waitTimeMilliSeconds = if (responseData.activityPackage!!.getActivityKind() ===
+        waitTimeMilliSeconds = if (responseData.activityPackage!!.activityKind ===
             ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()
         ) {
             Util.getWaitingTime(retries, backoffStrategyForInstallSession)
@@ -219,11 +219,11 @@ class PackageHandler(
         logger!!.verbose("Session callback parameters: %s", sessionParameters.callbackParameters!!)
         logger!!.verbose("Session partner parameters: %s", sessionParameters.partnerParameters!!)
         for (activityPackage in packageQueue!!) {
-            val parameters = activityPackage.getParameters()
+            val parameters = activityPackage.parameters
             // callback parameters
             val mergedCallbackParameters: HashMap<String, String>? = Util.mergeParameters(
                 sessionParameters.callbackParameters,
-                activityPackage.getCallbackParameters(),
+                activityPackage.callbackParameters,
                 "Callback"
             )
             PackageBuilder.addMapJson(
@@ -234,7 +234,7 @@ class PackageHandler(
             // partner parameters
             val mergedPartnerParameters: HashMap<String, String>? = Util.mergeParameters(
                 sessionParameters.partnerParameters,
-                activityPackage.getPartnerParameters(),
+                activityPackage.partnerParameters,
                 "Partner"
             )
             PackageBuilder.addMapJson(

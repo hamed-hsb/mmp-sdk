@@ -93,7 +93,7 @@ class MotrackConfig {
         if (allowSuppressLogLevel && ENVIRONMENT_PRODUCTION == environment) {
             setLogLevel(LogLevel.SUPPRESS, environment)
         } else {
-            setLogLevel(LogLevel.INFO, environment)
+            setLogLevel(LogLevel.VERBOSE, environment)
         }
 
         var context = context

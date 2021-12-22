@@ -9,7 +9,7 @@ import junit.framework.Assert
  */
 
 class TestActivityPackage(private val activityPackage: ActivityPackage) {
-    var parameters: HashMap<String, String>? = activityPackage.getParameters()
+    var parameters: HashMap<String, String>? = activityPackage.parameters
     var appToken: String = "123456789012"
     var environment: String = "sandbox"
     var clientSdk: String = "android4.28.7"
@@ -109,27 +109,28 @@ class TestActivityPackage(private val activityPackage: ActivityPackage) {
         if (savedCallbackParameters == null) {
             Assert.assertNull(
                 activityPackage.getExtendedString(),
-                activityPackage.getCallbackParameters()
+                activityPackage.callbackParameters
             )
         } else {
             Assert.assertTrue(
                 activityPackage.getExtendedString(),
-                savedCallbackParameters == activityPackage.getCallbackParameters()
+                savedCallbackParameters == activityPackage.callbackParameters
             )
         }
         // saved partner parameters
         if (savedPartnerParameters == null) {
             Assert.assertNull(
                 activityPackage.getExtendedString(),
-                activityPackage.getPartnerParameters()
+                activityPackage.partnerParameters
             )
         } else {
             Assert.assertTrue(
                 activityPackage.getExtendedString(),
-                savedPartnerParameters == activityPackage.getPartnerParameters()
+                savedPartnerParameters == activityPackage.partnerParameters
             )
         }
     }
+
     fun testInfoPackage(source: String) {
         // test default package attributes
         testDefaultAttributes("/sdk_info", ActivityKind.INFO, "info")
@@ -185,6 +186,7 @@ class TestActivityPackage(private val activityPackage: ActivityPackage) {
             )
         }
     }
+
     fun testClickPackage(source: String) {
         testClickPackage(source, true)
     }
@@ -236,18 +238,18 @@ class TestActivityPackage(private val activityPackage: ActivityPackage) {
         activityKindString: String
     ) {
         // check the Sdk version is being tested
-        activityPackage.getClientSdk()?.let { assertEquals(it, clientSdk) }
+        activityPackage.clientSdk?.let { assertEquals(it, clientSdk) }
         // check the path
-        activityPackage.getPath()?.let { assertEquals(it, path) }
+        activityPackage.path?.let { assertEquals(it, path) }
         // test activity kind
         // check the activity kind
-        assertEquals(activityPackage.getActivityKind(), activityKind)
+        assertEquals(activityPackage.activityKind, activityKind)
         // the conversion from activity kind to String
-        assertEquals(activityPackage.getActivityKind().toString(), activityKindString)
+        assertEquals(activityPackage.activityKind.toString(), activityKindString)
         // the conversion from String to activity kind
-        assertEquals(activityPackage.getActivityKind(), ActivityKind.fromString(activityKindString))
+        assertEquals(activityPackage.activityKind, ActivityKind.fromString(activityKindString))
         // test suffix
-        activityPackage.getSuffix()?.let { assertEquals(it, suffix) }
+        activityPackage.suffix?.let { assertEquals(it, suffix) }
     }
 
     private fun testDefaultParameters() {

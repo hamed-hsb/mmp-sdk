@@ -21,8 +21,8 @@ class GlobalApplication : Application() {
 
         val config = MotrackConfig(this, appToken, environment)
 
-        // Change the log level.
-        config.setLogLevel(LogLevel.VERBOSE)
+//        // Change the log level.
+//        config.setLogLevel(LogLevel.VERBOSE)
 
         // Set attribution delegate.
         config.onAttributionChangedListener = object : OnAttributionChangedListener {

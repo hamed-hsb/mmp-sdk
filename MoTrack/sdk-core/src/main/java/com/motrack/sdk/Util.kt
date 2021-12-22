@@ -10,6 +10,7 @@ import android.provider.Settings.Secure
 import com.motrack.sdk.scheduler.AsyncTaskExecutor
 import com.motrack.sdk.scheduler.SingleThreadFutureScheduler
 import java.io.*
+import java.lang.ClassCastException
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.text.DecimalFormat
@@ -26,6 +27,9 @@ import kotlin.math.pow
 
 class Util {
     companion object {
+        private const val fieldReadErrorMessage =
+            "Unable to read '%s' field in migration device with message (%s)"
+
         private const val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z"
         val SecondsDisplayFormat: DecimalFormat = newLocalDecimalFormat()
         val dateFormatter = SimpleDateFormat(DATE_FORMAT, Locale.US)
@@ -330,6 +334,47 @@ class Util {
             )
         }
 
+        fun formatString(format: String?, vararg args: Any?): String {
+            return String.format(Locale.US, format!!, *args)
+        }
+
+        fun equalEnum(first: Enum<*>?, second: Enum<*>?): Boolean {
+            return equalObject(first, second)
+        }
+
+        fun equalLong(first: Long?, second: Long?): Boolean {
+            return equalObject(first, second)
+        }
+
+        fun equalInt(first: Int?, second: Int?): Boolean {
+            return equalObject(first, second)
+        }
+
+        fun hashBoolean(value: Boolean?): Int {
+            return value?.hashCode() ?: 0
+        }
+
+        fun hashLong(value: Long?): Int {
+            return value?.hashCode() ?: 0
+        }
+
+        fun hashDouble(value: Double?): Int {
+            return value?.hashCode() ?: 0
+        }
+
+        fun hashString(value: String?): Int {
+            return value?.hashCode() ?: 0
+        }
+
+        fun hashEnum(value: Enum<*>?): Int {
+            return value?.hashCode() ?: 0
+        }
+
+        fun hashObject(value: Any?): Int {
+            return value?.hashCode() ?: 0
+        }
+
+
         fun createUuid(): String {
             return UUID.randomUUID().toString()
         }
@@ -394,9 +439,12 @@ class Util {
 
                 try {
                     objectStream.writeObject(anObject)
-                    getLogger().debug("Wrote $anObject: $objectName")
+                    getLogger().debug("Wrote $objectName: $anObject")
                 } catch (e: NotSerializableException) {
                     getLogger().error("Failed to serialize $objectName")
+                }finally {
+                    objectStream.flush()
+                    objectStream.close()
                 }
 
             } catch (e: java.lang.Exception) {
@@ -406,6 +454,70 @@ class Util {
                 closable?.close()
             } catch (e: java.lang.Exception) {
                 getLogger().error("Failed to close $objectName file for writing $e)")
+            }
+        }
+
+        fun readStringField(
+            fields: ObjectInputStream.GetField,
+            name: String?,
+            defaultValue: String?
+        ): String? {
+            return readObjectField(fields, name, defaultValue)
+        }
+
+        fun <T> readObjectField(
+            fields: ObjectInputStream.GetField,
+            name: String?,
+            defaultValue: T
+        ): T {
+            return try {
+                fields[name, defaultValue] as T
+            } catch (e: java.lang.Exception) {
+                getLogger()
+                    .debug(fieldReadErrorMessage, name!!, e.message!!)
+                defaultValue
+            }
+        }
+
+        fun readBooleanField(
+            fields: ObjectInputStream.GetField,
+            name: String?,
+            defaultValue: Boolean
+        ): Boolean {
+            return try {
+                fields[name, defaultValue]
+            } catch (e: java.lang.Exception) {
+                getLogger()
+                    .debug(fieldReadErrorMessage, name!!, e.message!!)
+                defaultValue
+            }
+        }
+
+        fun readIntField(
+            fields: ObjectInputStream.GetField,
+            name: String?,
+            defaultValue: Int
+        ): Int {
+            return try {
+                fields[name, defaultValue]
+            } catch (e: java.lang.Exception) {
+                getLogger()
+                    .debug(fieldReadErrorMessage, name!!, e.message!!)
+                defaultValue
+            }
+        }
+
+        fun readLongField(
+            fields: ObjectInputStream.GetField,
+            name: String?,
+            defaultValue: Long
+        ): Long {
+            return try {
+                fields[name, defaultValue]
+            } catch (e: java.lang.Exception) {
+                getLogger()
+                    .debug(fieldReadErrorMessage, name!!, e.message!!)
+                defaultValue
             }
         }
 

@@ -13,6 +13,7 @@ android {
         }
         minSdk rootProject.ext.coreMinSdkVersion
         targetSdk rootProject.ext.coreTargetSdkVersion
+        consumerProguardFiles 'motrack-proguard-rules.txt'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

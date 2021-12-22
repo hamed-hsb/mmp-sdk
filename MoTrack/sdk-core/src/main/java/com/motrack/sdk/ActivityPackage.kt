@@ -9,30 +9,38 @@ import kotlin.collections.HashMap
  * @since 06th October 2021
  */
 
-class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
+class ActivityPackage(var activityKind: ActivityKind = ActivityKind.UNKNOWN) :
+    Serializable {
     // data
-    private var path: String? = null
-    private var parameters: HashMap<String, String>? = null
-    private var clientSdk: String? = null
+    var path: String? = null
+    var parameters: HashMap<String, String>? = null
+    var clientSdk: String? = null
+    var suffix: String? = null
 
     @Transient // it will not be serialized
-    private val hashCode = 0
-    private var suffix: String? = null
+    var hashCode = 0
 
     // delay
-    private var callbackParameters: HashMap<String, String>? = null
-    private var partnerParameters: HashMap<String, String>? = null
+    var callbackParameters: HashMap<String, String>? = null
+    var partnerParameters: HashMap<String, String>? = null
 
-    private var retries = 0
-    private var clickTimeInMilliseconds: Long = 0
-    private var clickTimeInSeconds: Long = 0
-    private var installBeginTimeInSeconds: Long = 0
-    private var clickTimeServerInSeconds: Long = 0
-    private var installBeginTimeServerInSeconds: Long = 0
-    private var installVersion: String? = null
-    private var googlePlayInstant: Boolean? = null
+    var retries = 0
 
-    private val logger = MotrackFactory.getLogger()
+    var clickTimeInMilliseconds: Long = 0
+
+    var clickTimeInSeconds: Long = 0
+
+    var installBeginTimeInSeconds: Long = 0
+
+    var clickTimeServerInSeconds: Long = 0
+
+    var installBeginTimeServerInSeconds: Long = 0
+
+    var installVersion: String? = null
+
+    var googlePlayInstant: Boolean? = null
+
+    val logger = MotrackFactory.getLogger()
 
 
     companion object {
@@ -42,18 +50,18 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
             ObjectStreamField("clientSdk", String::class.java),
             ObjectStreamField(
                 "parameters",
-                Map::class.java as Class<Map<String?, String?>?>
+                HashMap::class.java as Class<HashMap<String, String>?>
             ),
             ObjectStreamField("activityKind", ActivityKind::class.java),
             ObjectStreamField("suffix", String::class.java),
             ObjectStreamField(
                 "callbackParameters",
-                Map::class.java as Class<Map<String?, String?>?>
+                HashMap::class.java as Class<HashMap<String, String>?>
             ),
             ObjectStreamField(
                 "partnerParameters",
-                Map::class.java as Class<Map<String?, String?>?>
-            )
+                HashMap::class.java as Class<HashMap<String, String>?>
+            ),
         )
 
     }
@@ -79,8 +87,11 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
 
     @Throws(ClassNotFoundException::class, IOException::class)
     private fun writeObject(stream: ObjectOutputStream) {
-        stream.defaultWriteObject()
-
+        try {
+            stream.defaultWriteObject()
+        }catch (e: Exception){
+            logger.error("Error when serializing ActivityPackage: ${e.message}")
+        }
     }
 
     @Throws(ClassNotFoundException::class, IOException::class)
@@ -91,7 +102,8 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
         activityKind = readField(fields, "activityKind", ActivityKind.UNKNOWN) as ActivityKind
         suffix = readField(fields, "suffix", null) as String?
         parameters = readField(fields, "parameters", null) as HashMap<String, String>?
-        callbackParameters = readField(fields, "callbackParameters", null) as HashMap<String, String>?
+        callbackParameters =
+            readField(fields, "callbackParameters", null) as HashMap<String, String>?
         partnerParameters = readField(fields, "partnerParameters", null) as HashMap<String, String>?
     }
 
@@ -113,126 +125,11 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
         return retries
     }
 
-    public fun getPath(): String? {
-        return path
-    }
-
-    public fun setPath(path: String) {
-        this.path = path
-    }
-
-
-    public fun setClientSdk(clientSdk: String) {
-        this.clientSdk = clientSdk
-    }
-
-    public fun getClientSdk(): String? {
-        return clientSdk
-    }
-
-    public fun getParameters(): HashMap<String, String>? {
-        return parameters
-    }
-
-    fun setParameters(parameters: HashMap<String, String>) {
-        this.parameters = parameters
-    }
-
-    fun setCallbackParameters(callbackParameters: HashMap<String, String>?) {
-        this.callbackParameters = callbackParameters
-    }
-
-
-    fun setPartnerParameters(partnerParameters: HashMap<String, String>?) {
-        this.partnerParameters = partnerParameters
-    }
-
-    @JvmName("getPackageActivityKind")
-    fun getActivityKind(): ActivityKind {
-        return activityKind
-    }
-
     fun getFailureMessage(): String {
         return "Failed to track $activityKind$suffix"
     }
 
-    fun getSuffix(): String? {
-        return suffix
-    }
-
-    fun setSuffix(suffix: String?) {
-        this.suffix = suffix
-    }
-
-    fun getRetries(): Int {
-        return retries
-    }
-
-    fun getClickTimeInMilliseconds(): Long {
-        return clickTimeInMilliseconds
-    }
-
-    fun setClickTimeInMilliseconds(clickTimeInMilliseconds: Long) {
-        this.clickTimeInMilliseconds = clickTimeInMilliseconds
-    }
-
-    fun getClickTimeInSeconds(): Long {
-        return clickTimeInSeconds
-    }
-
-    fun setClickTimeInSeconds(clickTimeInSeconds: Long) {
-        this.clickTimeInSeconds = clickTimeInSeconds
-    }
-
-    fun getInstallBeginTimeInSeconds(): Long {
-        return installBeginTimeInSeconds
-    }
-
-    fun setInstallBeginTimeInSeconds(installBeginTimeInSeconds: Long) {
-        this.installBeginTimeInSeconds = installBeginTimeInSeconds
-    }
-
-    fun getClickTimeServerInSeconds(): Long {
-        return clickTimeServerInSeconds
-    }
-
-    fun setClickTimeServerInSeconds(clickTimeServerInSeconds: Long) {
-        this.clickTimeServerInSeconds = clickTimeServerInSeconds
-    }
-
-    fun getInstallBeginTimeServerInSeconds(): Long {
-        return installBeginTimeServerInSeconds
-    }
-
-    fun setInstallBeginTimeServerInSeconds(installBeginTimeServerInSeconds: Long) {
-        this.installBeginTimeServerInSeconds = installBeginTimeServerInSeconds
-    }
-
-    fun getInstallVersion(): String? {
-        return installVersion
-    }
-
-    fun setInstallVersion(installVersion: String?) {
-        this.installVersion = installVersion
-    }
-
-    fun getGooglePlayInstant(): Boolean? {
-        return googlePlayInstant
-    }
-
-    fun setGooglePlayInstant(googlePlayInstant: Boolean?) {
-        this.googlePlayInstant = googlePlayInstant
-    }
-
-    fun getCallbackParameters(): HashMap<String, String>? {
-        return callbackParameters
-    }
-
-    fun getPartnerParameters(): HashMap<String, String>? {
-        return partnerParameters
-    }
-
-    public override fun toString(): String {
+    override fun toString(): String {
         return "$activityKind$suffix"
     }
 
@@ -242,43 +139,29 @@ class ActivityPackage(private var activityKind: ActivityKind) : Serializable {
 
         other as ActivityPackage
 
-        if (activityKind != other.activityKind) return false
         if (path != other.path) return false
-        if (parameters != other.parameters) return false
         if (clientSdk != other.clientSdk) return false
-        if (hashCode != other.hashCode) return false
+        if (parameters != other.parameters) return false
+        if (activityKind != other.activityKind) return false
         if (suffix != other.suffix) return false
         if (callbackParameters != other.callbackParameters) return false
         if (partnerParameters != other.partnerParameters) return false
-        if (retries != other.retries) return false
-        if (clickTimeInMilliseconds != other.clickTimeInMilliseconds) return false
-        if (clickTimeInSeconds != other.clickTimeInSeconds) return false
-        if (installBeginTimeInSeconds != other.installBeginTimeInSeconds) return false
-        if (clickTimeServerInSeconds != other.clickTimeServerInSeconds) return false
-        if (installBeginTimeServerInSeconds != other.installBeginTimeServerInSeconds) return false
-        if (installVersion != other.installVersion) return false
-        if (googlePlayInstant != other.googlePlayInstant) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = activityKind.hashCode()
-        result = 31 * result + path.hashCode()
-        result = 31 * result + parameters.hashCode()
-        result = 31 * result + clientSdk.hashCode()
-        result = 31 * result + hashCode
-        result = 31 * result + (suffix?.hashCode() ?: 0)
-        result = 31 * result + callbackParameters.hashCode()
-        result = 31 * result + partnerParameters.hashCode()
-        result = 31 * result + retries
-        result = 31 * result + clickTimeInMilliseconds.hashCode()
-        result = 31 * result + clickTimeInSeconds.hashCode()
-        result = 31 * result + installBeginTimeInSeconds.hashCode()
-        result = 31 * result + clickTimeServerInSeconds.hashCode()
-        result = 31 * result + installBeginTimeServerInSeconds.hashCode()
-        result = 31 * result + (installVersion?.hashCode() ?: 0)
-        result = 31 * result + (googlePlayInstant?.hashCode() ?: 0)
-        return result
+        if (hashCode == 0) {
+            hashCode = 17
+            hashCode = 31 * hashCode + path.hashCode()
+            hashCode = 31 * hashCode + clientSdk.hashCode()
+            hashCode = 31 * hashCode + parameters.hashCode()
+            hashCode = 31 * hashCode + activityKind.hashCode()
+            hashCode = 31 * hashCode + (suffix?.hashCode() ?: 0)
+            hashCode = 31 * hashCode + callbackParameters.hashCode()
+            hashCode = 31 * hashCode + partnerParameters.hashCode()
+        }
+
+        return hashCode
     }
 }

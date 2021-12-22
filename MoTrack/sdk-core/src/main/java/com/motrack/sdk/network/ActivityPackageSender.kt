@@ -90,33 +90,33 @@ class ActivityPackageSender(
         try {
             val activityPackage = responseData.activityPackage!!
             val activityPackageParameters: HashMap<String, String> =
-                activityPackage.getParameters() as HashMap<String, String>
+                activityPackage.parameters as HashMap<String, String>
             val sendingParameters = responseData.sendingParameters
             val authorizationHeader: String? = buildAndExtractAuthorizationHeader(
                 activityPackageParameters,
-                activityPackage.getActivityKind()
+                activityPackage.activityKind
             )
             val shouldUseGET =
-                responseData.activityPackage!!.getActivityKind() === ActivityKind.ATTRIBUTION
+                responseData.activityPackage!!.activityKind === ActivityKind.ATTRIBUTION
             val urlString: String = if (shouldUseGET) {
                 extractEventCallbackId(activityPackageParameters)
                 generateUrlStringForGET(
-                    activityPackage.getActivityKind(),
-                    activityPackage.getPath()!!,
+                    activityPackage.activityKind,
+                    activityPackage.path!!,
                     activityPackageParameters,
                     sendingParameters
                 )
             } else {
                 generateUrlStringForPOST(
-                    activityPackage.getActivityKind(),
-                    activityPackage.getPath()!!
+                    activityPackage.activityKind,
+                    activityPackage.path!!
                 )
             }
             val url = URL(urlString)
             val connection = httpsURLConnectionProvider!!.generateHttpsURLConnection(url)
 
             // get and apply connection options (default or for tests)
-            connectionOptions!!.applyConnectionOptions(connection, activityPackage.getClientSdk()!!)
+            connectionOptions!!.applyConnectionOptions(connection, activityPackage.clientSdk!!)
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader)
             }

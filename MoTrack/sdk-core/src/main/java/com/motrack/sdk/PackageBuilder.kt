@@ -45,29 +45,29 @@ class PackageBuilder(
     fun buildSessionPackage(isInDelay: Boolean): ActivityPackage {
         val parameters: HashMap<String, String> = getSessionParameters(isInDelay)
         val sessionPackage: ActivityPackage = getDefaultActivityPackage(ActivityKind.SESSION)
-        sessionPackage.setPath("/session")
-        sessionPackage.setSuffix("")
+        sessionPackage.path = "/session"
+        sessionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.SESSION.toString(),
-            sessionPackage.getClientSdk(), motrackConfig.context, logger
+            sessionPackage.clientSdk, motrackConfig.context, logger
         )
-        sessionPackage.setParameters(parameters)
+        sessionPackage.parameters = parameters
         return sessionPackage
     }
 
     fun buildEventPackage(event: MotrackEvent, isInDelay: Boolean): ActivityPackage {
         val parameters: HashMap<String, String> = getEventParameters(event, isInDelay)
         val eventPackage = getDefaultActivityPackage(ActivityKind.EVENT)
-        eventPackage.setPath("/event")
-        eventPackage.setSuffix(getEventSuffix(event))
+        eventPackage.path = "/event"
+        eventPackage.suffix = getEventSuffix(event)
         MotrackSigner.sign(
             parameters, ActivityKind.EVENT.toString(),
-            eventPackage.getClientSdk(), motrackConfig.context!!, logger
+            eventPackage.clientSdk, motrackConfig.context!!, logger
         )
-        eventPackage.setParameters(parameters)
+        eventPackage.parameters = parameters
         if (isInDelay) {
-            eventPackage.setCallbackParameters(event.callbackParameters)
-            eventPackage.setPartnerParameters(event.partnerParameters)
+            eventPackage.callbackParameters = event.callbackParameters
+            eventPackage.partnerParameters = event.partnerParameters
         }
         return eventPackage
     }
@@ -75,33 +75,33 @@ class PackageBuilder(
     fun buildInfoPackage(source: String?): ActivityPackage {
         val parameters: HashMap<String, String> = getInfoParameters(source!!)
         val infoPackage = getDefaultActivityPackage(ActivityKind.INFO)
-        infoPackage.setPath("/sdk_info")
-        infoPackage.setSuffix("")
+        infoPackage.path = "/sdk_info"
+        infoPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.INFO.toString(),
-            infoPackage.getClientSdk(), motrackConfig.context!!, logger
+            infoPackage.clientSdk, motrackConfig.context!!, logger
         )
-        infoPackage.setParameters(parameters)
+        infoPackage.parameters = parameters
         return infoPackage
     }
 
     fun buildClickPackage(source: String?): ActivityPackage {
         val parameters: HashMap<String, String> = getClickParameters(source!!)
         val clickPackage = getDefaultActivityPackage(ActivityKind.CLICK)
-        clickPackage.setPath("/sdk_click")
-        clickPackage.setSuffix("")
-        clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds)
-        clickPackage.setClickTimeInSeconds(clickTimeInSeconds)
-        clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds)
-        clickPackage.setClickTimeServerInSeconds(clickTimeServerInSeconds)
-        clickPackage.setInstallBeginTimeServerInSeconds(installBeginTimeServerInSeconds)
-        clickPackage.setInstallVersion(installVersion)
-        clickPackage.setGooglePlayInstant(googlePlayInstant)
+        clickPackage.path = "/sdk_click"
+        clickPackage.suffix = ""
+        clickPackage.clickTimeInMilliseconds = clickTimeInMilliseconds
+        clickPackage.clickTimeInSeconds = clickTimeInSeconds
+        clickPackage.installBeginTimeInSeconds = installBeginTimeInSeconds
+        clickPackage.clickTimeServerInSeconds = clickTimeServerInSeconds
+        clickPackage.installBeginTimeServerInSeconds  = installBeginTimeServerInSeconds
+        clickPackage.installVersion = installVersion
+        clickPackage.googlePlayInstant = googlePlayInstant
         MotrackSigner.sign(
             parameters, ActivityKind.CLICK.toString(),
-            clickPackage.getClientSdk(), motrackConfig.context!!, logger
+            clickPackage.clientSdk, motrackConfig.context!!, logger
         )
-        clickPackage.setParameters(parameters)
+        clickPackage.parameters = parameters
         return clickPackage
     }
 
@@ -110,39 +110,40 @@ class PackageBuilder(
             initiatedByDescription!!
         )
         val attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION)
-        attributionPackage.setPath("attribution") // does not contain '/' because of Uri.Builder.appendPath
-        attributionPackage.setSuffix("")
+        attributionPackage.path =
+            "attribution" // does not contain '/' because of Uri.Builder.appendPath
+        attributionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.ATTRIBUTION.toString(),
-            attributionPackage.getClientSdk(), motrackConfig.context!!, logger
+            attributionPackage.clientSdk, motrackConfig.context!!, logger
         )
-        attributionPackage.setParameters(parameters)
+        attributionPackage.parameters = parameters
         return attributionPackage
     }
 
     fun buildGdprPackage(): ActivityPackage {
         val parameters: HashMap<String, String> = getGdprParameters()
         val gdprPackage = getDefaultActivityPackage(ActivityKind.GDPR)
-        gdprPackage.setPath("/gdpr_forget_device")
-        gdprPackage.setSuffix("")
+        gdprPackage.path = "/gdpr_forget_device"
+        gdprPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.GDPR.toString(),
-            gdprPackage.getClientSdk(), motrackConfig.context!!, logger
+            gdprPackage.clientSdk, motrackConfig.context!!, logger
         )
-        gdprPackage.setParameters(parameters)
+        gdprPackage.parameters = parameters
         return gdprPackage
     }
 
     fun buildDisableThirdPartySharingPackage(): ActivityPackage {
         val parameters: HashMap<String, String> = getDisableThirdPartySharingParameters()
         val activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING)
-        activityPackage.setPath("/disable_third_party_sharing")
-        activityPackage.setSuffix("")
+        activityPackage.path = "/disable_third_party_sharing"
+        activityPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.DISABLE_THIRD_PARTY_SHARING.toString(),
-            activityPackage.getClientSdk(), motrackConfig.context!!, logger
+            activityPackage.clientSdk, motrackConfig.context!!, logger
         )
-        activityPackage.setParameters(parameters)
+        activityPackage.parameters = parameters
         return activityPackage
     }
 
@@ -152,13 +153,13 @@ class PackageBuilder(
         val parameters: HashMap<String, String> =
             getThirdPartySharingParameters(motrackThirdPartySharing)
         val activityPackage = getDefaultActivityPackage(ActivityKind.THIRD_PARTY_SHARING)
-        activityPackage.setPath("/third_party_sharing")
-        activityPackage.setSuffix("")
+        activityPackage.path = "/third_party_sharing"
+        activityPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.THIRD_PARTY_SHARING.toString(),
-            activityPackage.getClientSdk(), motrackConfig.context!!, logger
+            activityPackage.clientSdk, motrackConfig.context!!, logger
         )
-        activityPackage.setParameters(parameters)
+        activityPackage.parameters = parameters
         return activityPackage
     }
 
@@ -166,13 +167,13 @@ class PackageBuilder(
         val parameters: HashMap<String, String> =
             getMeasurementConsentParameters(consentMeasurement)
         val activityPackage = getDefaultActivityPackage(ActivityKind.MEASUREMENT_CONSENT)
-        activityPackage.setPath("/measurement_consent")
-        activityPackage.setSuffix("")
+        activityPackage.path = "/measurement_consent"
+        activityPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.MEASUREMENT_CONSENT.toString(),
-            activityPackage.getClientSdk(), motrackConfig.context!!, logger
+            activityPackage.clientSdk, motrackConfig.context!!, logger
         )
-        activityPackage.setParameters(parameters)
+        activityPackage.parameters = parameters
         return activityPackage
     }
 
@@ -181,13 +182,13 @@ class PackageBuilder(
             source!!, adRevenueJson!!
         )
         val adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE)
-        adRevenuePackage.setPath("/ad_revenue")
-        adRevenuePackage.setSuffix("")
+        adRevenuePackage.path = "/ad_revenue"
+        adRevenuePackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.AD_REVENUE.toString(),
-            adRevenuePackage.getClientSdk(), motrackConfig.context!!, logger
+            adRevenuePackage.clientSdk, motrackConfig.context!!, logger
         )
-        adRevenuePackage.setParameters(parameters)
+        adRevenuePackage.parameters = parameters
         return adRevenuePackage
     }
 
@@ -198,16 +199,16 @@ class PackageBuilder(
         val parameters: HashMap<String, String> =
             getAdRevenueParameters(motrackAdRevenue, isInDelay)
         val adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE)
-        adRevenuePackage.setPath("/ad_revenue")
-        adRevenuePackage.setSuffix("")
+        adRevenuePackage.path = "/ad_revenue"
+        adRevenuePackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.AD_REVENUE.toString(),
-            adRevenuePackage.getClientSdk(), motrackConfig.context!!, logger
+            adRevenuePackage.clientSdk, motrackConfig.context!!, logger
         )
-        adRevenuePackage.setParameters(parameters)
+        adRevenuePackage.parameters = parameters
         if (isInDelay) {
-            adRevenuePackage.setCallbackParameters(motrackAdRevenue.callbackParameters)
-            adRevenuePackage.setPartnerParameters(motrackAdRevenue.partnerParameters)
+            adRevenuePackage.callbackParameters = motrackAdRevenue.callbackParameters
+            adRevenuePackage.partnerParameters = motrackAdRevenue.partnerParameters
         }
         return adRevenuePackage
     }
@@ -218,13 +219,13 @@ class PackageBuilder(
     ): ActivityPackage {
         val parameters: HashMap<String, String> = getSubscriptionParameters(subscription, isInDelay)
         val subscriptionPackage = getDefaultActivityPackage(ActivityKind.SUBSCRIPTION)
-        subscriptionPackage.setPath("/v2/purchase")
-        subscriptionPackage.setSuffix("")
+        subscriptionPackage.path = "/v2/purchase"
+        subscriptionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.SUBSCRIPTION.toString(),
-            subscriptionPackage.getClientSdk(), motrackConfig.context!!, logger
+            subscriptionPackage.clientSdk, motrackConfig.context!!, logger
         )
-        subscriptionPackage.setParameters(parameters)
+        subscriptionPackage.parameters = parameters
         return subscriptionPackage
     }
 
@@ -1575,7 +1576,7 @@ class PackageBuilder(
 
     private fun getDefaultActivityPackage(activityKind: ActivityKind): ActivityPackage {
         val activityPackage = ActivityPackage(activityKind)
-        activityPackage.setClientSdk(deviceInfo.clientSdk)
+        activityPackage.clientSdk = deviceInfo.clientSdk
         return activityPackage
     }
 

@@ -212,7 +212,7 @@ class SdkClickHandler(
         }
 
         val sdkClickPackage: ActivityPackage = packageQueue!!.removeAt(0)
-        val retries = sdkClickPackage.getRetries()
+        val retries = sdkClickPackage.retries
         val runnable = Runnable {
             sendSdkClickI(sdkClickPackage)
             sendNextSdkClick()
@@ -239,9 +239,9 @@ class SdkClickHandler(
      */
     private fun sendSdkClickI(sdkClickPackage: ActivityPackage) {
         val activityHandler = activityHandlerWeakRef!!.get()
-        val source = sdkClickPackage.getParameters()!!["source"]
+        val source = sdkClickPackage.parameters!!["source"]
         val isReftag = source != null && source == SOURCE_REFTAG
-        val rawReferrerString = sdkClickPackage.getParameters()!!["raw_referrer"]
+        val rawReferrerString = sdkClickPackage.parameters!!["raw_referrer"]
         if (isReftag) {
             // Check before sending if referrer was removed already.
             val sharedPreferencesManager = SharedPreferencesManager(
@@ -249,7 +249,7 @@ class SdkClickHandler(
             )
             val rawReferrer = sharedPreferencesManager.getRawReferrer(
                 rawReferrerString!!,
-                sdkClickPackage.getClickTimeInMilliseconds()
+                sdkClickPackage.clickTimeInMilliseconds
             ) ?: return
         }
         val isInstallReferrer = source != null && source == SOURCE_INSTALL_REFERRER
@@ -265,14 +265,14 @@ class SdkClickHandler(
             // Check if install referrer information is saved to activity state.
             // If yes, we have successfully sent it at earlier point and no need to do it again.
             // If not, proceed with sending of sdk_click package for install referrer.
-            clickTime = sdkClickPackage.getClickTimeInSeconds()
-            installBegin = sdkClickPackage.getInstallBeginTimeInSeconds()
-            installReferrer = sdkClickPackage.getParameters()!!["referrer"]
-            clickTimeServer = sdkClickPackage.getClickTimeServerInSeconds()
-            installBeginServer = sdkClickPackage.getInstallBeginTimeServerInSeconds()
-            installVersion = sdkClickPackage.getInstallVersion()
-            googlePlayInstant = sdkClickPackage.getGooglePlayInstant()
-            referrerApi = sdkClickPackage.getParameters()!!["referrer_api"]
+            clickTime = sdkClickPackage.clickTimeInSeconds
+            installBegin = sdkClickPackage.installBeginTimeInSeconds
+            installReferrer = sdkClickPackage.parameters!!["referrer"]
+            clickTimeServer = sdkClickPackage.clickTimeServerInSeconds
+            installBeginServer = sdkClickPackage.installBeginTimeServerInSeconds
+            installVersion = sdkClickPackage.installVersion
+            googlePlayInstant = sdkClickPackage.googlePlayInstant
+            referrerApi = sdkClickPackage.parameters!!["referrer_api"]
         }
         val isPreinstall = source != null && source == Constants.PREINSTALL
         val sendingParameters = generateSendingParametersI()
@@ -296,7 +296,7 @@ class SdkClickHandler(
             val sharedPreferencesManager = SharedPreferencesManager(activityHandler.getContext())
             sharedPreferencesManager.removeRawReferrer(
                 rawReferrerString,
-                sdkClickPackage.getClickTimeInMilliseconds()
+                sdkClickPackage.clickTimeInMilliseconds
             )
         }
         if (isInstallReferrer) {
@@ -312,7 +312,7 @@ class SdkClickHandler(
             responseData.isInstallReferrer = true
         }
         if (isPreinstall) {
-            val payloadLocation = sdkClickPackage.getParameters()!!["found_location"]
+            val payloadLocation = sdkClickPackage.parameters!!["found_location"]
             if (payloadLocation != null && payloadLocation.isNotEmpty()) {
                 // update preinstall flag in shared preferences after sdk_click is sent.
                 val sharedPreferencesManager =

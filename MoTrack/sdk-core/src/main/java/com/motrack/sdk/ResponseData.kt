@@ -31,7 +31,7 @@ open class ResponseData {
             sendingParameters: Map<String, String>?
         ): ResponseData {
             val responseData: ResponseData?
-            val activityKind = activityPackage.getActivityKind()
+            val activityKind = activityPackage.activityKind
 
             responseData = when (activityKind) {
                 ActivityKind.SESSION -> SessionResponseData(activityPackage)

@@ -9,7 +9,7 @@ import org.json.JSONObject
 
 class SessionResponseData(activityPackage: ActivityPackage) : ResponseData() {
 
-    private val sdkPlatform = activityPackage.getClientSdk()?.let { Util.getSdkPrefixPlatform(it) }
+    private val sdkPlatform = activityPackage.clientSdk?.let { Util.getSdkPrefixPlatform(it) }
 
     public fun getSuccessResponseData(): MotrackSessionSuccess? {
         if (!success) {

@@ -118,6 +118,7 @@ class SingleThreadCachedScheduler(source: String) : ThreadScheduler {
             }
             runnable.run()
         } catch (t: Throwable) {
+            t.printStackTrace()
             MotrackFactory.getLogger().warn("Execution failed: ${t.message}")
         }
     }

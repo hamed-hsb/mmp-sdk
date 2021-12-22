@@ -104,7 +104,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         readSessionCallbackParametersI(motrackConfig!!.context!!)
         readSessionPartnerParametersI(motrackConfig!!.context!!)
 
-        motrackConfig!!.startEnabled.let {
+        motrackConfig!!.startEnabled?.let {
             motrackConfig!!.preLaunchActions!!.preLaunchActionsArray.add(object :
                 IRunActivityHandler {
                 override fun run(activityHandler: ActivityHandler?) {
@@ -542,7 +542,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         val eventPackage = eventBuilder.buildEventPackage(event, internalState!!.isInDelayedStart)
         packageHandler!!.addPackage(eventPackage)
         if (motrackConfig!!.eventBufferingEnabled) {
-            logger!!.info("Buffered event ${eventPackage.getSuffix()!!}")
+            logger!!.info("Buffered event ${eventPackage.suffix!!}")
         } else {
             packageHandler!!.sendFirstPackage()
         }
@@ -1384,7 +1384,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         val sharedPreferencesManager = SharedPreferencesManager(getContext())
         sharedPreferencesManager.removePushToken()
         if (motrackConfig!!.eventBufferingEnabled) {
-            logger!!.info("Buffered event ${infoPackage.getSuffix()!!}")
+            logger!!.info("Buffered event ${infoPackage.suffix!!}")
         } else {
             packageHandler!!.sendFirstPackage()
         }
@@ -1982,7 +1982,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         val sharedPreferencesManager = SharedPreferencesManager(getContext())
         sharedPreferencesManager.removeGdprForgetMe()
         if (motrackConfig!!.eventBufferingEnabled) {
-            logger!!.info("Buffered event ${gdprPackage.getSuffix()!!}")
+            logger!!.info("Buffered event ${gdprPackage.suffix!!}")
         } else {
             packageHandler!!.sendFirstPackage()
         }
@@ -2020,7 +2020,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         // Removed the cached disable third party sharing flag.
         sharedPreferencesManager.removeDisableThirdPartySharing()
         if (motrackConfig!!.eventBufferingEnabled) {
-            logger!!.info("Buffered event ${activityPackage.getSuffix()!!}")
+            logger!!.info("Buffered event ${activityPackage.suffix!!}")
         } else {
             packageHandler!!.sendFirstPackage()
         }
@@ -2050,7 +2050,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             packageBuilder.buildThirdPartySharingPackage(motrackThirdPartySharing)
         packageHandler!!.addPackage(activityPackage)
         if (motrackConfig!!.eventBufferingEnabled) {
-            logger!!.info("Buffered event ${activityPackage.getSuffix()!!}")
+            logger!!.info("Buffered event ${activityPackage.suffix!!}")
         } else {
             packageHandler!!.sendFirstPackage()
         }
@@ -2079,7 +2079,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             packageBuilder.buildMeasurementConsentPackage(consentMeasurement)
         packageHandler!!.addPackage(activityPackage)
         if (motrackConfig!!.eventBufferingEnabled) {
-            logger!!.info("Buffered event ${activityPackage.getSuffix()!!}")
+            logger!!.info("Buffered event ${activityPackage.suffix!!}")
         } else {
             packageHandler!!.sendFirstPackage()
         }

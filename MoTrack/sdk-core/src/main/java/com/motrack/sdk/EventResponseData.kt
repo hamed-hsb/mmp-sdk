@@ -9,9 +9,9 @@ import org.json.JSONObject
 
 class EventResponseData(activityPackage: ActivityPackage) : ResponseData() {
 
-    private var eventToken: String? = activityPackage.getParameters()?.get("event_token")
-    private var callbackId: String? = activityPackage.getParameters()?.get("event_callback_id")
-    private var sdkPlatform = activityPackage.getClientSdk()?.let { Util.getSdkPrefixPlatform(it) }
+    private var eventToken: String? = activityPackage.parameters?.get("event_token")
+    private var callbackId: String? = activityPackage.parameters?.get("event_callback_id")
+    private var sdkPlatform = activityPackage.clientSdk?.let { Util.getSdkPrefixPlatform(it) }
 
 
     public fun getSuccessResponseData(): MotrackEventSuccess? {
