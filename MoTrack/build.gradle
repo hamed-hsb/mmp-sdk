@@ -42,7 +42,7 @@ ext {
     okhttp3IdlingResourceVersion = '1.0.0'
 }
     buildscript {
-        ext.kotlinVersion = '1.6.0'
+        ext.kotlinVersion = '1.6.10'
         repositories {
             google()
             mavenCentral()
