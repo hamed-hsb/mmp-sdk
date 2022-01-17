@@ -20,7 +20,7 @@ class PackageFactory {
         fun buildReftagSdkClickPackage(
             rawReferrer: String?,
             clickTime: Long,
-            activityState: ActivityState,
+            activityState: ActivityState?,
             motrackConfig: MotrackConfig,
             deviceInfo: DeviceInfo,
             sessionParameters: SessionParameters
@@ -147,7 +147,7 @@ class PackageFactory {
         fun buildPreinstallSdkClickPackage(
             preinstallPayload: String?,
             preinstallLocation: String?,
-            activityState: ActivityState,
+            activityState: ActivityState?,
             motrackConfig: MotrackConfig,
             deviceInfo: DeviceInfo,
             sessionParameters: SessionParameters

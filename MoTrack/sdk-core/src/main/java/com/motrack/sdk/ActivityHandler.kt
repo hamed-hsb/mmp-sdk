@@ -379,8 +379,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         return deviceInfo!!
     }
 
-    override fun getActivityState(): ActivityState {
-        return activityState!!
+    override fun getActivityState(): ActivityState? {
+        return activityState
     }
 
     override fun getSessionParameters(): SessionParameters {

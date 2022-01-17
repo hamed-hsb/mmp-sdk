@@ -10,17 +10,17 @@ import java.io.*
 
 class MotrackAttribution : Serializable {
 
-    lateinit var trackerToken: String
-    lateinit var trackerName: String
-    lateinit var network: String
-    lateinit var campaign: String
-    lateinit var adgroup: String
-    lateinit var creative: String
-    lateinit var clickLabel: String
-    lateinit var adid: String
-    lateinit var costType: String
+    var trackerToken: String? = null
+    var trackerName: String? = null
+    var network: String? = null
+    var campaign: String? = null
+    var adgroup: String? = null
+    var creative: String? = null
+    var clickLabel: String? = null
+    var adid: String? = null
+    var costType: String? = null
     var costAmount: Double = 0.0
-    lateinit var costCurrency: String
+    var costCurrency: String? = null
 
 
     @Throws(IOException::class)

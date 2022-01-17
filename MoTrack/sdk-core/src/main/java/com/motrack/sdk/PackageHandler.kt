@@ -216,8 +216,15 @@ class PackageHandler(
             return
         }
         logger!!.debug("Updating package handler queue")
-        logger!!.verbose("Session callback parameters: %s", sessionParameters.callbackParameters!!)
-        logger!!.verbose("Session partner parameters: %s", sessionParameters.partnerParameters!!)
+        sessionParameters.callbackParameters?.let {
+            logger!!.verbose("Session callback parameters: %s",
+                it.toString())
+        }
+        sessionParameters.partnerParameters?.let {
+            logger!!.verbose("Session partner parameters: %s",
+                it
+            )
+        }
         for (activityPackage in packageQueue!!) {
             val parameters = activityPackage.parameters
             // callback parameters

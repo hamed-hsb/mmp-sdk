@@ -215,7 +215,7 @@ class PreinstallUtil {
                 val methodObject = classObject.getDeclaredMethod("get", String::class.java)
                 return methodObject.invoke(classObject, propertyKey) as String
             } catch (e: Exception) {
-                logger.error("Exception read system property using reflection key [$propertyKey] error [${e.message!!}]")
+                logger.error("Exception read system property using reflection key [$propertyKey] error [${e.message}]")
             }
             return null
         }

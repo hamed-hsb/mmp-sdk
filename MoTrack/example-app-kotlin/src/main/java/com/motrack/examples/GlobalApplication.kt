@@ -139,10 +139,10 @@ class GlobalApplication : Application() {
         registerActivityLifecycleCallbacks(MotrackLifecycleCallbacks())
 
         // Put the SDK in offline mode.
-         Motrack.setOfflineMode(true)
+//         Motrack.setOfflineMode(true)
 
         // Disable the SDK
-        Motrack.setEnabled(false)
+//        Motrack.setEnabled(false)
 
         // Send push notification token.
          Motrack.setPushToken("token", applicationContext);

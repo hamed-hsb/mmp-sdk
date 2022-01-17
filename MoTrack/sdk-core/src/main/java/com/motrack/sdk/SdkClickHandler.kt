@@ -199,9 +199,12 @@ class SdkClickHandler(
             return
         }
 
-        if (activityHandler.getActivityState().isGdprForgotten) {
-            return
+        activityHandler.getActivityState()?.let {
+            if (it.isGdprForgotten) {
+                return
+            }
         }
+
 
         if (paused) {
             return

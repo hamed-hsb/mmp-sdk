@@ -90,7 +90,7 @@ interface IActivityHandler {
 
     fun getDeviceInfo(): DeviceInfo
 
-    fun getActivityState(): ActivityState
+    fun getActivityState(): ActivityState?
 
     fun getSessionParameters(): SessionParameters
 

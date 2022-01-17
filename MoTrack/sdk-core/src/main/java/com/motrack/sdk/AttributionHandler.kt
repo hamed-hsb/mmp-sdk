@@ -54,11 +54,11 @@ class AttributionHandler(
     }
 
     private fun sendAttributionRequestI() {
-        if (activityHandlerWeakRef!!.get()!!.getActivityState().isGdprForgotten) {
+        if (activityHandlerWeakRef?.get()?.getActivityState()?.isGdprForgotten == true) {
             return
         }
         if (paused) {
-            logger!!.debug("Attribution handler is paused")
+            logger?.debug("Attribution handler is paused")
             return
         }
 

@@ -21,7 +21,7 @@ class TestLibrary {
     private var waitControlQueue: BlockingQueue<String>? = null
     lateinit var controlClient: ControlWebSocketClient
     private var executor: ExecutorService? = null
-    private var infoToServer: HashMap<String, String>? = null
+    private var infoToServer: HashMap<String, String?>? = null
     private lateinit var testSessionId: String
     private val currentTestNames = StringBuilder()
     private var commandListener: ICommandListener? = null
@@ -150,7 +150,7 @@ class TestLibrary {
         }
     }
 
-    fun addInfoToSend(key: String, value: String) {
+    fun addInfoToSend(key: String, value: String?) {
         if (infoToServer == null) {
             infoToServer = HashMap()
         }

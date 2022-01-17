@@ -62,7 +62,7 @@ class NetworkUtils {
         fun sendPostI(
             path: String,
             clientSdk: String?,
-            postBody: Map<String, String>?
+            postBody: Map<String, String?>?
         ): HttpResponse? {
             return sendPostI(path, clientSdk, null, postBody)
         }
@@ -71,7 +71,7 @@ class NetworkUtils {
             path: String,
             clientSdk: String?,
             testNames: String?,
-            postBody: Map<String, String>?
+            postBody: Map<String, String?>?
         ): HttpResponse? {
             val targetURL: String = TestLibrary.baseUrl + path
             try {
@@ -126,7 +126,7 @@ class NetworkUtils {
         @Throws(IOException::class)
         fun createPOSTHttpsURLConnection(
             urlString: String?,
-            postBody: Map<String, String>?,
+            postBody: Map<String, String?>?,
             connectionOptions: IConnectionOptions
         ): HttpsURLConnection {
             var wr: DataOutputStream? = null
@@ -161,7 +161,7 @@ class NetworkUtils {
         }
 
         @Throws(UnsupportedEncodingException::class)
-        private fun getPostDataString(body: Map<String, String>): String {
+        private fun getPostDataString(body: Map<String, String?>): String {
             val result = StringBuilder()
             for ((key, value) in body) {
                 val encodedName = URLEncoder.encode(key, Constants.ENCODING)
