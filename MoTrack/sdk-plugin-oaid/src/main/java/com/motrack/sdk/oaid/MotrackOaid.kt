@@ -21,7 +21,7 @@ class MotrackOaid {
         fun readOaid(context: Context) {
             readOaid()
             try {
-                System.loadLibrary("nllvm1623827671")
+                System.loadLibrary("msaoaidsec")
                 val certificate: String? = Util.readCertFromAssetFile(context)
                 isMsaSdkAvailable = MdidSdkHelper.InitCert(context, certificate)
             } catch (t: Throwable) {
