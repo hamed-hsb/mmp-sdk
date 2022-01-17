@@ -538,7 +538,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         val now = System.currentTimeMillis()
         activityState!!.eventCount++
         updateActivityStateI(now)
-        val eventBuilder = PackageBuilder(motrackConfig!!,deviceInfo!!, activityState, sessionParameters, now)
+        val eventBuilder =
+            PackageBuilder(motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now)
         val eventPackage = eventBuilder.buildEventPackage(event, internalState!!.isInDelayedStart)
         packageHandler!!.addPackage(eventPackage)
         if (motrackConfig!!.eventBufferingEnabled) {
@@ -2283,8 +2284,11 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             if (motrackConfig.processName != null) {
                 val currentPid = Process.myPid()
                 val manager =
-                    motrackConfig.context!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                for (processInfo in manager.runningAppProcesses) {
+                    motrackConfig.context!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+                        ?: return null
+
+                val processInfoList = manager.runningAppProcesses ?: return null
+                for (processInfo in processInfoList) {
                     if (processInfo.pid == currentPid) {
                         if (!processInfo.processName.equals(
                                 motrackConfig.processName,
