@@ -27,18 +27,9 @@ class AndroidUtil {
 
         fun getGoogleAdId(context: Context, onDeviceIdRead: OnDeviceIdsRead) {
             val logger: ILogger = MotrackFactory.getLogger()
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                logger.debug("GoogleAdId being read in the background")
-                val googleAdId: String? = getGoogleAdId(context)
-                logger.debug("GoogleAdId read $googleAdId")
-                onDeviceIdRead.onGoogleAdIdRead(googleAdId)
-                return
-            }
-            logger.debug("GoogleAdId being read in the foreground")
             object : AsyncTaskExecutor<Context?, String?>() {
 
                 protected override fun onPostExecute(result: String?) {
-                    val logger: ILogger = MotrackFactory.getLogger()
                     onDeviceIdRead.onGoogleAdIdRead(result)
                 }
 
