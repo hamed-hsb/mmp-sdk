@@ -549,8 +549,6 @@ class ActivityPackageSender(
         val googleAdIdName = "gps_adid"
         val fireAdIdName = "fire_adid"
         val androidIdName = "android_id"
-        val macSha1Name = "mac_sha1"
-        val macMd5Name = "mac_md5"
         val androidUUIDName = "android_uuid"
         if (parameters[googleAdIdName] != null) {
             return googleAdIdName
@@ -561,12 +559,7 @@ class ActivityPackageSender(
         if (parameters[androidIdName] != null) {
             return androidIdName
         }
-        if (parameters[macSha1Name] != null) {
-            return macSha1Name
-        }
-        if (parameters[macMd5Name] != null) {
-            return macMd5Name
-        }
+
         return if (parameters[androidUUIDName] != null) {
             androidUUIDName
         } else null

@@ -310,8 +310,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -439,8 +437,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -555,8 +551,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -623,8 +617,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Attribution parameters.
@@ -775,8 +767,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -851,8 +841,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -926,8 +914,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -1013,8 +999,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -1095,8 +1079,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -1172,8 +1154,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -1310,8 +1290,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Rest of the parameters.
@@ -1443,8 +1421,6 @@ class PackageBuilder(
             )
             deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
             addString(parameters, "android_id", deviceInfo.androidId)
-            addString(parameters, "mac_md5", deviceInfo.macShortMd5)
-            addString(parameters, "mac_sha1", deviceInfo.macSha1)
         }
 
         // Callback and partner parameters.
@@ -1549,9 +1525,7 @@ class PackageBuilder(
     }
 
     private fun checkDeviceIds(parameters: Map<String, String>?) {
-        if (parameters != null && !parameters.containsKey("mac_sha1")
-            && !parameters.containsKey("mac_md5")
-            && !parameters.containsKey("android_id")
+        if (parameters != null && !parameters.containsKey("android_id")
             && !parameters.containsKey("gps_adid")
             && !parameters.containsKey("fire_adid")
             && !parameters.containsKey("oaid")

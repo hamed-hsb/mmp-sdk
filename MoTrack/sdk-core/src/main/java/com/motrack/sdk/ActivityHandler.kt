@@ -132,7 +132,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         deviceInfo!!.reloadPlayIds(motrackConfig!!.context)
         if (deviceInfo!!.playAdId == null) {
             logger!!.warn("Unable to get Google Play Services Advertising ID at start time")
-            if (deviceInfo!!.macSha1.isNullOrEmpty() && deviceInfo!!.macShortMd5.isNullOrEmpty() && deviceInfo!!.androidId.isNullOrEmpty()) {
+            if (deviceInfo!!.androidId == null) {
                 logger!!.error("Unable to get any device id's. Please check if Proguard is correctly set with Motrack SDK")
             }
         } else {

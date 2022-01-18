@@ -58,16 +58,8 @@ class Util {
             return Secure.getString(context!!.contentResolver, Secure.ANDROID_ID)
         }
 
-        fun sha1(text: String): String? {
-            return hash(text, Constants.SHA1)
-        }
-
         fun sha256(text: String): String? {
             return hash(text, Constants.SHA256)
-        }
-
-        fun md5(text: String): String? {
-            return hash(text, Constants.MD5)
         }
 
         fun hash(text: String, method: String?): String? {

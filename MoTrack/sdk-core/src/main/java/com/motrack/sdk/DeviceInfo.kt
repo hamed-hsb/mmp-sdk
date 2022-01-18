@@ -22,8 +22,6 @@ class DeviceInfo(private val context: Context, sdkPrefix: String?) {
     var playAdIdAttempt = 0
     var isTrackingEnabled: Boolean? = false
     private var nonGoogleIdsReadOnce: Boolean = false
-     var macSha1: String? = null
-    var macShortMd5: String? = null
     var androidId: String? = null
     lateinit var fabAttributionId: String
     var clientSdk: String
@@ -334,24 +332,8 @@ class DeviceInfo(private val context: Context, sdkPrefix: String?) {
         if (!Util.checkPermission(context!!, Manifest.permission.ACCESS_WIFI_STATE)) {
             MotrackFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE")
         }
-        val macAddress: String? = AndroidUtil.getMacAddress(context)
-        macSha1 = getMacSha1(macAddress)
-        macShortMd5 = getMacShortMd5(macAddress)
         androidId = Util.getAndroidId(context)
         nonGoogleIdsReadOnce = true
-    }
-    private fun getMacSha1(macAddress: String?): String? {
-        return if (macAddress == null) {
-            null
-        } else Util.sha1(macAddress)
-    }
-
-    private fun getMacShortMd5(macAddress: String?): String? {
-        if (macAddress == null) {
-            return null
-        }
-        val macShort = macAddress.replace(":".toRegex(), "")
-        return Util.md5(macShort)
     }
 
     private fun getFacebookAttributionId(context: Context): String? {
