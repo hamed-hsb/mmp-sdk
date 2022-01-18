@@ -329,9 +329,6 @@ class DeviceInfo(private val context: Context, sdkPrefix: String?) {
         if (nonGoogleIdsReadOnce) {
             return
         }
-        if (!Util.checkPermission(context!!, Manifest.permission.ACCESS_WIFI_STATE)) {
-            MotrackFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE")
-        }
         androidId = Util.getAndroidId(context)
         nonGoogleIdsReadOnce = true
     }
