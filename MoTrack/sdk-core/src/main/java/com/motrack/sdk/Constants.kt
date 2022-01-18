@@ -25,8 +25,6 @@ class Constants {
         var REFTAG = "reftag"
         var INSTALL_REFERRER = "install_referrer"
 
-        var MD5 = "MD5"
-        var SHA1 = "SHA-1"
         var SHA256 = "SHA-256"
 
 

@@ -10,7 +10,6 @@ import android.provider.Settings.Secure
 import com.motrack.sdk.scheduler.AsyncTaskExecutor
 import com.motrack.sdk.scheduler.SingleThreadFutureScheduler
 import java.io.*
-import java.lang.ClassCastException
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.text.DecimalFormat
@@ -434,7 +433,7 @@ class Util {
                     getLogger().debug("Wrote $objectName: $anObject")
                 } catch (e: NotSerializableException) {
                     getLogger().error("Failed to serialize $objectName")
-                }finally {
+                } finally {
                     objectStream.flush()
                     objectStream.close()
                 }
