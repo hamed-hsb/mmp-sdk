@@ -5,6 +5,7 @@ import com.motrack.sdk.ILogger
 import com.motrack.sdk.MotrackFactory
 import org.json.JSONObject
 import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -16,12 +17,12 @@ import javax.net.ssl.HttpsURLConnection
 class NetworkUtil {
 
     interface IConnectionOptions {
-        fun applyConnectionOptions(connection: HttpsURLConnection, clientSdk: String)
+        fun applyConnectionOptions(connection: HttpURLConnection, clientSdk: String)
     }
 
     interface IHttpsURLConnectionProvider {
         @Throws(IOException::class)
-        fun generateHttpsURLConnection(url: URL): HttpsURLConnection
+        fun generateHttpsURLConnection(url: URL): HttpURLConnection
     }
 
     companion object {
@@ -38,7 +39,7 @@ class NetworkUtil {
         fun createDefaultConnectionOptions(): IConnectionOptions {
             return object : IConnectionOptions {
                 override fun applyConnectionOptions(
-                    connection: HttpsURLConnection,
+                    connection: HttpURLConnection,
                     clientSdk: String
                 ) {
                     connection.setRequestProperty("Client-SDK", clientSdk)
@@ -57,8 +58,8 @@ class NetworkUtil {
         fun createDefaultHttpsURLConnectionProvider(): IHttpsURLConnectionProvider {
             return object : IHttpsURLConnectionProvider {
                 @Throws(IOException::class)
-                override fun generateHttpsURLConnection(url: URL): HttpsURLConnection {
-                    return url.openConnection() as HttpsURLConnection
+                override fun generateHttpsURLConnection(url: URL): HttpURLConnection {
+                    return url.openConnection() as HttpURLConnection
                 }
             }
         }

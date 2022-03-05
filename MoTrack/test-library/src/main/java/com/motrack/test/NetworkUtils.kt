@@ -3,10 +3,7 @@ package com.motrack.test
 import com.motrack.test.Util.Companion.debug
 import com.motrack.test.Util.Companion.error
 import java.io.*
-import java.net.InetAddress
-import java.net.NetworkInterface
-import java.net.URL
-import java.net.URLEncoder
+import java.net.*
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.*
@@ -78,7 +75,7 @@ class NetworkUtils {
                 connectionOptions.clientSdk = clientSdk
                 connectionOptions.testNames = testNames
 
-                val connection: HttpsURLConnection =
+                val connection: HttpURLConnection =
                     createPOSTHttpsURLConnection(targetURL, postBody, connectionOptions)
                 val httpResponse: HttpResponse = readHttpResponse(connection)
                 debug("Response: ${httpResponse.response}")
@@ -96,7 +93,7 @@ class NetworkUtils {
         }
 
         @Throws(java.lang.Exception::class)
-        fun readHttpResponse(connection: HttpsURLConnection): HttpResponse {
+        fun readHttpResponse(connection: HttpURLConnection): HttpResponse {
             val sb = StringBuffer()
             val httpResponse = HttpResponse()
             try {
@@ -128,13 +125,13 @@ class NetworkUtils {
             urlString: String?,
             postBody: Map<String, String?>?,
             connectionOptions: IConnectionOptions
-        ): HttpsURLConnection {
+        ): HttpURLConnection {
             var wr: DataOutputStream? = null
-            val connection: HttpsURLConnection?
+            val connection: HttpURLConnection?
             return try {
                 debug("POST request: %s", urlString)
                 val url = URL(urlString)
-                connection = url.openConnection() as HttpsURLConnection
+                connection = url.openConnection() as HttpURLConnection
                 connectionOptions.applyConnectionOptions(connection)
                 connection.requestMethod = "POST"
                 connection.useCaches = false
@@ -184,14 +181,14 @@ class NetworkUtils {
         }
 
         interface IConnectionOptions {
-            fun applyConnectionOptions(connection: HttpsURLConnection)
+            fun applyConnectionOptions(connection: HttpURLConnection)
         }
 
         class ConnectionOptions : IConnectionOptions {
             var clientSdk: String? = null
             var testNames: String? = null
 
-            override fun applyConnectionOptions(connection: HttpsURLConnection) {
+            override fun applyConnectionOptions(connection: HttpURLConnection) {
                 clientSdk?.let { connection.setRequestProperty("Client-SDK", clientSdk) }
                 testNames?.let { connection.setRequestProperty("Test-Names", testNames) }
 
@@ -206,8 +203,8 @@ class NetworkUtils {
                 try {
                     val sc = SSLContext.getInstance("TLS")
                     sc.init(null, trustAllCerts, SecureRandom())
-                    connection.sslSocketFactory = sc.socketFactory
-                    connection.hostnameVerifier = hostnameVerifier
+//                    connection.sslSocketFactory = sc.socketFactory
+//                    connection.hostnameVerifier = hostnameVerifier
                     debug("applyConnectionOptions")
                 } catch (e: java.lang.Exception) {
                     debug("applyConnectionOptions ${e.message}")

@@ -3,6 +3,7 @@ package com.motrack.sdk
 import android.os.SystemClock
 import com.motrack.sdk.network.NetworkUtil
 import java.io.*
+import java.net.HttpURLConnection
 import java.net.ProtocolException
 import java.net.URL
 import java.nio.charset.Charset
@@ -327,7 +328,7 @@ class MockHttpsURLConnection(url: URL?) : HttpsURLConnection(url),
         return 0
     }
 
-    override fun generateHttpsURLConnection(url: URL): HttpsURLConnection {
+    override fun generateHttpsURLConnection(url: URL): HttpURLConnection {
         TODO("Not yet implemented")
     }
 

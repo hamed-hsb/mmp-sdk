@@ -57,7 +57,7 @@ class Constants {
         var MOTRACK_PREINSTALL_FILE_SYSTEM_PATH = "/data/local/tmp/motrack.preinstall"
         var EXTRA_SYSTEM_INSTALLER_REFERRER = "com.attribution.EXTRA_SYSTEM_INSTALLER_REFERRER"
 
-        var BASE_URL = "http://185.231.59.242" // "https://app.motrack.com"
+        var BASE_URL = "http://185.231.59.242/api/v1/test" // "http://185.231.59.242" // "https://app.motrack.com"
         var GDPR_URL = "https://gdpr.motrack.com"
         var SUBSCRIPTION_URL = "https://subscription.motrack.com"
 

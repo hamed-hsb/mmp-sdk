@@ -69,9 +69,9 @@ class TestSdkClickHandler {
 
     @Test
     fun testPaused() {
-        sdkClickPackage!!.setClientSdk("Test-First-Click")
+        sdkClickPackage!!.clientSdk = "Test-First-Click"
         val secondSdkClickPackage = getClickPackage()
-        secondSdkClickPackage.setClientSdk("Test-Second-Click")
+        secondSdkClickPackage.clientSdk = "Test-Second-Click"
         MotrackFactory.sdkClickBackoffStrategy = BackoffStrategy.NO_WAIT
 
         // assert test name to read better in logcat

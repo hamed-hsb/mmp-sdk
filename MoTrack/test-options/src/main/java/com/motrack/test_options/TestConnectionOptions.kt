@@ -3,6 +3,7 @@ package com.motrack.test_options
 import android.util.Log
 import com.motrack.sdk.MotrackFactory
 import com.motrack.sdk.network.NetworkUtil
+import java.net.HttpURLConnection
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.HostnameVerifier
@@ -21,7 +22,7 @@ class TestConnectionOptions {
         fun setTestConnectionOptions() {
             MotrackFactory.connectionOptions = object : NetworkUtil.IConnectionOptions {
                 override fun applyConnectionOptions(
-                    connection: HttpsURLConnection,
+                    connection: HttpURLConnection,
                     clientSdk: String
                 ) {
                     val defaultConnectionOption: NetworkUtil.IConnectionOptions =
@@ -32,8 +33,8 @@ class TestConnectionOptions {
                             generateTrustAllCerts(),
                             SecureRandom()
                         )
-                        connection.sslSocketFactory = tlsSocketFactory
-                        connection.hostnameVerifier = generateHostnameVerifier()
+//                        connection.sslSocketFactory = tlsSocketFactory
+//                        connection.hostnameVerifier = generateHostnameVerifier()
                     } catch (e: Exception) {
                         Log.e("TestOptions", "connectionOptions error " + e.message)
                     }

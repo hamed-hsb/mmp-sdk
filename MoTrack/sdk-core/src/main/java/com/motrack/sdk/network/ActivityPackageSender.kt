@@ -261,7 +261,7 @@ class ActivityPackageSender(
     }
 
     @Throws(ProtocolException::class)
-    private fun configConnectionForGET(connection: HttpsURLConnection): DataOutputStream? {
+    private fun configConnectionForGET(connection: HttpURLConnection): DataOutputStream? {
         // set default GET configuration options
         connection.requestMethod = "GET"
         return null
@@ -269,7 +269,7 @@ class ActivityPackageSender(
 
     @Throws(ProtocolException::class, UnsupportedEncodingException::class, IOException::class)
     private fun configConnectionForPOST(
-        connection: HttpsURLConnection,
+        connection: HttpURLConnection,
         activityPackageParameters: Map<String, String>,
         sendingParameters: Map<String, String>
     ): DataOutputStream? {
@@ -336,7 +336,7 @@ class ActivityPackageSender(
     }
 
     private fun readConnectionResponse(
-        connection: HttpsURLConnection?,
+        connection: HttpURLConnection?,
         responseData: ResponseData
     ): Int? {
         val responseStringBuilder = StringBuilder()
