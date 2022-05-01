@@ -31,7 +31,6 @@ class GlobalApplication : Application() {
                 Log.d(TAG, "Attribution: $attribution")
             }
         }
-
         // Set event success tracking delegate.
         config.onEventTrackingSucceededListener = object : OnEventTrackingFailedListener,
             OnEventTrackingSucceededListener {

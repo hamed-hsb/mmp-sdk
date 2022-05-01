@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         // Motrack UI according to SDK state.
         btnEnableDisableSDK = findViewById<View>(R.id.btnEnableDisableSDK) as Button
     }
+
+
     public override fun onResume() {
         super.onResume()
 

@@ -295,12 +295,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -417,12 +417,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-    Util.getFireAdvertisingId(motrackConfig)
+    Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -526,12 +526,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-           Util.getFireTrackingEnabled(motrackConfig)
+           Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -592,12 +592,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -712,6 +712,8 @@ class PackageBuilder(
     private fun getAttributionParameters(initiatedBy: String): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val attribution: HashMap<String, String> = HashMap()
+
         val imeiParameters =
             Util.getImeiParameters(motrackConfig, logger)
 
@@ -729,22 +731,15 @@ class PackageBuilder(
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(motrackConfig)
-        addString(parameters, "android_uuid", activityStateCopy!!.uuid)
-        addString(parameters, "gps_adid", deviceInfo.playAdId)
-        addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
-        addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource)
-        addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled)
-        addString(
-            parameters,
-            "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
-        )
+
+
+
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+            Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
-        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+        if (!containsPlayIds(attribution) && !containsFireIds(attribution)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
@@ -753,7 +748,17 @@ class PackageBuilder(
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
+
+
+        logger.info("*************************************************************************************")
         // Rest of the parameters.
+        addBoolean(attribution, "needs_response_details", true)
+        addString(parameters, "fire_adid", Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver))
+        addString(parameters, "android_uuid", activityStateCopy!!.uuid)
+        addString(parameters, "gps_adid", deviceInfo.playAdId)
+        addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
+        addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource)
+        addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled)
         addString(parameters, "api_level", deviceInfo.apiLevel)
         addString(parameters, "app_secret", motrackConfig.appSecret)
         addString(parameters, "app_token", motrackConfig.appToken)
@@ -766,23 +771,20 @@ class PackageBuilder(
         addString(parameters, "device_type", deviceInfo.deviceType)
         addLong(parameters, "ui_mode", deviceInfo.uiMode?.toLong())
         addString(parameters, "environment", motrackConfig.environment)
-        addBoolean(
-            parameters,
-            "event_buffering_enabled",
-            motrackConfig.eventBufferingEnabled
-        )
+        addBoolean(parameters, "event_buffering_enabled", motrackConfig.eventBufferingEnabled)
         addString(parameters, "external_device_id", motrackConfig.externalDeviceId)
         addString(parameters, "initiated_by", initiatedBy)
-        addBoolean(parameters, "needs_response_details", true)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
-        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
-        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
-        checkDeviceIds(parameters)
-        return parameters
+
+
+
+        addMapJson(attribution,"parameters",parameters)
+        checkDeviceIds(attribution)
+        return attribution
     }
 
     private fun getGdprParameters(): HashMap<String, String> {
@@ -813,12 +815,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -888,12 +890,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -975,12 +977,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1057,12 +1059,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1134,12 +1136,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1267,12 +1269,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1395,12 +1397,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            Util.getFireAdvertisingId(motrackConfig)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(

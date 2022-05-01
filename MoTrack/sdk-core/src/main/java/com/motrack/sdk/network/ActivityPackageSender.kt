@@ -2,6 +2,7 @@ package com.motrack.sdk.network
 
 import android.net.Uri
 import com.motrack.sdk.*
+import com.motrack.sdk.network.parser.JsonObjectEncoder
 import com.motrack.sdk.scheduler.SingleThreadCachedScheduler
 import com.motrack.sdk.scheduler.ThreadExecutor
 import org.json.JSONException
@@ -96,8 +97,9 @@ class ActivityPackageSender(
                 activityPackageParameters,
                 activityPackage.activityKind
             )
-            val shouldUseGET =
-                responseData.activityPackage!!.activityKind === ActivityKind.ATTRIBUTION
+
+            val shouldUseGET = responseData.activityPackage!!.activityKind === ActivityKind.EVENT
+
             val urlString: String = if (shouldUseGET) {
                 extractEventCallbackId(activityPackageParameters)
                 generateUrlStringForGET(
@@ -244,7 +246,8 @@ class ActivityPackageSender(
 
         // 'targetUrl' does not end with '/', but activity package paths that are sent by POST
         //  do start with '/', so it's not added om between
-        val urlString = "$urlWithPath$activityPackagePath"
+       // val urlString = "$urlWithPath/$activityPackagePath"
+        val urlString = "http://185.231.59.242/api/v1/test/${activityPackagePath}"
         logger.debug("Making request to url : $urlString")
         return urlString
     }
@@ -281,13 +284,15 @@ class ActivityPackageSender(
         connection.doInput = true
         // necessary to pass the body to the connection
         connection.doOutput = true
+        //encoding request
+        connection.setRequestProperty("Content-Type", "application/json; utf-8");
+        //encoding response
+        connection.setRequestProperty("Accept", "application/json");
 
         // build POST body
-        val postBodyString: String = generatePOSTBodyString(
-            activityPackageParameters,
-            sendingParameters
-        ) ?: return null
+        val postBodyString: String? = JsonObjectEncoder(activityPackageParameters, sendingParameters).generatePOSTBodyJsonString()
 
+        logger.info("json --> ${postBodyString}")
         // write POST body to connection
         val dataOutputStream = DataOutputStream(connection.outputStream)
         dataOutputStream.writeBytes(postBodyString)

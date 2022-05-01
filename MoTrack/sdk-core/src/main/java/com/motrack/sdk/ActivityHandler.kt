@@ -2025,7 +2025,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             return
         }
 
-        if (motrackConfig.coppaCompliantEnabled == true) {
+        if (motrackConfig!!.coppaCompliantEnabled == true) {
             logger!!.warn("Call to disable third party sharing API ignored, already done when COPPA enabled")
             return
         }
