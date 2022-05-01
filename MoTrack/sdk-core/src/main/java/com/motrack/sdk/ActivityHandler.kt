@@ -543,6 +543,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (!checkEventI(event)) return
         if (!checkOrderIdI(event.orderId)) return
         if (activityState!!.isGdprForgotten) return
+
         val now = System.currentTimeMillis()
         activityState!!.eventCount++
         updateActivityStateI(now)
@@ -2062,6 +2063,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             // block calling third party sharing API when COPPA enabled
             return
         }
+        resetThirdPartySharingCoppaActivityStateI()
         val now = System.currentTimeMillis()
         val packageBuilder =
             PackageBuilder(motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now)
