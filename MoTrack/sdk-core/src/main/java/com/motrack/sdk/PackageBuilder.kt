@@ -350,11 +350,6 @@ class PackageBuilder(
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
         addBoolean(parameters, "needs_response_details", true)
-        addLong(
-            parameters,
-            "network_type",
-            AndroidUtil.getNetworkType(motrackConfig.context!!).toLong()
-        )
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
@@ -478,11 +473,6 @@ class PackageBuilder(
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
         addBoolean(parameters, "needs_response_details", true)
-        addLong(
-            parameters,
-            "network_type",
-            AndroidUtil.getNetworkType(motrackConfig.context!!).toLong()
-        )
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
@@ -681,11 +671,6 @@ class PackageBuilder(
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
         addBoolean(parameters, "needs_response_details", true)
-        addLong(
-            parameters,
-            "network_type",
-            AndroidUtil.getNetworkType(motrackConfig.context!!).toLong()
-        )
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
@@ -1194,11 +1179,6 @@ class PackageBuilder(
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
         addBoolean(parameters, "needs_response_details", true)
-        addLong(
-            parameters,
-            "network_type",
-            AndroidUtil.getNetworkType(motrackConfig.context!!).toLong()
-        )
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
@@ -1330,11 +1310,6 @@ class PackageBuilder(
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
         addBoolean(parameters, "needs_response_details", true)
-        addLong(
-            parameters,
-            "network_type",
-            AndroidUtil.getNetworkType(motrackConfig.context!!).toLong()
-        )
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
@@ -1479,11 +1454,6 @@ class PackageBuilder(
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
         addBoolean(parameters, "needs_response_details", true)
-        addLong(
-            parameters,
-            "network_type",
-            AndroidUtil.getNetworkType(motrackConfig.context!!).toLong()
-        )
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
