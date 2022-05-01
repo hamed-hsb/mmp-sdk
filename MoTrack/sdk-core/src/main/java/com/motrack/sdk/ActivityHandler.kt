@@ -2024,6 +2024,12 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (activityState!!.isThirdPartySharingDisabled) {
             return
         }
+
+        if (motrackConfig.coppaCompliantEnabled == true) {
+            logger!!.warn("Call to disable third party sharing API ignored, already done when COPPA enabled")
+            return
+        }
+
         activityState!!.isThirdPartySharingDisabled = true
         writeActivityStateI()
         val now = System.currentTimeMillis()
