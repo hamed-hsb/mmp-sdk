@@ -19,7 +19,6 @@ import com.motrack.sdk.scheduler.TimerCycle
 import com.motrack.sdk.scheduler.TimerOnce
 import org.json.JSONObject
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * @author yaya (@yahyalmh)
@@ -129,8 +128,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             logger!!.info("Event buffering is enabled")
         }
 
-        deviceInfo!!.reloadPlayIds(motrackConfig!!.context)
-        if (deviceInfo!!.playAdId == null) {
+        deviceInfo!!.reloadPlayIds(motrackConfig!!)
+        if (deviceInfo!!.canReadPlayIds(motrackConfig!!) && deviceInfo!!.playAdId == null) {
             logger!!.warn("Unable to get Google Play Services Advertising ID at start time")
             if (deviceInfo!!.androidId == null) {
                 logger!!.error("Unable to get any device id's. Please check if Proguard is correctly set with Motrack SDK")
@@ -2333,4 +2332,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
 
     }
+
+
+
 }

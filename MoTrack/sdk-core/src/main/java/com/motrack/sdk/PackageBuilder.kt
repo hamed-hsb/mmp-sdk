@@ -3,7 +3,6 @@ package com.motrack.sdk
 import android.content.ContentResolver
 import org.json.JSONObject
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * @author yaya (@yahyalmh)
@@ -94,7 +93,7 @@ class PackageBuilder(
         clickPackage.clickTimeInSeconds = clickTimeInSeconds
         clickPackage.installBeginTimeInSeconds = installBeginTimeInSeconds
         clickPackage.clickTimeServerInSeconds = clickTimeServerInSeconds
-        clickPackage.installBeginTimeServerInSeconds  = installBeginTimeServerInSeconds
+        clickPackage.installBeginTimeServerInSeconds = installBeginTimeServerInSeconds
         clickPackage.installVersion = installVersion
         clickPackage.googlePlayInstant = googlePlayInstant
         MotrackSigner.sign(
@@ -287,7 +286,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -308,7 +307,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -409,7 +408,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -430,7 +429,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -518,7 +517,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -539,7 +538,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -584,7 +583,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -605,7 +604,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -729,7 +728,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -750,7 +749,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -780,6 +779,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -803,7 +804,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -824,7 +825,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -853,6 +854,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -876,7 +879,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -897,7 +900,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -926,6 +929,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -961,7 +966,7 @@ class PackageBuilder(
         )
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -982,7 +987,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1010,6 +1015,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1041,7 +1048,7 @@ class PackageBuilder(
         )
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1062,7 +1069,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1090,6 +1097,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1116,7 +1125,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1137,7 +1146,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1203,6 +1212,8 @@ class PackageBuilder(
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1247,7 +1258,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1268,7 +1279,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1347,6 +1358,8 @@ class PackageBuilder(
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1373,7 +1386,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1394,7 +1407,7 @@ class PackageBuilder(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1477,6 +1490,9 @@ class PackageBuilder(
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
 
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
+
         // subscription specific parameters
         addString(parameters, "billing_store", subscription.getBillingStore())
         addString(parameters, "currency", subscription.getCurrency())
@@ -1490,6 +1506,8 @@ class PackageBuilder(
             subscription.getPurchaseTime()
         )
         addString(parameters, "transaction_id", subscription.getOrderId())
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
