@@ -2346,6 +2346,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
 
     private fun processCoppaComplianceI() {
         if (motrackConfig!!.coppaCompliantEnabled == null) {
+            resetThirdPartySharingCoppaActivityStateI()
             return
         }
         if (motrackConfig!!.coppaCompliantEnabled!!) {
@@ -2388,7 +2389,9 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (activityState == null) {
             return
         }
-        if (activityState!!.isThirdPartySharingDisabledForCoppa) {
+        if (activityState!!.isThirdPartySharingDisabledForCoppa != null &&
+            activityState!!.isThirdPartySharingDisabledForCoppa
+        ) {
             activityState!!.isThirdPartySharingDisabledForCoppa = false
             writeActivityStateI()
         }
