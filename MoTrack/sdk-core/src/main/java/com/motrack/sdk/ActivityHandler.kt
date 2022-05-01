@@ -129,10 +129,19 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
 
         deviceInfo!!.reloadPlayIds(motrackConfig!!)
-        if (deviceInfo!!.canReadPlayIds(motrackConfig!!) && deviceInfo!!.playAdId == null) {
-            logger!!.warn("Unable to get Google Play Services Advertising ID at start time")
+        if (deviceInfo!!.playAdId == null) {
+            if (deviceInfo!!.canReadPlayIds(motrackConfig!!)) {
+                logger!!.warn("Unable to get Google Play Services Advertising ID at start time")
+            } else {
+                logger!!.info("Cannot read Google Play Services Advertising ID for kids")
+            }
+
             if (deviceInfo!!.androidId == null) {
-                logger!!.error("Unable to get any device id's. Please check if Proguard is correctly set with Motrack SDK")
+                if (deviceInfo!!.canReadNonPlayIds(motrackConfig!!)) {
+                    logger!!.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK")
+                } else {
+                    logger!!.info("Cannot read non Play Ids for kids")
+                }
             }
         } else {
             logger!!.info("Google Play Services Advertising ID read correctly at start time")
