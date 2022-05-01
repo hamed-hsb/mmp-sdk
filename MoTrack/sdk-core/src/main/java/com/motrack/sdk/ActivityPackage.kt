@@ -16,6 +16,7 @@ class ActivityPackage(var activityKind: ActivityKind = ActivityKind.UNKNOWN) :
     var parameters: HashMap<String, String>? = null
     var clientSdk: String? = null
     var suffix: String? = null
+        get() = field
 
     @Transient // it will not be serialized
     var hashCode = 0

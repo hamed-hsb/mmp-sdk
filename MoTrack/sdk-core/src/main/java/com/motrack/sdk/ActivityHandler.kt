@@ -1427,6 +1427,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI()
             } else {
+                processCoppaComplianceI()
+
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI()
                 }
@@ -2046,6 +2048,11 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (activityState!!.isGdprForgotten) {
             return
         }
+
+        if (motrackConfig!!.coppaCompliantEnabled != null && motrackConfig!!.coppaCompliantEnabled!!) {
+            // block calling third party sharing API when COPPA enabled
+            return
+        }
         val now = System.currentTimeMillis()
         val packageBuilder =
             PackageBuilder(motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now)
@@ -2344,16 +2351,27 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (motrackConfig!!.coppaCompliantEnabled!!) {
             disableThirdPartySharingForCoppaEnabledI()
         } else {
-            enableThirdPartySharingForCoppaDisabledI()
+            resetThirdPartySharingCoppaActivityStateI()
         }
     }
 
     private fun disableThirdPartySharingForCoppaEnabledI() {
-        if (shouldDisableThirdPartySharingForCoppaEnabled()) {
-            activityState!!.isThirdPartySharingDisabledForCoppa = true
-            writeActivityStateI()
-            val adjustThirdPartySharingForCoppaDisabled = MotrackThirdPartySharing(false)
-            trackThirdPartySharingI(adjustThirdPartySharingForCoppaDisabled)
+        if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
+            return
+        }
+        activityState!!.isThirdPartySharingDisabledForCoppa = true
+        writeActivityStateI()
+        val adjustThirdPartySharing = MotrackThirdPartySharing(false)
+        val now = System.currentTimeMillis()
+        val packageBuilder = PackageBuilder(
+            motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now
+        )
+        val activityPackage = packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing)
+        packageHandler!!.addPackage(activityPackage)
+        if (motrackConfig!!.eventBufferingEnabled) {
+            logger!!.info("Buffered event %s", activityPackage.suffix!!)
+        } else {
+            packageHandler!!.sendFirstPackage()
         }
     }
 
@@ -2366,8 +2384,23 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
     }
 
-    private fun shouldDisableThirdPartySharingForCoppaEnabled(): Boolean {
+    private fun resetThirdPartySharingCoppaActivityStateI() {
         if (activityState == null) {
+            return
+        }
+        if (activityState!!.isThirdPartySharingDisabledForCoppa) {
+            activityState!!.isThirdPartySharingDisabledForCoppa = false
+            writeActivityStateI()
+        }
+    }
+    private fun shouldDisableThirdPartySharingWhenCoppaEnabled(): Boolean {
+        if (activityState == null) {
+            return false
+        }
+        if (!isEnabledI()) {
+            return false
+        }
+        if (activityState!!.isGdprForgotten) {
             return false
         }
         return if (activityState!!.isThirdPartySharingDisabledForCoppa == null) {
