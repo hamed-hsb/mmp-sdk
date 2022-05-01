@@ -51,4 +51,3 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
 
     implementation project(path: ':sdk-core')
-}

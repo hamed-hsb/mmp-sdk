@@ -42,4 +42,5 @@ dependencies {
     testImplementation "junit:junit:$rootProject.JunitVersion"
     androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+    implementation 'com.google.code.gson:gson:2.9.0'
 }
