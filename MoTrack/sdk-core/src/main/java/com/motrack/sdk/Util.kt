@@ -602,6 +602,13 @@ class Util {
             } else getFireAdvertisingId(motrackConfig)
         }
 
+
+        fun getFireTrackingEnabled(motrackConfig: MotrackConfig): Boolean? {
+            return if (Util.isCoppaEnabled(motrackConfig)) {
+                null
+            } else getFireTrackingEnabled(motrackConfig.context.getContentResolver())
+        }
+
         private fun isEqualGoogleReferrerDetails(
             referrerDetails: ReferrerDetails,
             activityState: ActivityState

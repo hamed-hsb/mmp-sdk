@@ -300,7 +300,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -422,7 +422,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -531,7 +531,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+           Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -597,7 +597,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -742,7 +742,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -818,7 +818,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -893,7 +893,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -980,7 +980,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1062,7 +1062,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1139,7 +1139,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1272,7 +1272,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -1400,7 +1400,7 @@ class PackageBuilder(
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
