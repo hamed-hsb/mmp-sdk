@@ -2063,7 +2063,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             // block calling third party sharing API when COPPA enabled
             return
         }
-        resetThirdPartySharingCoppaActivityStateI()
+
+
         val now = System.currentTimeMillis()
         val packageBuilder =
             PackageBuilder(motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now)
