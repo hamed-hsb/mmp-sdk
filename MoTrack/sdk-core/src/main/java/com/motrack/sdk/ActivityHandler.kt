@@ -594,9 +594,12 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
         MotrackSigner.onResume(logger!!)
         updateHandlersStatusAndSendI()
+        processCoppaComplianceI()
         processSessionI()
         checkAttributionStateI()
         processCachedDeeplinkI()
+
+
     }
 
     private fun checkAttributionStateI() {
@@ -2334,5 +2337,51 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
     }
 
 
+    private fun processCoppaComplianceI() {
+        if (motrackConfig!!.coppaCompliantEnabled == null) {
+            return
+        }
+        if (motrackConfig!!.coppaCompliantEnabled!!) {
+            disableThirdPartySharingForCoppaEnabledI()
+        } else {
+            enableThirdPartySharingForCoppaDisabledI()
+        }
+    }
+
+    private fun disableThirdPartySharingForCoppaEnabledI() {
+        if (shouldDisableThirdPartySharingForCoppaEnabled()) {
+            activityState!!.isThirdPartySharingDisabledForCoppa = true
+            writeActivityStateI()
+            val adjustThirdPartySharingForCoppaDisabled = MotrackThirdPartySharing(false)
+            trackThirdPartySharingI(adjustThirdPartySharingForCoppaDisabled)
+        }
+    }
+
+    private fun enableThirdPartySharingForCoppaDisabledI() {
+        if (shouldEnableThirdPartySharingForCoppaDisabled()) {
+            activityState!!.isThirdPartySharingDisabledForCoppa = false
+            writeActivityStateI()
+            val adjustThirdPartySharingForCoppaEnabled = MotrackThirdPartySharing(true)
+            trackThirdPartySharingI(adjustThirdPartySharingForCoppaEnabled)
+        }
+    }
+
+    private fun shouldDisableThirdPartySharingForCoppaEnabled(): Boolean {
+        if (activityState == null) {
+            return false
+        }
+        return if (activityState!!.isThirdPartySharingDisabledForCoppa == null) {
+            true
+        } else !activityState!!.isThirdPartySharingDisabledForCoppa
+    }
+
+    private fun shouldEnableThirdPartySharingForCoppaDisabled(): Boolean {
+        if (activityState == null) {
+            return false
+        }
+        return if (activityState!!.isThirdPartySharingDisabledForCoppa == null) {
+            false
+        } else activityState!!.isThirdPartySharingDisabledForCoppa
+    }
 
 }

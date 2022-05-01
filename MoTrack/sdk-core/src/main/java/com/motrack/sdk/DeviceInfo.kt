@@ -18,7 +18,7 @@ import java.util.*
 class DeviceInfo(private val context: Context, sdkPrefix: String?) {
     var playAdId: String? = null
     var playAdIdSource: String? = null
-    var playAdIdAttempt = 0
+    var playAdIdAttempt = -1
     var isTrackingEnabled: Boolean? = false
     private var nonGoogleIdsReadOnce: Boolean = false
     var androidId: String? = null
