@@ -97,7 +97,7 @@ class Util {
         }
 
         fun runInBackground(command: Runnable) {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
+            if (Looper.myLooper() != null && Looper.myLooper() != Looper.getMainLooper()) {
                 command.run()
                 return
             }
@@ -604,7 +604,7 @@ class Util {
 
 
         fun getFireTrackingEnabled(motrackConfig: MotrackConfig): Boolean? {
-            return if (Util.isCoppaEnabled(motrackConfig)) {
+            return if (motrackConfig.coppaCompliantEnabled == true) {
                 null
             } else getFireTrackingEnabled(motrackConfig)
         }
