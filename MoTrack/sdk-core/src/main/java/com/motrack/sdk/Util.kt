@@ -547,6 +547,61 @@ class Util {
             )
         }
 
+
+        fun canReadPlayIds(motrackConfig: MotrackConfig): Boolean {
+            if (isPlayStoreKidsAppEnabled(motrackConfig)) {
+                return false
+            }
+            return if (isCoppaEnabled(motrackConfig)) {
+                false
+            } else true
+        }
+
+        fun canReadNonPlayIds(motrackConfig: MotrackConfig): Boolean {
+            if (isPlayStoreKidsAppEnabled(motrackConfig)) {
+                return false
+            }
+            return if (isCoppaEnabled(motrackConfig)) {
+                false
+            } else true
+        }
+
+        fun isCoppaEnabled(motrackConfig: MotrackConfig): Boolean {
+            return if (motrackConfig.coppaCompliantEnabled != null && motrackConfig.coppaCompliantEnabled!!) {
+                true
+            } else false
+        }
+
+        fun isPlayStoreKidsAppEnabled(motrackConfig: MotrackConfig): Boolean {
+            return if (motrackConfig.playStoreKidsAppEnabled != null && motrackConfig.playStoreKidsAppEnabled!!) {
+                true
+            } else false
+        }
+
+        fun getImeiParameters(
+            motrackConfig: MotrackConfig,
+            logger: ILogger?
+        ): Map<String, String>? {
+            return if (isCoppaEnabled(motrackConfig)) {
+                null
+            } else Reflection.getImeiParameters(motrackConfig.context, logger)
+        }
+
+        fun getOaidParameters(
+            motrackConfig: MotrackConfig,
+            logger: ILogger?
+        ): Map<String, String>? {
+            return if (isCoppaEnabled(motrackConfig)) {
+                null
+            } else Reflection.getOaidParameters(motrackConfig.context, logger)
+        }
+
+        fun getFireAdvertisingId(motrackConfig: MotrackConfig): String? {
+            return if (isCoppaEnabled(motrackConfig)) {
+                null
+            } else getFireAdvertisingId(motrackConfig)
+        }
+
         private fun isEqualGoogleReferrerDetails(
             referrerDetails: ReferrerDetails,
             activityState: ActivityState

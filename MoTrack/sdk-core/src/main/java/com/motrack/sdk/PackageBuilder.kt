@@ -257,7 +257,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -266,7 +266,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -295,7 +295,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -379,7 +379,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -388,7 +388,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -417,7 +417,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+    Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -502,7 +502,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -511,7 +511,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -526,7 +526,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -568,7 +568,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -577,7 +577,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -592,7 +592,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -713,7 +713,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -722,7 +722,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -737,7 +737,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -789,7 +789,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -798,7 +798,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -813,7 +813,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -864,7 +864,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -873,7 +873,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -888,7 +888,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -939,7 +939,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -948,7 +948,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -975,7 +975,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -1027,7 +1027,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1036,7 +1036,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -1057,7 +1057,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -1110,7 +1110,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1119,7 +1119,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -1134,7 +1134,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -1225,7 +1225,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1234,7 +1234,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -1267,7 +1267,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,
@@ -1371,7 +1371,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1380,7 +1380,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -1395,7 +1395,7 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig)
         )
         addBoolean(
             parameters,

@@ -27,7 +27,8 @@ class MotrackConfig {
     var sendInBackground: Boolean = false
     var eventBufferingEnabled: Boolean = false
     private lateinit var logger: ILogger
-    var context: Context? = null
+    public var context: Context? = null
+        get() = context
     var appToken: String? = null
     lateinit var environment: String
 
