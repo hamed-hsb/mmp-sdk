@@ -226,7 +226,7 @@ class ActivityState : Serializable, Cloneable {
         isThirdPartySharingDisabled =
             Util.readBooleanField(fields, "isThirdPartySharingDisabled", false)
         isThirdPartySharingDisabledForCoppa =
-            Util.readObjectField(fields, "isThirdPartySharingDisabledForCoppa", null)!!
+            Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false)
 
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false)
         updatePackages = Util.readBooleanField(fields, "updatePackages", false)

@@ -606,7 +606,7 @@ class Util {
         fun getFireTrackingEnabled(motrackConfig: MotrackConfig): Boolean? {
             return if (Util.isCoppaEnabled(motrackConfig)) {
                 null
-            } else getFireTrackingEnabled(motrackConfig.context.getContentResolver())
+            } else getFireTrackingEnabled(motrackConfig)
         }
 
         private fun isEqualGoogleReferrerDetails(

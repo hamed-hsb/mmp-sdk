@@ -2361,12 +2361,17 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             resetThirdPartySharingCoppaActivityStateI()
             return
         }
-        if (motrackConfig!!.coppaCompliantEnabled!!) {
-            disableThirdPartySharingForCoppaEnabledI()
-        } else {
-            resetThirdPartySharingCoppaActivityStateI()
+
+
+        if (motrackConfig!!.coppaCompliantEnabled == false) {
+            resetThirdPartySharingCoppaActivityStateI();
+            return;
         }
+
+        disableThirdPartySharingForCoppaEnabledI();
     }
+
+
 
     private fun disableThirdPartySharingForCoppaEnabledI() {
         if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
