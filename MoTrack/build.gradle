@@ -41,6 +41,7 @@ ext {
     jUnitKtxVersion = '1.1.4-alpha03'
     okhttp3IdlingResourceVersion = '1.0.0'
 }
+
     buildscript {
         ext.kotlinVersion = '1.6.10'
         repositories {
@@ -54,8 +55,23 @@ ext {
             // NOTE: Do not place your application dependencies here; they belong
             // in the individual module build.gradle files
         }
-    }
 
-    task clean(type: Delete) {
-        delete rootProject.buildDir
+buildscript {
+    ext.kotlinVersion = '1.6.10'
+    repositories {
+        google()
+        mavenCentral()
+
     }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
