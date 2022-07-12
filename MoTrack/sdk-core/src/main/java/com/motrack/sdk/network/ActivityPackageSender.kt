@@ -100,7 +100,8 @@ class ActivityPackageSender(
 
             val shouldUseGET = responseData.activityPackage!!.activityKind === ActivityKind.EVENT
 
-            val urlString: String = if (shouldUseGET) {
+            val shouldUsePost =  true
+            val urlString: String = if (shouldUsePost) {
                 extractEventCallbackId(activityPackageParameters)
                 generateUrlStringForGET(
                     activityPackage.activityKind,
@@ -122,7 +123,7 @@ class ActivityPackageSender(
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader)
             }
-            dataOutputStream = if (shouldUseGET) {
+            dataOutputStream = if (shouldUsePost) {
                 configConnectionForGET(connection)
             } else {
                 extractEventCallbackId(activityPackageParameters)
@@ -247,7 +248,7 @@ class ActivityPackageSender(
         // 'targetUrl' does not end with '/', but activity package paths that are sent by POST
         //  do start with '/', so it's not added om between
        // val urlString = "$urlWithPath/$activityPackagePath"
-        val urlString = "http://185.231.59.242/api/v1/test/${activityPackagePath}"
+        val urlString = "http://185.231.59.242/api/v1/test${activityPackagePath}"
         logger.debug("Making request to url : $urlString")
         return urlString
     }

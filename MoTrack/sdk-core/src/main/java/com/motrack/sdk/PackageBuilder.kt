@@ -110,7 +110,7 @@ class PackageBuilder(
         )
         val attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION)
         attributionPackage.path =
-            "attribution" // does not contain '/' because of Uri.Builder.appendPath
+            "/attribution" // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.ATTRIBUTION.toString(),
@@ -569,6 +569,7 @@ class PackageBuilder(
     private fun getClickParameters(source: String): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val sdkClick: HashMap<String, String> = HashMap()
         val imeiParameters =
             Util.getImeiParameters(motrackConfig, logger)
 
@@ -586,6 +587,9 @@ class PackageBuilder(
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(motrackConfig)
+
+        addBoolean(sdkClick, "needs_response_details", true)
+
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -671,7 +675,7 @@ class PackageBuilder(
         addDuration(parameters, "last_interval", activityStateCopy!!.lastInterval)
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
-        addBoolean(parameters, "needs_response_details", true)
+
 
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
@@ -708,8 +712,11 @@ class PackageBuilder(
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
         addString(parameters, "payload", preinstallPayload)
         addString(parameters, "found_location", preinstallLocation)
+
+        addMapJson(sdkClick,"parameters",parameters)
+
         checkDeviceIds(parameters)
-        return parameters
+        return sdkClick
     }
 
     private fun getAttributionParameters(initiatedBy: String): HashMap<String, String> {
