@@ -256,6 +256,7 @@ class PackageBuilder(
     private fun getSessionParameters(isInDelay: Boolean): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val session: HashMap<String, String> = HashMap()
         val imeiParameters =
             Util.getImeiParameters(motrackConfig, logger)
 
@@ -287,6 +288,9 @@ class PackageBuilder(
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(motrackConfig)
+
+        addBoolean(session, "needs_response_details", true)
+
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -348,7 +352,7 @@ class PackageBuilder(
         addDuration(parameters, "last_interval", activityStateCopy!!.lastInterval)
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
-        addBoolean(parameters, "needs_response_details", true)
+
 
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
@@ -372,8 +376,10 @@ class PackageBuilder(
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
-        checkDeviceIds(parameters)
-        return parameters
+
+        addMapJson(session,"parameters",parameters)
+        checkDeviceIds(session)
+        return session
     }
 
     fun getEventParameters(event: MotrackEvent, isInDelay: Boolean): HashMap<String, String> {
@@ -715,7 +721,7 @@ class PackageBuilder(
 
         addMapJson(sdkClick,"parameters",parameters)
 
-        checkDeviceIds(parameters)
+        checkDeviceIds(sdkClick)
         return sdkClick
     }
 
