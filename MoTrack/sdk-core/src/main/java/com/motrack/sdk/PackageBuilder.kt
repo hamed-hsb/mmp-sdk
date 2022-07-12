@@ -385,6 +385,7 @@ class PackageBuilder(
     fun getEventParameters(event: MotrackEvent, isInDelay: Boolean): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val eventParameters: HashMap<String, String> = HashMap()
         val imeiParameters =
             Util.getImeiParameters(motrackConfig, logger)
 
@@ -395,7 +396,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-           Util.getOaidParameters(motrackConfig, logger)
+            Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -416,6 +417,9 @@ class PackageBuilder(
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(motrackConfig)
+
+        addBoolean(eventParameters, "needs_response_details", true)
+
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -424,12 +428,12 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-    Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
+            Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
@@ -478,7 +482,7 @@ class PackageBuilder(
         addString(parameters, "language", deviceInfo.language)
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
-        addBoolean(parameters, "needs_response_details", true)
+
 
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
@@ -502,8 +506,9 @@ class PackageBuilder(
             activityStateCopy!!.subsessionCount.toLong()
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
-        checkDeviceIds(parameters)
-        return parameters
+        addMapJson(eventParameters,"parameters",parameters)
+        checkDeviceIds(eventParameters)
+        return eventParameters
     }
 
     private fun getInfoParameters(source: String): HashMap<String, String> {
