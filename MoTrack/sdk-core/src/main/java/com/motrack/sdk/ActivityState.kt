@@ -14,6 +14,7 @@ class ActivityState : Serializable, Cloneable {
         enabled = true
         isGdprForgotten = false
         isThirdPartySharingDisabled = false
+
         askingAttribution = false
         eventCount = 0 // no events yet
         sessionCount = 0 // the first session just started
@@ -47,6 +48,7 @@ class ActivityState : Serializable, Cloneable {
     var enabled: Boolean = true
     var isGdprForgotten: Boolean = false
     var isThirdPartySharingDisabled: Boolean = false
+    var isThirdPartySharingDisabledForCoppa: Boolean = false
     var askingAttribution: Boolean = false
 
     // global counters
@@ -130,6 +132,12 @@ class ActivityState : Serializable, Cloneable {
             )
         ) return false
         if (!Util.equalBoolean(
+                isThirdPartySharingDisabledForCoppa,
+                otherActivityState.isThirdPartySharingDisabledForCoppa
+            )
+        ) return false
+
+        if (!Util.equalBoolean(
                 askingAttribution,
                 otherActivityState.askingAttribution
             )
@@ -174,6 +182,7 @@ class ActivityState : Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashBoolean(enabled)
         hashCode = 37 * hashCode + Util.hashBoolean(isGdprForgotten)
         hashCode = 37 * hashCode + Util.hashBoolean(isThirdPartySharingDisabled)
+        hashCode = 37 * hashCode + Util.hashBoolean(isThirdPartySharingDisabledForCoppa)
         hashCode = 37 * hashCode + Util.hashBoolean(askingAttribution)
         hashCode = 37 * hashCode + eventCount
         hashCode = 37 * hashCode + sessionCount
@@ -216,6 +225,9 @@ class ActivityState : Serializable, Cloneable {
         isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false)
         isThirdPartySharingDisabled =
             Util.readBooleanField(fields, "isThirdPartySharingDisabled", false)
+        isThirdPartySharingDisabledForCoppa =
+            Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false)
+
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false)
         updatePackages = Util.readBooleanField(fields, "updatePackages", false)
         orderIds = Util.readObjectField(fields, "orderIds", null)
@@ -257,6 +269,7 @@ class ActivityState : Serializable, Cloneable {
             ObjectStreamField("enabled", Boolean::class.javaPrimitiveType),
             ObjectStreamField("isGdprForgotten", Boolean::class.javaPrimitiveType),
             ObjectStreamField("isThirdPartySharingDisabled", Boolean::class.javaPrimitiveType),
+            ObjectStreamField("isThirdPartySharingDisabledForCoppa", Boolean::class.javaPrimitiveType),
             ObjectStreamField("askingAttribution", Boolean::class.javaPrimitiveType),
             ObjectStreamField("eventCount", Int::class.javaPrimitiveType),
             ObjectStreamField("sessionCount", Int::class.javaPrimitiveType),

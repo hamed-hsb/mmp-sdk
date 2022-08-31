@@ -1,5 +1,6 @@
 package com.motrack.sdk
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.*
 import kotlin.math.pow
+
 
 /**
  * @author yaya (@yahyalmh)
@@ -545,6 +547,79 @@ class Util {
                 referrerDetails.installReferrer,
                 activityState.installReferrerHuaweiAppGallery
             )
+        }
+
+
+        fun canReadPlayIds(motrackConfig: MotrackConfig): Boolean {
+            if (isPlayStoreKidsAppEnabled(motrackConfig)) {
+                return false
+            }
+            return if (isCoppaEnabled(motrackConfig)) {
+                false
+            } else true
+        }
+
+        fun canReadNonPlayIds(motrackConfig: MotrackConfig): Boolean {
+            if (isPlayStoreKidsAppEnabled(motrackConfig)) {
+                return false
+            }
+            return if (isCoppaEnabled(motrackConfig)) {
+                false
+            } else true
+        }
+
+        fun isCoppaEnabled(motrackConfig: MotrackConfig): Boolean {
+            return if (motrackConfig.coppaCompliantEnabled != null && motrackConfig.coppaCompliantEnabled!!) {
+                true
+            } else false
+        }
+
+        fun isPlayStoreKidsAppEnabled(motrackConfig: MotrackConfig): Boolean {
+            return if (motrackConfig.playStoreKidsAppEnabled != null && motrackConfig.playStoreKidsAppEnabled!!) {
+                true
+            } else false
+        }
+
+        fun getImeiParameters(
+            motrackConfig: MotrackConfig,
+            logger: ILogger?
+        ): Map<String, String>? {
+            return if (isCoppaEnabled(motrackConfig)) {
+                null
+            } else Reflection.getImeiParameters(motrackConfig.context, logger)
+        }
+
+        fun getOaidParameters(
+            motrackConfig: MotrackConfig,
+            logger: ILogger?
+        ): Map<String, String>? {
+            return if (isCoppaEnabled(motrackConfig)) {
+                null
+            } else Reflection.getOaidParameters(motrackConfig.context, logger)
+        }
+
+        fun getFireAdvertisingId(contentResolver: ContentResolver?): String? {
+            if (contentResolver == null) {
+                return null
+            }
+            try {
+                // get advertising
+                return Secure.getString(contentResolver, "advertising_id")
+            } catch (ex: java.lang.Exception) {
+                // not supported
+            }
+            return null
+        }
+
+
+        fun getFireTrackingEnabled(contentResolver: ContentResolver?): Boolean? {
+            try {
+                // get user's tracking preference
+                return Secure.getInt(contentResolver, "limit_ad_tracking") == 0
+            } catch (ex: java.lang.Exception) {
+                // not supported
+            }
+            return null
         }
 
         private fun isEqualGoogleReferrerDetails(

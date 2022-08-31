@@ -19,7 +19,6 @@ import com.motrack.sdk.scheduler.TimerCycle
 import com.motrack.sdk.scheduler.TimerOnce
 import org.json.JSONObject
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * @author yaya (@yahyalmh)
@@ -129,11 +128,20 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             logger!!.info("Event buffering is enabled")
         }
 
-        deviceInfo!!.reloadPlayIds(motrackConfig!!.context)
+        deviceInfo!!.reloadPlayIds(motrackConfig!!)
         if (deviceInfo!!.playAdId == null) {
-            logger!!.warn("Unable to get Google Play Services Advertising ID at start time")
+            if (deviceInfo!!.canReadPlayIds(motrackConfig!!)) {
+                logger!!.warn("Unable to get Google Play Services Advertising ID at start time")
+            } else {
+                logger!!.info("Cannot read Google Play Services Advertising ID for kids")
+            }
+
             if (deviceInfo!!.androidId == null) {
-                logger!!.error("Unable to get any device id's. Please check if Proguard is correctly set with Motrack SDK")
+                if (deviceInfo!!.canReadNonPlayIds(motrackConfig!!)) {
+                    logger!!.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK")
+                } else {
+                    logger!!.info("Cannot read non Play Ids for kids")
+                }
             }
         } else {
             logger!!.info("Google Play Services Advertising ID read correctly at start time")
@@ -535,6 +543,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (!checkEventI(event)) return
         if (!checkOrderIdI(event.orderId)) return
         if (activityState!!.isGdprForgotten) return
+
         val now = System.currentTimeMillis()
         activityState!!.eventCount++
         updateActivityStateI(now)
@@ -595,9 +604,12 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
         MotrackSigner.onResume(logger!!)
         updateHandlersStatusAndSendI()
+        processCoppaComplianceI()
         processSessionI()
         checkAttributionStateI()
         processCachedDeeplinkI()
+
+
     }
 
     private fun checkAttributionStateI() {
@@ -1425,6 +1437,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI()
             } else {
+                processCoppaComplianceI()
+
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI()
                 }
@@ -2010,6 +2024,12 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (activityState!!.isThirdPartySharingDisabled) {
             return
         }
+
+        if (motrackConfig!!.coppaCompliantEnabled == true) {
+            logger!!.warn("Call to disable third party sharing API ignored, already done when COPPA enabled")
+            return
+        }
+
         activityState!!.isThirdPartySharingDisabled = true
         writeActivityStateI()
         val now = System.currentTimeMillis()
@@ -2044,6 +2064,13 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (activityState!!.isGdprForgotten) {
             return
         }
+
+        if (motrackConfig!!.coppaCompliantEnabled != null && motrackConfig!!.coppaCompliantEnabled!!) {
+            // block calling third party sharing API when COPPA enabled
+            return
+        }
+
+
         val now = System.currentTimeMillis()
         val packageBuilder =
             PackageBuilder(motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now)
@@ -2333,4 +2360,87 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         }
 
     }
+
+
+    private fun processCoppaComplianceI() {
+        if (motrackConfig!!.coppaCompliantEnabled == null) {
+            resetThirdPartySharingCoppaActivityStateI()
+            return
+        }
+
+
+        if (motrackConfig!!.coppaCompliantEnabled == false) {
+            resetThirdPartySharingCoppaActivityStateI();
+            return;
+        }
+
+        disableThirdPartySharingForCoppaEnabledI();
+    }
+
+
+
+    private fun disableThirdPartySharingForCoppaEnabledI() {
+        if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
+            return
+        }
+        activityState!!.isThirdPartySharingDisabledForCoppa = true
+        writeActivityStateI()
+        val adjustThirdPartySharing = MotrackThirdPartySharing(false)
+        val now = System.currentTimeMillis()
+        val packageBuilder = PackageBuilder(
+            motrackConfig!!, deviceInfo!!, activityState, sessionParameters, now
+        )
+        val activityPackage = packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing)
+        packageHandler!!.addPackage(activityPackage)
+        if (motrackConfig!!.eventBufferingEnabled) {
+            logger!!.info("Buffered event %s", activityPackage.suffix!!)
+        } else {
+            packageHandler!!.sendFirstPackage()
+        }
+    }
+
+    private fun enableThirdPartySharingForCoppaDisabledI() {
+        if (shouldEnableThirdPartySharingForCoppaDisabled()) {
+            activityState!!.isThirdPartySharingDisabledForCoppa = false
+            writeActivityStateI()
+            val adjustThirdPartySharingForCoppaEnabled = MotrackThirdPartySharing(true)
+            trackThirdPartySharingI(adjustThirdPartySharingForCoppaEnabled)
+        }
+    }
+
+    private fun resetThirdPartySharingCoppaActivityStateI() {
+        if (activityState == null) {
+            return
+        }
+        if (activityState!!.isThirdPartySharingDisabledForCoppa != null &&
+            activityState!!.isThirdPartySharingDisabledForCoppa
+        ) {
+            activityState!!.isThirdPartySharingDisabledForCoppa = false
+            writeActivityStateI()
+        }
+    }
+    private fun shouldDisableThirdPartySharingWhenCoppaEnabled(): Boolean {
+        if (activityState == null) {
+            return false
+        }
+        if (!isEnabledI()) {
+            return false
+        }
+        if (activityState!!.isGdprForgotten) {
+            return false
+        }
+        return if (activityState!!.isThirdPartySharingDisabledForCoppa == null) {
+            true
+        } else !activityState!!.isThirdPartySharingDisabledForCoppa
+    }
+
+    private fun shouldEnableThirdPartySharingForCoppaDisabled(): Boolean {
+        if (activityState == null) {
+            return false
+        }
+        return if (activityState!!.isThirdPartySharingDisabledForCoppa == null) {
+            false
+        } else activityState!!.isThirdPartySharingDisabledForCoppa
+    }
+
 }

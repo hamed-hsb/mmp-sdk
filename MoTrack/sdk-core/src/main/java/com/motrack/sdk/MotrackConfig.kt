@@ -27,7 +27,8 @@ class MotrackConfig {
     var sendInBackground: Boolean = false
     var eventBufferingEnabled: Boolean = false
     private lateinit var logger: ILogger
-    var context: Context? = null
+     var context: Context? = null
+
     var appToken: String? = null
     lateinit var environment: String
 
@@ -48,6 +49,9 @@ class MotrackConfig {
 
 
     var deepLinkComponent: Class<*>? = null
+
+    var playStoreKidsAppEnabled: Boolean? = null
+    var coppaCompliantEnabled: Boolean? = null
 
 
     public var preLaunchActions: MotrackInstance.Companion.PreLaunchActions? = null
@@ -114,6 +118,16 @@ class MotrackConfig {
         sendInBackground = false
         preinstallTrackingEnabled = false
     }
+
+
+    fun setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled: Boolean) {
+        this.playStoreKidsAppEnabled = playStoreKidsAppEnabled
+    }
+
+    fun setCoppaCompliantEnabled(coppaCompliantEnabled: Boolean) {
+        this.coppaCompliantEnabled = coppaCompliantEnabled
+    }
+
 
     public fun isValid(): Boolean {
         if (!checkAppToken(appToken)) return false

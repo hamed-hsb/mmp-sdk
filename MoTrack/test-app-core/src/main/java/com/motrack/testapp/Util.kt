@@ -2,6 +2,7 @@ package com.motrack.testapp
 
 import android.util.Log
 import com.motrack.sdk.network.NetworkUtil
+import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -34,7 +35,7 @@ class Util {
         fun testConnectionOptions(): NetworkUtil.IConnectionOptions {
             return object : NetworkUtil.IConnectionOptions {
                 override fun applyConnectionOptions(
-                    connection: HttpsURLConnection,
+                    connection: HttpURLConnection,
                     clientSdk: String
                 ) {
                     val defaultConnectionOption: NetworkUtil.IConnectionOptions =
@@ -83,11 +84,11 @@ class Util {
                                 }
                             }
                         ), SecureRandom())
-                        connection.sslSocketFactory = sc.socketFactory
-                        connection.hostnameVerifier = HostnameVerifier { hostname, session ->
-                            Log.d("TestApp", "verify hostname ")
-                            true
-                        }
+//                        connection.sslSocketFactory = sc.socketFactory
+//                        connection.hostnameVerifier = HostnameVerifier { hostname, session ->
+//                            Log.d("TestApp", "verify hostname ")
+//                            true
+//                        }
                     } catch (e: Exception) {
                         Log.e("TestApp", "testingMode error " + e.message)
                     }

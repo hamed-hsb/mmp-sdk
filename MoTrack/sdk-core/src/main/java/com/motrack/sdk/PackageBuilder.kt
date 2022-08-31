@@ -3,7 +3,6 @@ package com.motrack.sdk
 import android.content.ContentResolver
 import org.json.JSONObject
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * @author yaya (@yahyalmh)
@@ -94,7 +93,7 @@ class PackageBuilder(
         clickPackage.clickTimeInSeconds = clickTimeInSeconds
         clickPackage.installBeginTimeInSeconds = installBeginTimeInSeconds
         clickPackage.clickTimeServerInSeconds = clickTimeServerInSeconds
-        clickPackage.installBeginTimeServerInSeconds  = installBeginTimeServerInSeconds
+        clickPackage.installBeginTimeServerInSeconds = installBeginTimeServerInSeconds
         clickPackage.installVersion = installVersion
         clickPackage.googlePlayInstant = googlePlayInstant
         MotrackSigner.sign(
@@ -111,7 +110,7 @@ class PackageBuilder(
         )
         val attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION)
         attributionPackage.path =
-            "attribution" // does not contain '/' because of Uri.Builder.appendPath
+            "/attribution" // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.ATTRIBUTION.toString(),
@@ -257,8 +256,9 @@ class PackageBuilder(
     private fun getSessionParameters(isInDelay: Boolean): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val session: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -267,7 +267,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -287,7 +287,10 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
+
+        addBoolean(session, "needs_response_details", true)
+
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -296,19 +299,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -349,7 +352,7 @@ class PackageBuilder(
         addDuration(parameters, "last_interval", activityStateCopy!!.lastInterval)
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
-        addBoolean(parameters, "needs_response_details", true)
+
 
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
@@ -373,15 +376,18 @@ class PackageBuilder(
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
-        checkDeviceIds(parameters)
-        return parameters
+
+        addMapJson(session,"parameters",parameters)
+        checkDeviceIds(session)
+        return session
     }
 
     fun getEventParameters(event: MotrackEvent, isInDelay: Boolean): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val eventParameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -390,7 +396,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+            Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -410,7 +416,10 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
+
+        addBoolean(eventParameters, "needs_response_details", true)
+
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -419,19 +428,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+            Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -473,7 +482,7 @@ class PackageBuilder(
         addString(parameters, "language", deviceInfo.language)
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
-        addBoolean(parameters, "needs_response_details", true)
+
 
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
@@ -497,15 +506,16 @@ class PackageBuilder(
             activityStateCopy!!.subsessionCount.toLong()
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
-        checkDeviceIds(parameters)
-        return parameters
+        addMapJson(eventParameters,"parameters",parameters)
+        checkDeviceIds(eventParameters)
+        return eventParameters
     }
 
     private fun getInfoParameters(source: String): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -514,13 +524,13 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -529,19 +539,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+           Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -570,8 +580,9 @@ class PackageBuilder(
     private fun getClickParameters(source: String): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val sdkClick: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -580,13 +591,16 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
+
+        addBoolean(sdkClick, "needs_response_details", true)
+
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -595,19 +609,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -672,7 +686,7 @@ class PackageBuilder(
         addDuration(parameters, "last_interval", activityStateCopy!!.lastInterval)
         addString(parameters, "mcc", AndroidUtil.getMcc(motrackConfig.context!!))
         addString(parameters, "mnc", AndroidUtil.getMnc(motrackConfig.context!!))
-        addBoolean(parameters, "needs_response_details", true)
+
 
         addString(parameters, "os_build", deviceInfo.buildName)
         addString(parameters, "os_name", deviceInfo.osName)
@@ -709,15 +723,20 @@ class PackageBuilder(
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
         addString(parameters, "payload", preinstallPayload)
         addString(parameters, "found_location", preinstallLocation)
-        checkDeviceIds(parameters)
-        return parameters
+
+        addMapJson(sdkClick,"parameters",parameters)
+
+        checkDeviceIds(sdkClick)
+        return sdkClick
     }
 
     private fun getAttributionParameters(initiatedBy: String): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
+        val attribution: HashMap<String, String> = HashMap()
+
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -726,38 +745,41 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
+
+
+
+        addBoolean(
+            parameters,
+            "fire_tracking_enabled",
+            Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
+        )
+        if (!containsPlayIds(attribution) && !containsFireIds(attribution)) {
+            logger.warn(
+                "Google Advertising ID or Fire Advertising ID not detected, " +
+                        "fallback to non Google Play and Fire identifiers will take place"
+            )
+            deviceInfo.reloadNonPlayIds(motrackConfig);
+            addString(parameters, "android_id", deviceInfo.androidId)
+        }
+
+
+
+        logger.info("*************************************************************************************")
+        // Rest of the parameters.
+        addBoolean(attribution, "needs_response_details", true)
+        addString(parameters, "fire_adid", Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver))
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
         addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource)
         addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled)
-        addString(
-            parameters,
-            "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
-        )
-        addBoolean(
-            parameters,
-            "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
-        )
-        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn(
-                "Google Advertising ID or Fire Advertising ID not detected, " +
-                        "fallback to non Google Play and Fire identifiers will take place"
-            )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
-            addString(parameters, "android_id", deviceInfo.androidId)
-        }
-
-        // Rest of the parameters.
         addString(parameters, "api_level", deviceInfo.apiLevel)
         addString(parameters, "app_secret", motrackConfig.appSecret)
         addString(parameters, "app_token", motrackConfig.appToken)
@@ -770,28 +792,27 @@ class PackageBuilder(
         addString(parameters, "device_type", deviceInfo.deviceType)
         addLong(parameters, "ui_mode", deviceInfo.uiMode?.toLong())
         addString(parameters, "environment", motrackConfig.environment)
-        addBoolean(
-            parameters,
-            "event_buffering_enabled",
-            motrackConfig.eventBufferingEnabled
-        )
+        addBoolean(parameters, "event_buffering_enabled", motrackConfig.eventBufferingEnabled)
         addString(parameters, "external_device_id", motrackConfig.externalDeviceId)
         addString(parameters, "initiated_by", initiatedBy)
-        addBoolean(parameters, "needs_response_details", true)
         addString(parameters, "os_name", deviceInfo.osName)
         addString(parameters, "os_version", deviceInfo.osVersion)
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
-        checkDeviceIds(parameters)
-        return parameters
+
+
+
+        addMapJson(attribution,"parameters",parameters)
+        checkDeviceIds(attribution)
+        return attribution
     }
 
     private fun getGdprParameters(): HashMap<String, String> {
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -800,13 +821,13 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -815,19 +836,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -856,6 +877,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -864,7 +887,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -873,13 +896,13 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -888,19 +911,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -929,6 +952,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -937,7 +962,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -946,7 +971,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -964,7 +989,7 @@ class PackageBuilder(
         )
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -973,19 +998,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1013,6 +1038,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1023,7 +1050,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1032,7 +1059,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -1044,7 +1071,7 @@ class PackageBuilder(
         )
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1053,19 +1080,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1093,6 +1120,8 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addString(parameters, "secret_id", motrackConfig.secretId)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1104,7 +1133,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1113,13 +1142,13 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1128,19 +1157,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1207,6 +1236,8 @@ class PackageBuilder(
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1218,7 +1249,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1227,7 +1258,7 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
@@ -1251,7 +1282,7 @@ class PackageBuilder(
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1260,19 +1291,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1352,6 +1383,8 @@ class PackageBuilder(
         )
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }
@@ -1363,7 +1396,7 @@ class PackageBuilder(
         val contentResolver: ContentResolver = motrackConfig.context!!.contentResolver
         val parameters: HashMap<String, String> = HashMap()
         val imeiParameters =
-            Reflection.getImeiParameters(motrackConfig.context, logger)
+            Util.getImeiParameters(motrackConfig, logger)
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1372,13 +1405,13 @@ class PackageBuilder(
 
         // Check if oaid plugin is used and if yes, add the parameter
         val oaidParameters =
-            Reflection.getOaidParameters(motrackConfig.context, logger)
+           Util.getOaidParameters(motrackConfig, logger)
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters)
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(motrackConfig.context!!)
+        deviceInfo.reloadPlayIds(motrackConfig)
         addString(parameters, "android_uuid", activityStateCopy!!.uuid)
         addString(parameters, "gps_adid", deviceInfo.playAdId)
         addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt.toLong())
@@ -1387,19 +1420,19 @@ class PackageBuilder(
         addString(
             parameters,
             "fire_adid",
-            AndroidUtil.getFireAdvertisingId(contentResolver)
+            Util.getFireAdvertisingId(motrackConfig.context!!.contentResolver)
         )
         addBoolean(
             parameters,
             "fire_tracking_enabled",
-            AndroidUtil.getFireTrackingEnabled(contentResolver)
+          Util.getFireTrackingEnabled(motrackConfig.context!!.contentResolver)
         )
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn(
                 "Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place"
             )
-            deviceInfo.reloadNonPlayIds(motrackConfig.context!!)
+            deviceInfo.reloadNonPlayIds(motrackConfig);
             addString(parameters, "android_id", deviceInfo.androidId)
         }
 
@@ -1483,6 +1516,9 @@ class PackageBuilder(
         addDuration(parameters, "time_spent", activityStateCopy!!.timeSpent)
         addString(parameters, "updated_at", deviceInfo.appUpdateTime)
 
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
+
         // subscription specific parameters
         addString(parameters, "billing_store", subscription.getBillingStore())
         addString(parameters, "currency", subscription.getCurrency())
@@ -1496,6 +1532,8 @@ class PackageBuilder(
             subscription.getPurchaseTime()
         )
         addString(parameters, "transaction_id", subscription.getOrderId())
+        addBoolean(parameters, "ff_play_store_kids_app", motrackConfig.playStoreKidsAppEnabled)
+        addBoolean(parameters, "ff_coppa", motrackConfig.coppaCompliantEnabled)
         checkDeviceIds(parameters)
         return parameters
     }

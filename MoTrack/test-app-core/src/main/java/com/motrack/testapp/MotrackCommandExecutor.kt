@@ -263,6 +263,22 @@ class MotrackCommandExecutor(private var context: Context?) {
             val externalDeviceId = command.getFirstParameterValue("externalDeviceId")
             motrackConfig.externalDeviceId = externalDeviceId
         }
+
+
+
+        if (command.containsParameter("coppaCompliant")) {
+            val coppaCompliantS = command.getFirstParameterValue("coppaCompliant")
+            val coppaCompliant = "true" == coppaCompliantS
+            motrackConfig.setCoppaCompliantEnabled(coppaCompliant)
+        }
+
+        if (command.containsParameter("playStoreKids")) {
+            val playStoreKidsS = command.getFirstParameterValue("playStoreKids")
+            val playStoreKids = "true" == playStoreKidsS
+            motrackConfig.setPlayStoreKidsAppEnabled(playStoreKids)
+        }
+
+
         if (command.containsParameter("deferredDeeplinkCallback")) {
             motrackConfig.onDeeplinkResponseListener = object : OnDeeplinkResponseListener {
                 override fun launchReceivedDeeplink(deeplink: Uri?): Boolean {

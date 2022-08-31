@@ -1,6 +1,5 @@
 package com.motrack.sdk
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -19,7 +18,7 @@ import java.util.*
 class DeviceInfo(private val context: Context, sdkPrefix: String?) {
     var playAdId: String? = null
     var playAdIdSource: String? = null
-    var playAdIdAttempt = 0
+    var playAdIdAttempt = -1
     var isTrackingEnabled: Boolean? = false
     private var nonGoogleIdsReadOnce: Boolean = false
     var androidId: String? = null
@@ -247,7 +246,12 @@ class DeviceInfo(private val context: Context, sdkPrefix: String?) {
         return context.packageName
     }
 
-    fun reloadPlayIds(context: Context?) {
+    fun reloadPlayIds( motrackConfig: MotrackConfig) {
+
+        if (!canReadPlayIds(motrackConfig)) {
+            return
+        }
+        val context: Context? = motrackConfig.context
         val previousPlayAdId: String? = playAdId
         val previousIsTrackingEnabled = isTrackingEnabled
         playAdId = null
@@ -325,11 +329,15 @@ class DeviceInfo(private val context: Context, sdkPrefix: String?) {
         }
     }
 
-    fun reloadNonPlayIds(context: Context?) {
+    fun reloadNonPlayIds(motrackConfig: MotrackConfig) {
+
+        if (!canReadNonPlayIds(motrackConfig)) {
+            return
+        }
         if (nonGoogleIdsReadOnce) {
             return
         }
-        androidId = Util.getAndroidId(context)
+        androidId = Util.getAndroidId(motrackConfig.context)
         nonGoogleIdsReadOnce = true
     }
 
@@ -395,5 +403,24 @@ class DeviceInfo(private val context: Context, sdkPrefix: String?) {
                     "529c446a70175c5a900d5141812866db46be6559e2141616483998211f4a673149fb2232a1" +
                     "0d247663b26a9031e15f84bc1c74d141ff98a02d76f85b2c8ab2571b6469b232d8e768a7f7" +
                     "ca04f7abe4a775615916c07940656b58717457b42bd928a2"
+    }
+
+
+    fun canReadPlayIds(motrackConfig: MotrackConfig): Boolean {
+        if (motrackConfig.playStoreKidsAppEnabled != null && motrackConfig.playStoreKidsAppEnabled!!) {
+            return false
+        }
+        return if (motrackConfig.coppaCompliantEnabled != null && motrackConfig.coppaCompliantEnabled!!) {
+            false
+        } else true
+    }
+
+    fun canReadNonPlayIds(motrackConfig: MotrackConfig): Boolean {
+        if (motrackConfig.playStoreKidsAppEnabled != null && motrackConfig.playStoreKidsAppEnabled!!) {
+            return false
+        }
+        return if (motrackConfig.coppaCompliantEnabled != null && motrackConfig.coppaCompliantEnabled!!) {
+            false
+        } else true
     }
 }
