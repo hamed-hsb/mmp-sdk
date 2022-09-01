@@ -44,7 +44,7 @@ class PackageBuilder(
     fun buildSessionPackage(isInDelay: Boolean): ActivityPackage {
         val parameters: HashMap<String, String> = getSessionParameters(isInDelay)
         val sessionPackage: ActivityPackage = getDefaultActivityPackage(ActivityKind.SESSION)
-        sessionPackage.path = "/session"
+        sessionPackage.path = "/sessions"
         sessionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.SESSION.toString(),
@@ -57,7 +57,7 @@ class PackageBuilder(
     fun buildEventPackage(event: MotrackEvent, isInDelay: Boolean): ActivityPackage {
         val parameters: HashMap<String, String> = getEventParameters(event, isInDelay)
         val eventPackage = getDefaultActivityPackage(ActivityKind.EVENT)
-        eventPackage.path = "/event"
+        eventPackage.path = "/events"
         eventPackage.suffix = getEventSuffix(event)
         MotrackSigner.sign(
             parameters, ActivityKind.EVENT.toString(),
@@ -87,7 +87,7 @@ class PackageBuilder(
     fun buildClickPackage(source: String?): ActivityPackage {
         val parameters: HashMap<String, String> = getClickParameters(source!!)
         val clickPackage = getDefaultActivityPackage(ActivityKind.CLICK)
-        clickPackage.path = "/sdk_click"
+        clickPackage.path = "/sdk_clicks"
         clickPackage.suffix = ""
         clickPackage.clickTimeInMilliseconds = clickTimeInMilliseconds
         clickPackage.clickTimeInSeconds = clickTimeInSeconds
@@ -110,7 +110,7 @@ class PackageBuilder(
         )
         val attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION)
         attributionPackage.path =
-            "/attribution" // does not contain '/' because of Uri.Builder.appendPath
+            "/attributions" // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.suffix = ""
         MotrackSigner.sign(
             parameters, ActivityKind.ATTRIBUTION.toString(),
