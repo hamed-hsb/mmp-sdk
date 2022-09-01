@@ -87,7 +87,7 @@ class PackageBuilder(
     fun buildClickPackage(source: String?): ActivityPackage {
         val parameters: HashMap<String, String> = getClickParameters(source!!)
         val clickPackage = getDefaultActivityPackage(ActivityKind.CLICK)
-        clickPackage.path = "/sdk_click"
+        clickPackage.path = "/sdk_clicks"
         clickPackage.suffix = ""
         clickPackage.clickTimeInMilliseconds = clickTimeInMilliseconds
         clickPackage.clickTimeInSeconds = clickTimeInSeconds
