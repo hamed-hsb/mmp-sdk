@@ -2,6 +2,8 @@ package com.motrack.sdk
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import com.motrack.sdk.Constants.Companion.ONE_SECOND
 import com.motrack.sdk.scheduler.SingleThreadCachedScheduler
 import com.motrack.sdk.scheduler.ThreadExecutor
@@ -203,7 +205,9 @@ class InstallReferrer
                 "newBuilder",
                 arrayOf(Context::class.java), context
             )
-            return builder?.let { Reflection.invokeInstanceMethod(it, "build", null) }
+            return builder?.let {
+                Reflection.invokeInstanceMethod(it, "build", null)
+            }
         } catch (ex: ClassNotFoundException) {
             logger!!.warn("InstallReferrer not integrated in project (${ex.message!!}) thrown by (${ex.javaClass.canonicalName})")
         } catch (ex: Exception) {
@@ -304,6 +308,8 @@ class InstallReferrer
                     val installReferrer = getStringInstallReferrer(referrerDetails)
                     val clickTime = getReferrerClickTimestampSeconds(referrerDetails)
                     val installBegin = getInstallBeginTimestampSeconds(referrerDetails)
+
+                    logger!!.error("ref ${installReferrer}")
                     logger!!.debug("installReferrer: ${installReferrer!!}, clickTime: $clickTime, installBeginTime: $installBegin")
 
                     val installVersion = getStringInstallVersion(referrerDetails)
@@ -394,9 +400,26 @@ class InstallReferrer
             return null
         }
         try {
-            return Reflection.invokeInstanceMethod(
+
+
+            // get store name of meta-data that user add to yourself project's manifest file
+            val ai: ApplicationInfo = context!!.getPackageManager()
+                .getApplicationInfo(context!!.getPackageName(), PackageManager.GET_META_DATA)
+            val bundle = ai.metaData
+            val storeName = bundle.getString("motrack_storeName")
+            logger!!.error("store name is ${storeName}")
+
+
+            val referrer = Reflection.invokeInstanceMethod(
                 referrerDetails, "getInstallReferrer", null
             ) as String?
+
+            // if storeName variable is null utm-source will be google-play otherwise  utm-sorce will be storeNmae
+            if (storeName != null)
+                return referrer!!.replace("google-play", storeName)
+            else
+                return referrer
+
         } catch (e: java.lang.Exception) {
             logger!!.error("getStringInstallReferrer error (${e.message!!}) thrown by (${e.javaClass.canonicalName})")
         }

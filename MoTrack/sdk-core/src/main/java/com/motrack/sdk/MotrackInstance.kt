@@ -1,8 +1,11 @@
 package com.motrack.sdk
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import org.json.JSONObject
+
 
 /**
  * @author yaya (@yahyalmh)
@@ -63,6 +66,7 @@ class MotrackInstance {
      */
     public fun onCreate(motrackConfig: MotrackConfig?) {
         logger = MotrackFactory.getLogger()
+
         if (motrackConfig == null) {
             logger.error("MotrackConfig Missing")
             return
