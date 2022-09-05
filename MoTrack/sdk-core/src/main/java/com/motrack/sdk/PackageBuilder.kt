@@ -1,6 +1,8 @@
 package com.motrack.sdk
 
 import android.content.ContentResolver
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import org.json.JSONObject
 import java.util.*
 
@@ -259,6 +261,10 @@ class PackageBuilder(
         val session: HashMap<String, String> = HashMap()
         val imeiParameters =
             Util.getImeiParameters(motrackConfig, logger)
+
+
+
+
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -583,6 +589,9 @@ class PackageBuilder(
         val sdkClick: HashMap<String, String> = HashMap()
         val imeiParameters =
             Util.getImeiParameters(motrackConfig, logger)
+
+
+
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1700,6 +1709,8 @@ class PackageBuilder(
             String.format("(%.5f %s, '%s')", event.revenue, event.currency, event.eventToken)
         }
     }
+
+
 
 
 }

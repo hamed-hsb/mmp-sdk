@@ -53,6 +53,11 @@
             android:name=".ServiceExample"
             android:enabled="true"
             android:exported="true" />
+
+
+        <meta-data
+            android:name="motrack_storeName"
+            android:value="MYKET" />
     </application>
 
 </manifest>
