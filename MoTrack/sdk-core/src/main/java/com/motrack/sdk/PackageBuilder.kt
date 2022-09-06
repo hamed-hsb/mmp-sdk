@@ -494,6 +494,7 @@ class PackageBuilder(
         addString(parameters, "package_name", deviceInfo.packageName)
         addString(parameters, "push_token", activityStateCopy!!.pushToken)
         addDouble(parameters, "revenue", event.revenue)
+        addString(parameters, "order_id", event.orderId);
         addString(parameters, "screen_density", deviceInfo.screenDensity)
         addString(parameters, "screen_format", deviceInfo.screenFormat)
         addString(parameters, "screen_size", deviceInfo.screenSize)
