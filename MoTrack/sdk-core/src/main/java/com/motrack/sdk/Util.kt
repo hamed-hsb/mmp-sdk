@@ -98,19 +98,6 @@ class Util {
             }
         }
 
-        fun runInBackground(command: Runnable) {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                command.run()
-                return
-            }
-            object : AsyncTaskExecutor<Any?, Void?>() {
-                override fun doInBackground(params: Array<out Any?>): Void? {
-                    val command = params[0] as Runnable
-                    command.run()
-                    return null
-                }
-            }.execute(command as Any)
-        }
 
         @JvmStatic
         fun isValidParameter(
