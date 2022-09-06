@@ -1,8 +1,6 @@
 package com.motrack.sdk
 
 import android.content.ContentResolver
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import org.json.JSONObject
 import java.util.*
 

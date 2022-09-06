@@ -212,8 +212,7 @@ class MotrackInstance {
      */
     private fun saveRawReferrer(rawReferrer: String, clickTime: Long, context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime)
+            SharedPreferencesManager.getDefaultInstance(context)!!.saveRawReferrer(rawReferrer, clickTime)
         }
         Util.runInBackground(command)
     }
@@ -249,8 +248,7 @@ class MotrackInstance {
      */
     private fun savePreinstallReferrer(referrer: String, context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.savePreinstallReferrer(referrer)
+            SharedPreferencesManager.getDefaultInstance(context)!!.savePreinstallReferrer(referrer)
         }
         Util.runInBackground(command)
     }
@@ -427,8 +425,7 @@ class MotrackInstance {
      */
     private fun savePushToken(pushToken: String, context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.savePushToken(pushToken)
+            SharedPreferencesManager.getDefaultInstance(context)!!.savePushToken(pushToken)
         }
         Util.runInBackground(command)
     }
@@ -454,8 +451,7 @@ class MotrackInstance {
      */
     private fun saveGdprForgetMe(context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.setGdprForgetMe()
+            SharedPreferencesManager.getDefaultInstance(context)!!.setGdprForgetMe()
         }
         Util.runInBackground(command)
     }
@@ -480,8 +476,7 @@ class MotrackInstance {
      */
     private fun saveDisableThirdPartySharing(context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.setDisableThirdPartySharing()
+            SharedPreferencesManager.getDefaultInstance(context)!!.setDisableThirdPartySharing()
         }
         Util.runInBackground(command)
     }
@@ -577,8 +572,7 @@ class MotrackInstance {
      */
     private fun setSendingReferrersAsNotSent(context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.setSendingReferrersAsNotSent()
+            SharedPreferencesManager.getDefaultInstance(context)!!.setSendingReferrersAsNotSent()
         }
         Util.runInBackground(command)
     }
@@ -630,8 +624,7 @@ class MotrackInstance {
      */
     private fun saveDeeplink(deeplink: Uri, clickTime: Long, context: Context) {
         val command = Runnable {
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.saveDeeplink(deeplink, clickTime)
+            SharedPreferencesManager.getDefaultInstance(context)!!.saveDeeplink(deeplink, clickTime)
         }
         Util.runInBackground(command)
     }

@@ -156,22 +156,21 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
                 motrackConfig!!.pushToken?.let { setPushToken(it, false) }
             } else {
                 // since sdk has not yet started, save current push token for when it does
-                val sharedPreferencesManager = SharedPreferencesManager(getContext())
-                sharedPreferencesManager.savePushToken(motrackConfig!!.pushToken!!)
+                SharedPreferencesManager.getDefaultInstance(getContext())!!.savePushToken(motrackConfig!!.pushToken!!);
             }
         } else {
             // since sdk has already started, check if there is a saved push from previous runs
             if (internalState!!.hasFirstSdkStartOccurred()) {
-                val sharedPreferencesManager = SharedPreferencesManager(getContext())
-                val savedPushToken: String? = sharedPreferencesManager.getPushToken()
+
+                val savedPushToken = SharedPreferencesManager.getDefaultInstance(getContext())!!.getPushToken()
                 savedPushToken?.let { setPushToken(savedPushToken, true) }
             }
         }
 
         // GDPR
         if (internalState!!.hasFirstSdkStartOccurred()) {
-            val sharedPreferencesManager = SharedPreferencesManager(getContext())
-            if (sharedPreferencesManager.getGdprForgetMe()) {
+            val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext())
+            if (sharedPreferencesManager!!.getGdprForgetMe()) {
                 gdprForgetMe()
             } else {
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
@@ -640,8 +639,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         // still update handlers status
         updateHandlersStatusAndSendI()
         val now = System.currentTimeMillis()
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        activityState!!.pushToken = sharedPreferencesManager.getPushToken()
+        val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext())
+        activityState!!.pushToken = sharedPreferencesManager!!.getPushToken()
         // activityState.isGdprForgotten = sharedPreferencesManager.getGdprForgetMe();
 
         // track the first session package only if it's enabled
@@ -686,9 +685,9 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (!checkActivityStateI(activityState)) {
             return
         }
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        val cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl()
-        val cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime()
+        val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext())
+        val cachedDeeplinkUrl = sharedPreferencesManager!!.getDeeplinkUrl()
+        val cachedDeeplinkClickTime = sharedPreferencesManager!!.getDeeplinkClickTime()
         if (cachedDeeplinkUrl == null) {
             return
         }
@@ -915,8 +914,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
 
         // mark install as tracked on success
         if (sessionResponseData.success) {
-            val sharedPreferencesManager = SharedPreferencesManager(getContext())
-            sharedPreferencesManager.setInstallTracked()
+            SharedPreferencesManager.getDefaultInstance(getContext())!!.setInstallTracked();
         }
 
         // launch Session tracking listener if available
@@ -1354,8 +1352,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
     override fun setPushToken(token: String, preSaved: Boolean) {
         executor!!.submit(Runnable {
             if (!preSaved) {
-                val sharedPreferencesManager = SharedPreferencesManager(getContext())
-                sharedPreferencesManager.savePushToken(token)
+                SharedPreferencesManager.getDefaultInstance(getContext())!!.savePushToken(token);
             }
             if (internalState!!.hasFirstSdkStartNotOccurred()) {
                 // No install has been tracked so far.
@@ -1394,8 +1391,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         packageHandler!!.addPackage(infoPackage)
 
         // If push token was cached, remove it.
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        sharedPreferencesManager.removePushToken()
+        SharedPreferencesManager.getDefaultInstance(getContext())!!.removePushToken();
         if (motrackConfig!!.eventBufferingEnabled) {
             logger!!.info("Buffered event ${infoPackage.suffix!!}")
         } else {
@@ -1433,8 +1429,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         activityState!!.enabled = enabled
         writeActivityStateI()
         if (enabled) {
-            val sharedPreferencesManager = SharedPreferencesManager(getContext())
-            if (sharedPreferencesManager.getGdprForgetMe()) {
+            val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext())
+            if (sharedPreferencesManager!!.getGdprForgetMe()) {
                 gdprForgetMeI()
             } else {
                 processCoppaComplianceI()
@@ -1455,7 +1451,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             }
 
             // check if install was tracked
-            if (!sharedPreferencesManager.getInstallTracked()) {
+            if (!sharedPreferencesManager!!.getInstallTracked()) {
                 logger!!.debug("Detected that install was not tracked at enable time")
                 val now = System.currentTimeMillis()
                 trackNewSessionI(now)
@@ -1471,8 +1467,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
     }
 
     private fun checkAfterNewStartI() {
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        checkAfterNewStartI(sharedPreferencesManager)
+        SharedPreferencesManager.getDefaultInstance(getContext())?.let { checkAfterNewStartI(it) };
     }
 
     private fun checkAfterNewStartI(sharedPreferencesManager: SharedPreferencesManager) {
@@ -1512,8 +1507,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             return
         }
 
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        var readStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus()
+        val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext())
+        var readStatus = sharedPreferencesManager!!.getPreinstallPayloadReadStatus()
 
         if (PreinstallUtil.hasAllLocationsBeenRead(readStatus)) {
             internalState!!.preinstallHasBeenRead = true
@@ -1678,8 +1673,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         if (internalState!!.hasFirstSdkStartNotOccurred()) {
             return
         }
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        val referrerPayload = sharedPreferencesManager.getPreinstallReferrer()
+        val referrerPayload = SharedPreferencesManager.getDefaultInstance(getContext())!!.getPreinstallReferrer()
         if (referrerPayload == null || referrerPayload.isEmpty()) {
             return
         }
@@ -1994,8 +1988,7 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
         packageHandler!!.addPackage(gdprPackage)
 
         // If GDPR choice was cached, remove it.
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        sharedPreferencesManager.removeGdprForgetMe()
+        SharedPreferencesManager.getDefaultInstance(getContext())!!.removeGdprForgetMe();
         if (motrackConfig!!.eventBufferingEnabled) {
             logger!!.info("Buffered event ${gdprPackage.suffix!!}")
         } else {
@@ -2010,8 +2003,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
     private fun disableThirdPartySharingI() {
         // cache the disable third party sharing request, so that the request order maintains
         // even this call returns before making server request
-        val sharedPreferencesManager = SharedPreferencesManager(getContext())
-        sharedPreferencesManager.setDisableThirdPartySharing()
+        val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext())
+        sharedPreferencesManager!!.setDisableThirdPartySharing()
         if (!checkActivityStateI(activityState)) {
             return
         }
@@ -2339,8 +2332,8 @@ class ActivityHandler private constructor(private var motrackConfig: MotrackConf
             deleteAttribution(context)
             deleteSessionCallbackParameters(context)
             deleteSessionPartnerParameters(context)
-            val sharedPreferencesManager = SharedPreferencesManager(context)
-            sharedPreferencesManager.clear()
+
+            SharedPreferencesManager.getDefaultInstance(context)!!.clear();
         }
 
         fun deleteActivityState(context: Context): Boolean {

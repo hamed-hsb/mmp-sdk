@@ -19,7 +19,7 @@ class MotrackConfig {
 
     var pushToken: String? = null
     var delayStart: Double? = 0.0
-    private var urlStrategy: String? = null
+    var urlStrategy: String? = null
     var gdprPath: String? = null
     var preinstallFilePath: String? = null
 
@@ -209,6 +209,7 @@ class MotrackConfig {
         return false
     }
 
+    @JvmName("setUrlStrategy1")
     fun setUrlStrategy(urlStrategy: String?) {
         if (urlStrategy == null || urlStrategy.isEmpty()) {
             logger.error("Invalid url strategy")
@@ -225,6 +226,7 @@ class MotrackConfig {
         this.urlStrategy = urlStrategy
     }
 
+    @JvmName("getUrlStrategy1")
     fun getUrlStrategy(): String? {
         return urlStrategy
     }
