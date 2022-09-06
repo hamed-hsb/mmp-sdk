@@ -5,22 +5,22 @@ import android.content.SharedPreferences
 import android.net.Uri
 import org.json.JSONArray
 import org.json.JSONException
-import java.lang.ClassCastException
+
 
 /**
+ * Class used for shared preferences manipulation.
+ *
  * @author yaya (@yahyalmh)
  * @since 09th October 2021
+ *
+ * @author hamed (@hamed-hsb)
+ * @since 09th Jul 2022
  */
-
 class SharedPreferencesManager(context: Context) {
     /**
      * Shared preferences of the app.
      */
     private var sharedPreferences: SharedPreferences? = null
-
-    init {
-        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    }
 
     /**
      * Save raw referrer string into shared preferences.
@@ -34,7 +34,7 @@ class SharedPreferencesManager(context: Context) {
             if (getRawReferrer(rawReferrer, clickTime) != null) {
                 return
             }
-            val rawReferrerArray: JSONArray = getRawReferrerArray()
+            val rawReferrerArray = rawReferrerArray
 
             // There are exactly REFERRERS_COUNT saved referrers, do nothing.
             if (rawReferrerArray.length() == REFERRERS_COUNT) {
@@ -73,14 +73,14 @@ class SharedPreferencesManager(context: Context) {
     @Synchronized
     fun removeRawReferrer(rawReferrer: String?, clickTime: Long) {
         // Don't even try to remove null or empty referrers since they shouldn't exist in shared preferences.
-        if (rawReferrer == null || rawReferrer.isEmpty()) {
+        if (rawReferrer == null || rawReferrer.length == 0) {
             return
         }
-        val rawReferrerIndex: Int = getRawReferrerIndex(rawReferrer, clickTime)
+        val rawReferrerIndex = getRawReferrerIndex(rawReferrer, clickTime)
         if (rawReferrerIndex < 0) {
             return
         }
-        val rawReferrerArray = getRawReferrerArray()
+        val rawReferrerArray = rawReferrerArray
 
         // Rebuild queue without referrer that should be removed.
         val updatedReferrers = JSONArray()
@@ -110,47 +110,48 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     fun getRawReferrer(rawReferrer: String, clickTime: Long): JSONArray? {
-        val rawReferrerIndex: Int = getRawReferrerIndex(rawReferrer, clickTime)
+        val rawReferrerIndex = getRawReferrerIndex(rawReferrer, clickTime)
         if (rawReferrerIndex >= 0) {
             try {
-                return getRawReferrerArray().getJSONArray(rawReferrerIndex)
+                return rawReferrerArray.getJSONArray(rawReferrerIndex)
             } catch (e: JSONException) {
             }
         }
         return null
-    }
-
+    }// Initial move for those who have more than REFERRERS_COUNT stored already.
+    // Cut the array and leave it with only REFERRERS_COUNT elements.
     /**
      * Get array of saved referrer JSONArray objects.
      *
      * @return JSONArray of saved referrers. Defaults to empty JSONArray if none found.
      */
-    @Synchronized
-    fun getRawReferrerArray(): JSONArray {
-        val referrerQueueString: String? = getString(PREFS_KEY_RAW_REFERRERS)
-        if (referrerQueueString != null) {
-            try {
-                val rawReferrerArray = JSONArray(referrerQueueString)
+    @get:Synchronized
+    val rawReferrerArray: JSONArray
+        get() {
+            val referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS)
+            if (referrerQueueString != null) {
+                try {
+                    val rawReferrerArray = JSONArray(referrerQueueString)
 
-                // Initial move for those who have more than REFERRERS_COUNT stored already.
-                // Cut the array and leave it with only REFERRERS_COUNT elements.
-                if (rawReferrerArray.length() > REFERRERS_COUNT) {
-                    val tempReferrerArray = JSONArray()
-                    var i = 0
-                    while (i < REFERRERS_COUNT) {
-                        tempReferrerArray.put(rawReferrerArray[i])
-                        i += 1
+                    // Initial move for those who have more than REFERRERS_COUNT stored already.
+                    // Cut the array and leave it with only REFERRERS_COUNT elements.
+                    if (rawReferrerArray.length() > REFERRERS_COUNT) {
+                        val tempReferrerArray = JSONArray()
+                        var i = 0
+                        while (i < REFERRERS_COUNT) {
+                            tempReferrerArray.put(rawReferrerArray[i])
+                            i += 1
+                        }
+                        saveRawReferrerArray(tempReferrerArray)
+                        return tempReferrerArray
                     }
-                    saveRawReferrerArray(tempReferrerArray)
-                    return tempReferrerArray
+                    return JSONArray(referrerQueueString)
+                } catch (e: JSONException) {
+                } catch (t: Throwable) {
                 }
-                return JSONArray(referrerQueueString)
-            } catch (e: JSONException) {
-            } catch (t: Throwable) {
             }
+            return JSONArray()
         }
-        return JSONArray()
-    }
 
     /**
      * Save preinstall referrer string into shared preferences.
@@ -167,10 +168,9 @@ class SharedPreferencesManager(context: Context) {
      *
      * @return referrer Preinstall referrer string
      */
-    @Synchronized
-    fun getPreinstallReferrer(): String? {
-        return getString(PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER)
-    }
+    @get:Synchronized
+    val preinstallReferrer: String?
+        get() = getString(PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER)
 
     /**
      * Remove saved preinstall referrer string from shared preferences.
@@ -188,7 +188,7 @@ class SharedPreferencesManager(context: Context) {
     @Synchronized
     fun setSendingReferrersAsNotSent() {
         try {
-            val rawReferrerArray = getRawReferrerArray()
+            val rawReferrerArray = rawReferrerArray
             var hasRawReferrersBeenChanged = false
             for (i in 0 until rawReferrerArray.length()) {
                 val rawReferrer = rawReferrerArray.getJSONArray(i)
@@ -215,7 +215,7 @@ class SharedPreferencesManager(context: Context) {
     @Synchronized
     private fun getRawReferrerIndex(rawReferrer: String, clickTime: Long): Int {
         try {
-            val rawReferrers = getRawReferrerArray()
+            val rawReferrers = rawReferrerArray
             for (i in 0 until rawReferrers.length()) {
                 val savedRawReferrer = rawReferrers.getJSONArray(i)
                 // Check if raw referrer is already saved.
@@ -250,10 +250,9 @@ class SharedPreferencesManager(context: Context) {
      *
      * @return Push token value
      */
-    @Synchronized
-    fun getPushToken(): String? {
-        return getString(PREFS_KEY_PUSH_TOKEN)
-    }
+    @get:Synchronized
+    val pushToken: String?
+        get() = getString(PREFS_KEY_PUSH_TOKEN)
 
     /**
      * Remove push token from shared preferences.
@@ -276,20 +275,18 @@ class SharedPreferencesManager(context: Context) {
      *
      * @return boolean indicating whether install has been tracked or not
      */
-    @Synchronized
-    fun getInstallTracked(): Boolean {
-        return getBoolean(PREFS_KEY_INSTALL_TRACKED, false)
-    }
+    @get:Synchronized
+    val installTracked: Boolean
+        get() = getBoolean(PREFS_KEY_INSTALL_TRACKED, false)
 
     @Synchronized
     fun setGdprForgetMe() {
         saveBoolean(PREFS_KEY_GDPR_FORGET_ME, true)
     }
 
-    @Synchronized
-    fun getGdprForgetMe(): Boolean {
-        return getBoolean(PREFS_KEY_GDPR_FORGET_ME, false)
-    }
+    @get:Synchronized
+    val gdprForgetMe: Boolean
+        get() = getBoolean(PREFS_KEY_GDPR_FORGET_ME, false)
 
     @Synchronized
     fun removeGdprForgetMe() {
@@ -301,10 +298,9 @@ class SharedPreferencesManager(context: Context) {
         saveBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, true)
     }
 
-    @Synchronized
-    fun getDisableThirdPartySharing(): Boolean {
-        return getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false)
-    }
+    @get:Synchronized
+    val disableThirdPartySharing: Boolean
+        get() = getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false)
 
     @Synchronized
     fun removeDisableThirdPartySharing() {
@@ -320,47 +316,42 @@ class SharedPreferencesManager(context: Context) {
         saveLong(PREFS_KEY_DEEPLINK_CLICK_TIME, clickTime)
     }
 
-    @Synchronized
-    fun getDeeplinkUrl(): String? {
-        return getString(PREFS_KEY_DEEPLINK_URL)
-    }
+    @get:Synchronized
+    val deeplinkUrl: String?
+        get() = getString(PREFS_KEY_DEEPLINK_URL)
 
-    @Synchronized
-    fun getDeeplinkClickTime(): Long {
-        return getLong(PREFS_KEY_DEEPLINK_CLICK_TIME, -1)
-    }
+    @get:Synchronized
+    val deeplinkClickTime: Long
+        get() = getLong(PREFS_KEY_DEEPLINK_CLICK_TIME, -1)
 
     @Synchronized
     fun removeDeeplink() {
         remove(PREFS_KEY_DEEPLINK_URL)
         remove(PREFS_KEY_DEEPLINK_CLICK_TIME)
     }
-
-    /**
-     * Save information that preinstall tracker has been tracked to shared preferences.
-     */
-    @Synchronized
-    fun setPreinstallPayloadReadStatus(status: Long) {
-        saveLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, status)
-    }
-
     /**
      * Get information if preinstall tracker has been tracked from shared preferences. If no info, default to 0.
      *
      * @return long returning current read status of each Preinstall location.
      * Default value in binary is `00.....00000000` indicating none of the locations are yet read.
      */
-    @Synchronized
-    fun getPreinstallPayloadReadStatus(): Long {
-        return getLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, 0)
-    }
+    /**
+     * Save information that preinstall tracker has been tracked to shared preferences.
+     */
+    @get:Synchronized
+    @set:Synchronized
+    var preinstallPayloadReadStatus: Long
+        get() = getLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, 0)
+        set(status) {
+            saveLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, status)
+        }
 
     /**
      * Remove all key-value pairs from shared preferences.
      */
     @Synchronized
     fun clear() {
-        sharedPreferences!!.edit().clear().apply()
+        if (sharedPreferences != null)  sharedPreferences?.edit()?.clear()?.apply()
     }
 
     /**
@@ -371,7 +362,7 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun saveString(key: String, value: String) {
-        sharedPreferences!!.edit().putString(key, value).apply()
+        if (sharedPreferences != null) sharedPreferences?.edit()!!.putString(key, value).apply()
     }
 
     /**
@@ -382,7 +373,7 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun saveBoolean(key: String, value: Boolean) {
-        sharedPreferences!!.edit().putBoolean(key, value).apply()
+        if (sharedPreferences != null) sharedPreferences?.edit()?.putBoolean(key, value)?.apply()
     }
 
     /**
@@ -393,7 +384,7 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun saveLong(key: String, value: Long) {
-        sharedPreferences!!.edit().putLong(key, value).apply()
+        if (sharedPreferences != null) sharedPreferences?.edit()?.putLong(key, value)?.apply()
     }
 
     /**
@@ -404,7 +395,7 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun saveInteger(key: String, value: Int) {
-        sharedPreferences!!.edit().putInt(key, value).apply()
+        if (sharedPreferences != null) sharedPreferences?.edit()?.putInt(key, value)?.apply()
     }
 
     /**
@@ -415,14 +406,18 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun getString(key: String): String? {
-        return try {
-            sharedPreferences!!.getString(key, null)
-        } catch (e: ClassCastException) {
-            null
-        } catch (t: Throwable) {
-            if (key == PREFS_KEY_RAW_REFERRERS) {
-                remove(PREFS_KEY_RAW_REFERRERS)
+        return if (sharedPreferences != null) {
+            try {
+                sharedPreferences!!.getString(key, null)
+            } catch (e: ClassCastException) {
+                null
+            } catch (t: Throwable) {
+                if (key == PREFS_KEY_RAW_REFERRERS) {
+                    remove(PREFS_KEY_RAW_REFERRERS)
+                }
+                null
             }
+        } else {
             null
         }
     }
@@ -436,9 +431,13 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun getBoolean(key: String, defaultValue: Boolean): Boolean {
-        return try {
-            sharedPreferences!!.getBoolean(key, defaultValue)
-        } catch (e: ClassCastException) {
+        return if (sharedPreferences != null) {
+            try {
+                sharedPreferences!!.getBoolean(key, defaultValue)
+            } catch (e: ClassCastException) {
+                defaultValue
+            }
+        } else {
             defaultValue
         }
     }
@@ -452,9 +451,13 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun getLong(key: String, defaultValue: Long): Long {
-        return try {
-            sharedPreferences!!.getLong(key, defaultValue)
-        } catch (e: ClassCastException) {
+        return if (sharedPreferences != null) {
+            try {
+                sharedPreferences!!.getLong(key, defaultValue)
+            } catch (e: ClassCastException) {
+                defaultValue
+            }
+        } else {
             defaultValue
         }
     }
@@ -466,14 +469,14 @@ class SharedPreferencesManager(context: Context) {
      */
     @Synchronized
     private fun remove(key: String) {
-        sharedPreferences!!.edit().remove(key).apply()
+        if (sharedPreferences != null) sharedPreferences?.edit()?.remove(key)?.apply()
     }
 
-    companion object{
+    companion object {
         /**
-         * Name of Motrack preferences.
+         * Name of Adjust preferences.
          */
-        private const val PREFS_NAME = "motrack_preferences"
+        private const val PREFS_NAME = "adjust_preferences"
 
         /**
          * Key name for referrers.
@@ -489,18 +492,12 @@ class SharedPreferencesManager(context: Context) {
          * Key name for info about whether install has been tracked or not.
          */
         private const val PREFS_KEY_INSTALL_TRACKED = "install_tracked"
-
         private const val PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me"
-
         private const val PREFS_KEY_DISABLE_THIRD_PARTY_SHARING = "disable_third_party_sharing"
-
         private const val PREFS_KEY_DEEPLINK_URL = "deeplink_url"
-
         private const val PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time"
-
         private const val PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS =
             "preinstall_payload_read_status"
-
         private const val PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER =
             "preinstall_system_installer_referrer"
 
@@ -523,7 +520,18 @@ class SharedPreferencesManager(context: Context) {
          * Number of persisted referrers.
          */
         private const val REFERRERS_COUNT = 10
+    }
 
-
+    /**
+     * Default constructor.
+     *
+     * @param context Application context
+     */
+    init {
+        try {
+            sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        } catch (illegalStateException: IllegalStateException) {
+            sharedPreferences = null
+        }
     }
 }
