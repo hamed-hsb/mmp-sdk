@@ -538,8 +538,8 @@ class SharedPreferencesManager private constructor(context: Context) {
         @Synchronized
         fun getDefaultInstance(context: Context?): SharedPreferencesManager? {
             if (defaultInstance == null) {
-                defaultInstance = SharedPreferencesManager(context!!)
-                return defaultInstance
+
+                return  SharedPreferencesManager(context!!);
             }
             return defaultInstance
         }
