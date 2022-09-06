@@ -534,9 +534,11 @@ class SharedPreferencesManager private constructor(context: Context) {
         private var sharedPreferences: SharedPreferences? = null
         private var sharedPreferencesEditor: SharedPreferences.Editor? = null
         private var defaultInstance: SharedPreferencesManager? = null
-        fun getDefaultInstance(context: Context): SharedPreferencesManager? {
+
+        @Synchronized
+        fun getDefaultInstance(context: Context?): SharedPreferencesManager? {
             if (defaultInstance == null) {
-                defaultInstance = SharedPreferencesManager(context)
+                defaultInstance = SharedPreferencesManager(context!!)
                 return defaultInstance
             }
             return defaultInstance
@@ -552,7 +554,9 @@ class SharedPreferencesManager private constructor(context: Context) {
         try {
             sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             sharedPreferencesEditor = sharedPreferences!!.edit()
-        } catch (illegalStateException: IllegalStateException) {
+        } catch (exception: Exception) {
+            exception.printStackTrace();
+            MotrackFactory.getLogger().error("Cannot access to SharedPreferences", exception.message!!);
             sharedPreferences = null
             sharedPreferencesEditor = null
         }
