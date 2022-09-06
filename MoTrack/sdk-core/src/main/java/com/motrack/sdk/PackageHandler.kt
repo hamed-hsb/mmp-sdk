@@ -5,9 +5,7 @@ import com.motrack.sdk.network.IActivityPackageSender
 import com.motrack.sdk.scheduler.SingleThreadCachedScheduler
 import com.motrack.sdk.scheduler.ThreadScheduler
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.ArrayList
 
 /**
  * @author yaya (@yahyalmh)
@@ -104,9 +102,11 @@ class PackageHandler(
         }
         val retries = responseData.activityPackage!!.increaseRetries()
         val waitTimeMilliSeconds: Long
-        val sharedPreferencesManager = SharedPreferencesManager(context!!)
+
+        val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(context!!)
+
         waitTimeMilliSeconds = if (responseData.activityPackage!!.activityKind ===
-            ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()
+            ActivityKind.SESSION && !sharedPreferencesManager!!.getInstallTracked()
         ) {
             Util.getWaitingTime(retries, backoffStrategyForInstallSession)
         } else {

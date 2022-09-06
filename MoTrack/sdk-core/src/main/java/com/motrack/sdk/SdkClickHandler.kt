@@ -6,48 +6,22 @@ import com.motrack.sdk.scheduler.ThreadScheduler
 import org.json.JSONException
 import java.lang.ref.WeakReference
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class SdkClickHandler(
     activityHandler: IActivityHandler?,
     startsSending: Boolean,
     sdkClickHandlerActivityPackageSender: IActivityPackageSender
 ) : ISdkClickHandler {
-
-    companion object {
-        /**
-         * Divisor for milliseconds -> seconds conversion.
-         */
-        private const val MILLISECONDS_TO_SECONDS_DIVISOR = 1000.0
-
-        /**
-         * SdkClickHandler scheduled executor source.
-         */
-        private const val SCHEDULED_EXECUTOR_SOURCE = "SdkClickHandler"
-
-        /**
-         * Intent based referrer source name inside of sdk_click package.
-         */
-        private const val SOURCE_REFTAG = "reftag"
-
-        /**
-         * Install referrer service referrer source name inside of sdk_click package.
-         */
-        private const val SOURCE_INSTALL_REFERRER = "install_referrer"
-
-    }
-
     /**
      * Indicates whether SdkClickHandler is paused or not.
      */
     private var paused = false
 
-    private var logger: ILogger?
-
     /**
-     * Sending queue.
+     * MoTrack logger.
      */
-    private var packageQueue: ArrayList<ActivityPackage>?
+    private var logger: ILogger?
 
     /**
      * Backoff strategy.
@@ -55,33 +29,33 @@ class SdkClickHandler(
     private var backoffStrategy: BackoffStrategy?
 
     /**
-     * ActivityHandler instance.
+     * Sending queue.
      */
-    private var activityHandlerWeakRef: WeakReference<IActivityHandler>?
-
-    private var activityPackageSender: IActivityPackageSender?
+    private var packageQueue: MutableList<ActivityPackage>? = null
 
     /**
      * Custom actions scheduled executor.
      */
     private var scheduler: ThreadScheduler?
 
-    init {
-        init(activityHandler, startsSending, sdkClickHandlerActivityPackageSender)
-        logger = MotrackFactory.getLogger()
-        backoffStrategy = MotrackFactory.sdkClickBackoffStrategy
-        scheduler = SingleThreadCachedScheduler("SdkClickHandler")
-        paused = !startsSending
-        packageQueue = ArrayList()
-        activityHandlerWeakRef = WeakReference(activityHandler)
-        activityPackageSender = sdkClickHandlerActivityPackageSender
-    }
+    /**
+     * ActivityHandler instance.
+     */
+    private var activityHandlerWeakRef: WeakReference<IActivityHandler?>? = null
+    private var activityPackageSender: IActivityPackageSender? = null
 
+    /**
+     * {@inheritDoc}
+     */
     override fun init(
         activityHandler: IActivityHandler?,
         startsSending: Boolean,
         sdkClickHandlerActivityPackageSender: IActivityPackageSender
     ) {
+        paused = !startsSending
+        packageQueue = ArrayList()
+        activityHandlerWeakRef = WeakReference(activityHandler)
+        activityPackageSender = sdkClickHandlerActivityPackageSender
     }
 
     /**
@@ -105,8 +79,8 @@ class SdkClickHandler(
     override fun sendSdkClick(sdkClick: ActivityPackage) {
         scheduler!!.submit {
             packageQueue!!.add(sdkClick)
-            logger!!.debug("Added sdk_click ${packageQueue!!.size}")
-            logger!!.verbose(sdkClick.getExtendedString())
+            logger!!.debug("Added sdk_click %d", packageQueue!!.size)
+            logger!!.verbose("%s", sdkClick.getExtendedString())
             sendNextSdkClick()
         }
     }
@@ -117,11 +91,11 @@ class SdkClickHandler(
     override fun sendReftagReferrers() {
         scheduler!!.submit {
             val activityHandler = activityHandlerWeakRef!!.get()
-            val sharedPreferencesManager = SharedPreferencesManager(
+            val sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(
                 activityHandler!!.getContext()
             )
             try {
-                val rawReferrerArray = sharedPreferencesManager.getRawReferrerArray()
+                val rawReferrerArray = sharedPreferencesManager!!.getRawReferrerArray()
                 var hasRawReferrersBeenChanged = false
                 for (i in 0 until rawReferrerArray.length()) {
                     val savedRawReferrer = rawReferrerArray.getJSONArray(i)
@@ -154,23 +128,22 @@ class SdkClickHandler(
                     sharedPreferencesManager.saveRawReferrerArray(rawReferrerArray)
                 }
             } catch (e: JSONException) {
-                logger!!.error("Send saved raw referrers error (${e.message!!})")
+                logger!!.error("Send saved raw referrers error (%s)", e.message!!)
             }
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
-    override fun sendPreinstallPayload(payload: String?, location: String?) {
+    override fun sendPreinstallPayload(preinstallPayload: String?, preinstallLocation: String?) {
         scheduler!!.submit(Runnable {
             val activityHandler = activityHandlerWeakRef!!.get() ?: return@Runnable
 
             // Create sdk click
             val sdkClickPackage = PackageFactory.buildPreinstallSdkClickPackage(
-                payload,
-                location,
+                preinstallPayload,
+                preinstallLocation,
                 activityHandler.getActivityState(),
                 activityHandler.getMotrackConfig(),
                 activityHandler.getDeviceInfo(),
@@ -182,6 +155,25 @@ class SdkClickHandler(
         })
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    override fun teardown() {
+        logger!!.verbose("SdkClickHandler teardown")
+        if (scheduler != null) {
+            scheduler!!.teardown()
+        }
+        if (packageQueue != null) {
+            packageQueue!!.clear()
+        }
+        if (activityHandlerWeakRef != null) {
+            activityHandlerWeakRef!!.clear()
+        }
+        logger = null
+        packageQueue = null
+        backoffStrategy = null
+        scheduler = null
+    }
 
     /**
      * Send next sdk_click package from the queue.
@@ -198,23 +190,16 @@ class SdkClickHandler(
         if (activityHandler!!.getActivityState() == null) {
             return
         }
-
-        activityHandler.getActivityState()?.let {
-            if (it.isGdprForgotten) {
-                return
-            }
+        if (activityHandler.getActivityState()!!.isGdprForgotten) {
+            return
         }
-
-
         if (paused) {
             return
         }
-
         if (packageQueue!!.isEmpty()) {
             return
         }
-
-        val sdkClickPackage: ActivityPackage = packageQueue!!.removeAt(0)
+        val sdkClickPackage = packageQueue!!.removeAt(0)
         val retries = sdkClickPackage.retries
         val runnable = Runnable {
             sendSdkClickI(sdkClickPackage)
@@ -224,7 +209,10 @@ class SdkClickHandler(
             runnable.run()
             return
         }
-        val waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy!!)
+        val waitTimeMilliSeconds = Util.getWaitingTime(
+            retries,
+            backoffStrategy!!
+        )
         val waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR
         val secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds)
         logger!!.verbose(
@@ -247,13 +235,12 @@ class SdkClickHandler(
         val rawReferrerString = sdkClickPackage.parameters!!["raw_referrer"]
         if (isReftag) {
             // Check before sending if referrer was removed already.
-            val sharedPreferencesManager = SharedPreferencesManager(
-                activityHandler!!.getContext()
-            )
-            val rawReferrer = sharedPreferencesManager.getRawReferrer(
-                rawReferrerString!!,
-                sdkClickPackage.clickTimeInMilliseconds
-            ) ?: return
+            val rawReferrer =
+                SharedPreferencesManager.getDefaultInstance(activityHandler!!.getContext())!!
+                    .getRawReferrer(
+                        rawReferrerString!!,
+                        sdkClickPackage.clickTimeInMilliseconds
+                    ) ?: return
         }
         val isInstallReferrer = source != null && source == SOURCE_INSTALL_REFERRER
         var clickTime: Long = -1
@@ -283,61 +270,63 @@ class SdkClickHandler(
             sdkClickPackage,
             sendingParameters
         ) as? SdkClickResponseData ?: return
-        if (responseData.willRetry) {
+        val sdkClickResponseData = responseData
+        if (sdkClickResponseData.willRetry) {
             retrySendingI(sdkClickPackage)
             return
         }
         if (activityHandler == null) {
             return
         }
-        if (responseData.trackingState === TrackingState.OPTED_OUT) {
+        if (sdkClickResponseData.trackingState === TrackingState.OPTED_OUT) {
             activityHandler.gotOptOutResponse()
             return
         }
         if (isReftag) {
             // Remove referrer from shared preferences after sdk_click is sent.
-            val sharedPreferencesManager = SharedPreferencesManager(activityHandler.getContext())
-            sharedPreferencesManager.removeRawReferrer(
+            SharedPreferencesManager.getDefaultInstance(
+                activityHandler.getContext()
+            )!!.removeRawReferrer(
                 rawReferrerString,
                 sdkClickPackage.clickTimeInMilliseconds
             )
         }
         if (isInstallReferrer) {
             // After successfully sending install referrer, store sent values in activity state.
-            responseData.clickTime = clickTime
-            responseData.installBegin = installBegin
-            responseData.installReferrer = installReferrer
-            responseData.clickTimeServer = clickTimeServer
-            responseData.installBeginServer = installBeginServer
-            responseData.installVersion = installVersion
-            responseData.googlePlayInstant = googlePlayInstant!!
-            responseData.referrerApi = referrerApi
-            responseData.isInstallReferrer = true
+            sdkClickResponseData.clickTime = clickTime
+            sdkClickResponseData.installBegin = installBegin
+            sdkClickResponseData.installReferrer = installReferrer
+            sdkClickResponseData.clickTimeServer = clickTimeServer
+            sdkClickResponseData.installBeginServer = installBeginServer
+            sdkClickResponseData.installVersion = installVersion
+            sdkClickResponseData.googlePlayInstant = googlePlayInstant!!
+            sdkClickResponseData.referrerApi = referrerApi
+            sdkClickResponseData.isInstallReferrer = true
         }
         if (isPreinstall) {
             val payloadLocation = sdkClickPackage.parameters!!["found_location"]
-            if (payloadLocation != null && payloadLocation.isNotEmpty()) {
+            if (payloadLocation != null && !payloadLocation.isEmpty()) {
                 // update preinstall flag in shared preferences after sdk_click is sent.
                 val sharedPreferencesManager =
-                    SharedPreferencesManager(activityHandler.getContext())
+                    SharedPreferencesManager.getDefaultInstance(activityHandler.getContext())
                 if (Constants.SYSTEM_INSTALLER_REFERRER.equals(
                         payloadLocation,
                         ignoreCase = true
                     )
                 ) {
-                    sharedPreferencesManager.removePreinstallReferrer()
+                    sharedPreferencesManager!!.removePreinstallReferrer()
                 } else {
-                    val currentStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus()
+                    val currentStatus = sharedPreferencesManager!!.getPreinstallPayloadReadStatus()
                     val updatedStatus = PreinstallUtil.markAsRead(payloadLocation, currentStatus)
                     sharedPreferencesManager.setPreinstallPayloadReadStatus(updatedStatus)
                 }
             }
         }
-        activityHandler.finishedTrackingActivity(responseData)
+        activityHandler.finishedTrackingActivity(sdkClickResponseData)
     }
 
     private fun generateSendingParametersI(): Map<String, String> {
-        val sendingParameters = HashMap<String, String>()
+        val sendingParameters: HashMap<String, String> = HashMap()
         val now = System.currentTimeMillis()
         val dateString = Util.dateFormatter.format(now)
         PackageBuilder.addString(sendingParameters, "sent_at", dateString)
@@ -355,14 +344,14 @@ class SdkClickHandler(
      */
     private fun retrySendingI(sdkClickPackage: ActivityPackage) {
         val retries = sdkClickPackage.increaseRetries()
-        logger!!.error("Retrying sdk_click package for the $retries time")
+        logger!!.error("Retrying sdk_click package for the %d time", retries)
         sendSdkClick(sdkClickPackage)
     }
 
     /**
      * Print error log messages (runs within scheduled executor).
      *
-     * @param sdkClickPackage sdk_click package for which error occurred.
+     * @param sdkClickPackage sdk_click package for which error occured.
      * @param message         Message content.
      * @param throwable       Throwable to read the reason of the error.
      */
@@ -373,23 +362,42 @@ class SdkClickHandler(
     ) {
         val packageMessage = sdkClickPackage.getFailureMessage()
         val reasonString = Util.getReasonString(message, throwable)
-        val finalMessage = "$packageMessage. ($reasonString)"
+        val finalMessage = Util.formatString("%s. (%s)", packageMessage, reasonString)
         logger!!.error(finalMessage)
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun teardown() {
-        logger?.verbose("SdkClickHandler teardown")
-        scheduler?.teardown()
-        packageQueue?.clear()
-        activityHandlerWeakRef?.clear()
-        logger = null
-        packageQueue = null
-        backoffStrategy = null
-        scheduler = null
+    companion object {
+        /**
+         * Divisor for milliseconds -> seconds conversion.
+         */
+        private const val MILLISECONDS_TO_SECONDS_DIVISOR = 1000.0
+
+        /**
+         * SdkClickHandler scheduled executor source.
+         */
+        private const val SCHEDULED_EXECUTOR_SOURCE = "SdkClickHandler"
+
+        /**
+         * Intent based referrer source name inside of sdk_click package.
+         */
+        private const val SOURCE_REFTAG = "reftag"
+
+        /**
+         * Install referrer service referrer source name inside of sdk_click package.
+         */
+        private const val SOURCE_INSTALL_REFERRER = "install_referrer"
     }
 
-
+    /**
+     * SdkClickHandler constructor.
+     *
+     * @param activityHandler ActivityHandler reference
+     * @param startsSending   Is sending paused?
+     */
+    init {
+        init(activityHandler, startsSending, sdkClickHandlerActivityPackageSender)
+        logger = MotrackFactory.getLogger()
+        backoffStrategy = MotrackFactory.getSdkClickBackoffStrategy()
+        scheduler = SingleThreadCachedScheduler("SdkClickHandler")
+    }
 }

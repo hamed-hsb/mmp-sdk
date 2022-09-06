@@ -97,6 +97,14 @@ class MotrackFactory {
             MotrackFactory.activityHandler = activityHandler
         }
 
+
+        @JvmName("getSdkClickBackoffStrategy1")
+        fun getSdkClickBackoffStrategy(): BackoffStrategy? {
+            return if (sdkClickBackoffStrategy == null) {
+                BackoffStrategy.SHORT_WAIT
+            } else sdkClickBackoffStrategy
+        }
+
         fun setAttributionHandler(attributionHandler: IAttributionHandler?) {
             MotrackFactory.attributionHandler = attributionHandler
         }
