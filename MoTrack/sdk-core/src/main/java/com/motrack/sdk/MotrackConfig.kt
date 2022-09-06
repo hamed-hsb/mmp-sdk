@@ -74,6 +74,7 @@ class MotrackConfig {
         const val AD_REVENUE_ADMOST = "admost_sdk"
         const val AD_REVENUE_UNITY = "unity_sdk"
         const val AD_REVENUE_HELIUM_CHARTBOOST = "helium_chartboost_sdk"
+        const val AD_REVENUE_SOURCE_PUBLISHER = "publisher_sdk"
     }
 
     constructor(context: Context?, appToken: String?, environment: String) {
