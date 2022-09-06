@@ -356,10 +356,11 @@ class SharedPreferencesManager private constructor(context: Context) {
      * Remove all key-value pairs from shared preferences.
      */
     @Synchronized
-    fun clear() {
-        if (sharedPreferencesEditor != null) sharedPreferencesEditor!!.clear().apply()
+    open fun clear() {
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor!!.clear().apply()
+        }
     }
-
     /**
      * Write a string value to shared preferences.
      *
@@ -368,7 +369,9 @@ class SharedPreferencesManager private constructor(context: Context) {
      */
     @Synchronized
     private fun saveString(key: String, value: String) {
-        if (sharedPreferencesEditor != null) sharedPreferencesEditor!!.putString(key, value).apply()
+       if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor!!.putString(key, value).apply()
+        }
     }
 
     /**
@@ -378,9 +381,10 @@ class SharedPreferencesManager private constructor(context: Context) {
      * @param value Value to be written to shared preferences
      */
     @Synchronized
-    private fun saveBoolean(key: String, value: Boolean) {
-        if (sharedPreferencesEditor != null) sharedPreferencesEditor!!.putBoolean(key, value)
-            .apply()
+    private  fun saveBoolean(key: String, value: Boolean) {
+       if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor!!.putBoolean(key, value).apply()
+        }
     }
 
     /**
@@ -390,8 +394,10 @@ class SharedPreferencesManager private constructor(context: Context) {
      * @param value Value to be written to shared preferences
      */
     @Synchronized
-    private fun saveLong(key: String, value: Long) {
-        if (sharedPreferencesEditor != null) sharedPreferencesEditor!!.putLong(key, value).apply()
+    private  fun saveLong(key: String, value: Long) {
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor!!.putLong(key, value).apply()
+        }
     }
 
     /**
@@ -401,8 +407,10 @@ class SharedPreferencesManager private constructor(context: Context) {
      * @param value Value to be written to shared preferences
      */
     @Synchronized
-    private fun saveInteger(key: String, value: Int) {
-        if (sharedPreferencesEditor != null) sharedPreferencesEditor!!.putInt(key, value).apply()
+    private  fun saveInteger(key: String, value: Int) {
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor!!.putInt(key, value).apply()
+        }
     }
 
     /**
@@ -475,8 +483,10 @@ class SharedPreferencesManager private constructor(context: Context) {
      * @param key Key to be removed
      */
     @Synchronized
-    private fun remove(key: String) {
-        if (sharedPreferencesEditor != null) sharedPreferencesEditor!!.remove(key).apply()
+    private  fun remove(key: String) {
+       if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor!!.remove(key).apply()
+        }
     }
 
     companion object {
@@ -532,7 +542,15 @@ class SharedPreferencesManager private constructor(context: Context) {
          * Shared preferences editor of the app.
          */
         private var sharedPreferences: SharedPreferences? = null
+
+        /**
+         * Shared preferences editor of the app.
+         */
         private var sharedPreferencesEditor: SharedPreferences.Editor? = null
+
+        /**
+         * Singleton instance.
+         */
         private var defaultInstance: SharedPreferencesManager? = null
 
         @Synchronized
