@@ -31,6 +31,14 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    lint {
+        // If set to true (default), stops the build if errors are found.
+        abortOnError false
+        // If true, only report errors.
+        ignoreWarnings true
+    }
+
 }
 
 dependencies {
@@ -44,3 +52,24 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
     implementation 'com.google.code.gson:gson:2.9.0'
 }
+
+
+// delete jar file library in libs folder
+// motrack sdk core
+task deleteJar(type: Delete) {
+    delete 'libs/mylibrary.jar'
+}
+
+
+// generate jar library
+// motrack sdk core
+task exportjar(type: Copy) {
+    from('build/intermediates/compile_library_classes/release/')
+    into('libs/')
+    include('classes.jar')
+    rename('classes.jar', 'MoTrack-sdk-preAlfa-0.1.jar')
+
+}
+
+exportjar.dependsOn(deleteJar, build)
+

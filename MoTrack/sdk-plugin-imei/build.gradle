@@ -43,3 +43,21 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
 }
+
+// delete jar file library in libs folder
+// IMEI
+task deleteJar(type: Delete) {
+    delete 'libs/mylibrary.jar'
+}
+
+
+// generate jar library
+// IMEI
+task exportjar(type: Copy) {
+    from('build/intermediates/compile_library_classes/release/')
+    into('libs/')
+    include('classes.jar')
+    rename('classes.jar', 'motrack-sdk-plugin-imei-preAlfa-0.1.jar')
+}
+
+exportjar.dependsOn(deleteJar, build)

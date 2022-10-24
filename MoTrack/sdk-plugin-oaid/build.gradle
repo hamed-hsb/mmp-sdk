@@ -36,3 +36,22 @@ dependencies {
 
     compileOnly project(':sdk-core')
 }
+
+
+// delete jar file library in libs folder
+// OAID
+task deleteJar(type: Delete) {
+    delete 'libs/mylibrary.jar'
+}
+
+
+// generate jar library
+// OAID
+task exportjar(type: Copy) {
+    from('build/intermediates/compile_library_classes/release/')
+    into('libs/')
+    include('classes.jar')
+    rename('classes.jar', 'motrack-sdk-plugin-oaid-preAlfa-0.1.jar')
+}
+
+exportjar.dependsOn(deleteJar, build)

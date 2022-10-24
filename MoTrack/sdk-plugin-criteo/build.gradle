@@ -33,3 +33,22 @@ dependencies {
     implementation "androidx.core:core-ktx:$rootProject.coreKtxVersion"
     implementation project(path: ':sdk-core')
 }
+
+
+// delete jar file library in libs folder
+// CRITEO
+task deleteJar(type: Delete) {
+    delete 'libs/mylibrary.jar'
+}
+
+
+// generate jar library
+// CRITEO
+task exportjar(type: Copy) {
+    from('build/intermediates/compile_library_classes/release/')
+    into('libs/')
+    include('classes.jar')
+    rename('classes.jar', 'motrack-sdk-plugin-criteo-preAlfa-0.1.jar')
+}
+
+exportjar.dependsOn(deleteJar, build)
