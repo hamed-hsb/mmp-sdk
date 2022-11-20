@@ -1,68 +1,123 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 
-    buildscript {
+buildscript {
 
 
-        ext {
-            kotlinVersion = '1.6.10'
+    ext {
+        kotlinVersion = '1.6.10'
 
-            // Android config
-            coreMinSdkVersion = 16
-            coreCompileSdkVersion = 31
-            coreTargetSdkVersion = 31
-            coreVersionName = '1.1.0'
-            defaultVersionCode = 100
+        // Android config
+        coreMinSdkVersion = 16
+        coreCompileSdkVersion = 31
+        coreTargetSdkVersion = 31
+        coreVersionName = '1.1.0'
+        defaultVersionCode = 100
 
-            // Dependencies
-            coreKtxVersion = '1.7.0'
-            appCompatVersion = '1.4.0'
-            googleMaterialVersion = '1.4.0'
+        // Dependencies
+        coreKtxVersion = '1.7.0'
+        appCompatVersion = '1.4.0'
+        googleMaterialVersion = '1.4.0'
 
-            // Testing libraries
-            JunitVersion = '4.13.2'
-            androidxJunitVersion = '1.1.3'
-            espressoVersion = '3.4.0'
-            androidxTestRunner = '1.4.0'
-            androidxTestRules = '1.4.0'
+        // Testing libraries
+        JunitVersion = '4.13.2'
+        androidxJunitVersion = '1.1.3'
+        espressoVersion = '3.4.0'
+        androidxTestRunner = '1.4.0'
+        androidxTestRules = '1.4.0'
 
-            // play plugin
-            installreferrerVersion = '2.2'
-            playServicesAdsIdentifier = '18.0.0'
+        // play plugin
+        installreferrerVersion = '2.2'
+        playServicesAdsIdentifier = '18.0.0'
 
-            // POM
-            motrackGroupId = 'com.motrack.sdk'
 
-            gsonVersion = '2.8.9'
 
-            // Test
-            testCoreVersion = '1.4.0'
-            testRunnerVersion = '1.4.0'
-            testRulesVersion = '1.4.0'
-            androidxJunitVersion = '1.1.3'
-            extTruthVersion = '1.4.0'
-            truthVersion = '1.0.1'
-            espressoVersion = '3.4.0'
-            kotlinStdlibVersion = '1.6.0'
-            jUnitKtxVersion = '1.1.4-alpha03'
-            okhttp3IdlingResourceVersion = '1.0.0'
-        }
+        gsonVersion = '2.8.9'
 
-        repositories {
-            google()
-            mavenCentral()
-        }
-        dependencies {
-            classpath 'com.android.tools.build:gradle:7.1.3'
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        // Test
+        testCoreVersion = '1.4.0'
+        testRunnerVersion = '1.4.0'
+        testRulesVersion = '1.4.0'
+        androidxJunitVersion = '1.1.3'
+        extTruthVersion = '1.4.0'
+        truthVersion = '1.0.1'
+        espressoVersion = '3.4.0'
+        kotlinStdlibVersion = '1.6.0'
+        jUnitKtxVersion = '1.1.4-alpha03'
+        okhttp3IdlingResourceVersion = '1.0.0'
 
-            // NOTE: Do not place your application dependencies here; they belong
-            // in the individual module build.gradle files
-        }
+        PUBLISH_GROUP_ID = 'com.motrack.sdk'
+        PUBLISH_VERSION = '1.0.0-pre-alpha'
+        PUBLISH_ARTIFACT_ID = 'io.gitlab.motrack-org'
+
+
+        //***
+
+        sdkVersionCode = 1                      // version code for txsdk
+        sdkVersion = '1.0.0-pre-alfa'                    // version for txsdk and common
+        pomGroupID = "com.motrack.sdk"   // pom group id for txsdk and common
+
+        cliVersion = '1.0.0-pre-alfa'                    // clitool version
+    }
+
+    ext.versions = [
+            'kotlin' : '1.7.10',
+            'androidXAnnotation' : '1.5.0'
+    ]
+
+    repositories {
+
+        maven { url "https://plugins.gradle.org/m2/" }
+        gradlePluginPortal()
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.google.com' }
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'io.github.gradle-nexus:publish-plugin:1.1.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+
+    //   apply from: '/media/hamed/Base Drive1/projects/android/private/motrack/androidsdk/MoTrack/scripts/publish-root.gradle'
+
+
 
 
 }
 
+
+
+
+plugins {
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
+
+}
+
+
+
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
+//******
+
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
+
+apply from: 'publish-root.gradle'
+apply from: 'publish.gradle'
+
+
+
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+
+task cleanTmp(type: Delete) {
+    delete "$rootProject.rootDir/tmp"
 }

@@ -1,7 +1,12 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'maven-publish'
+    id 'signing'
+
+
 }
+
 
 android {
     compileSdk rootProject.ext.coreCompileSdkVersion
@@ -39,10 +44,14 @@ android {
         ignoreWarnings true
     }
 
+
+
 }
 
-dependencies {
 
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.core:core-ktx:$rootProject.coreKtxVersion"
     implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
 
@@ -53,23 +62,236 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
 }
 
+project.group = "io.gitlab.motrack-org"
+project.archivesBaseName = "MoTrackSDK"
+project.version = "1.0.0"
+//apply from: '../publish-module.gradle'
 
-// delete jar file library in libs folder
-// motrack sdk core
-task deleteJar(type: Delete) {
-    delete 'libs/mylibrary.jar'
+//*********************************
+
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
+        // For Android libraries
+        from android.sourceSets.main.java.srcDirs
+        from android.sourceSets.main.kotlin.srcDirs
+    } else {
+        // For pure Kotlin libraries, in case you have them
+        from sourceSets.main.java.srcDirs
+        from sourceSets.main.kotlin.srcDirs
+    }
 }
 
 
-// generate jar library
-// motrack sdk core
-task exportjar(type: Copy) {
-    from('build/intermediates/compile_library_classes/release/')
-    into('libs/')
-    include('classes.jar')
-    rename('classes.jar', 'MoTrack-sdk-preAlfa-0.1.jar')
+artifacts {
+    archives androidSourcesJar
+}
+
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // The coordinates of the library, being set from variables that
+                // we'll set up later
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+
+                // Two artifacts, the `aar` (or `jar`) and the sources
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    artifact("$buildDir/libs/${project.getName()}-${version}.jar")
+                }
+
+                artifact androidSourcesJar
+
+                // Mostly self-explanatory metadata
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = PUBLISH_DESCRIPTION
+                    url = PUBLISH_URL
+                    licenses {
+                        license {
+                            name = PUBLISH_LICENSE_NAME
+                            url = PUBLISH_LICENSE_URL
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = PUBLISH_DEVELOPER_ID
+                            name = PUBLISH_DEVELOPER_NAME
+                            email = PUBLISH_DEVELOPER_EMAIL
+                        }
+                    }
+
+                    // Version control info - if you're using GitHub, follow the
+                    // format as seen here
+                    scm {
+                        connection = PUBLISH_SCM_CONNECTION
+                        developerConnection = PUBLISH_SCM_DEVELOPER_CONNECTION
+                        url = PUBLISH_SCM_URL
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications
+}
+
+
+/*
+
+publishing {
+    publications {
+        mavenAndroidCore(MavenPublication) {
+            customizePom(pom)
+            groupId rootProject.ext.PUBLISH_GROUP_ID
+            artifactId 'android-sdk'
+            version rootProject.ext.PUBLISH_VERSION
+
+            artifact adtraceCoreJarRelease
+            artifact adtraceCoreAndroidJavadocsJar
+            artifact adtraceCoreAndroidSourcesJar
+        }
+
+        mavenAndroidCoreAAR(MavenPublication) {
+            customizePomForAar(pom)
+            groupId rootProject.ext.PUBLISH_ARTIFACT_ID
+            artifactId 'android-sdk'
+            version rootProject.ext.coreVersionName
+
+            artifact("$buildDir/outputs/aar/android-sdk-release.aar"){
+                builtBy tasks.getByPath("adtraceCoreAarRelease")
+            }
+            artifact adtraceCoreAndroidJavadocsJar
+            artifact adtraceCoreAndroidSourcesJar
+        }
+
+    }
+
+    repositories {
+        maven {
+            url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            if (project.hasProperty("sonatypeUsername")) {
+                credentials {
+                    username sonatypeUsername
+                    password sonatypePassword
+                }
+            }
+        }
+    }
+}
+
+def customizePom(pom) {
+    pom.withXml {
+        // Add all items necessary for maven central publication.
+        asNode().children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The MoTrack SDK for Android'
+            name 'MoTrack Android SDK'
+            url 'https://gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk'
+            organization {
+                name 'motrack'
+                url 'https://www.motrack.io'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+                connection 'scm:git:git@gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+                developerConnection 'scm:git:git@gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+            }
+            developers {
+                developer {
+                    name 'Hamed Safarzadeh'
+                    email = 'motrackdev@gmail.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
+    pom.withXml {
+        // Remove the existing packaging field, as it has to be overridden with type aar
+        asNode().remove(asNode().get("packaging"))
+
+        // Add all items necessary for maven central publication.
+        asNode().children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The MoTrack SDK for Android'
+            name 'MoTrack Android SDK'
+            url 'https://gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk'
+            packaging 'aar'
+            organization {
+                name 'motrack'
+                url 'https://www.motrack.io'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+                connection 'scm:git:git@gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+                developerConnection 'scm:git:git@gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+            }
+            developers {
+                developer {
+                    name 'Hamed Safarzadeh'
+                    email = 'motrackdev@gmail.com'
+                }
+            }
+        }
+    }
+}
+model {
+    tasks.generatePomFileForMavenAndroidCorePublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
+
+// TODO check if/how to replace this tasks
+    tasks.publishMavenAndroidCorePublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenAndroidCorePublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+
+
+    tasks.generatePomFileForMavenAndroidCoreAARPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
+
+//TODO check if/how to replace this tasks
+    tasks.publishMavenAndroidCoreAARPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenAndroidCoreAARPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+
 
 }
 
-exportjar.dependsOn(deleteJar, build)
+signing {
+    sign configurations.archives
+    sign publishing.publications.mavenAndroidCore
+    sign publishing.publications.mavenAndroidCoreAAR
+}
+*/
 

@@ -45,8 +45,7 @@ class Logger : ILogger {
                 Log.v(LOGTAG, message)
             } catch (e: Exception) {
                 Log.e(
-                    LOGTAG,
-                    "Error formatting log message: $message, with params: ${parameters.toList()}"
+                    LOGTAG, "Error formatting log message: $message, with params: ${parameters.toList()}"
                 )
             }
         }

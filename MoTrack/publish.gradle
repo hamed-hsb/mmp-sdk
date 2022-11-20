@@ -1,0 +1,15 @@
+ext {
+    PUBLISH_GROUP_ID = 'com.motrack.sdk'
+    PUBLISH_VERSION = '1.0.0'
+    PUBLISH_ARTIFACT_ID = 'io.gitlab.motrack-org'
+    PUBLISH_DESCRIPTION = 'MoTrack Android Library'
+    PUBLISH_URL = 'https://github.com/yunjaena/SlackWebhookAndroid'
+    PUBLISH_LICENSE_NAME = 'Apache License'
+    PUBLISH_LICENSE_URL = 'https://gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk/-/blob/master/LICENSE'
+    PUBLISH_DEVELOPER_ID = 'hamed-hsb'
+    PUBLISH_DEVELOPER_NAME = 'hamed safarzadeh'
+    PUBLISH_DEVELOPER_EMAIL = 'hamed@developer.com'
+    PUBLISH_SCM_CONNECTION = 'scm:git:gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk.git'
+    PUBLISH_SCM_DEVELOPER_CONNECTION = 'scm:git:ssh:ssh://git@gitlab.motrack.ir:766/motrack-org/motrack-android-group/androidsdk.git'
+    PUBLISH_SCM_URL = 'https://gitlab.motrack.ir/motrack-org/motrack-android-group/androidsdk'
+}

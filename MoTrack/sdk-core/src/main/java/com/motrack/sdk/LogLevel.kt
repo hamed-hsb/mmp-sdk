@@ -8,6 +8,7 @@ import android.util.Log
  */
 
 enum class LogLevel(private var androidLogLevel: Int) {
+
     VERBOSE(Log.VERBOSE),
     DEBUG(Log.DEBUG),
     INFO(Log.INFO),
